@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
+]>
+<!-- WK: Set category, IPR, docName -->
+<rfc category="std" docName="draft-wkumari-dnsop-multiple-responses-03"
+     ipr="trust200902">
+  <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+
+  <?rfc toc="yes" ?>
+
+  <?rfc symrefs="yes" ?>
+
+  <?rfc sortrefs="yes"?>
+
+  <?rfc iprnotified="no" ?>
+
+  <?rfc strict="yes"?>
+
+  <?rfc compact="yes" ?>
+
+  <front>
+    <!-- WK: Set long title. -->
+
+    <title abbrev="RFC5011 Security Considerations ">Security
+    Considerations for RFC5011 Publishers.</title>
+
+    <author fullname="Wes Hardaker" initials="W." surname="Hardaker">
+      <organization>Parsons, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>P.O. Box 382</street>
+
+          <city>Davis, CA</city>
+
+          <code>95617</code>
+
+          <country>US</country>
+        </postal>
+
+        <email>ietf@hardakers.net</email>
+      </address>
+    </author>
+
+    <author fullname="Warren Kumari" initials="W." surname="Kumari">
+      <organization>Google</organization>
+
+      <address>
+        <postal>
+          <street>1600 Amphitheatre Parkway</street>
+
+          <city>Mountain View, CA</city>
+
+          <code>94043</code>
+
+          <country>US</country>
+        </postal>
+
+        <email>warren@kumari.net</email>
+      </address>
+    </author>
+
+    <date day="20" month="July" year="2016"/>
+
+    <area>template</area>
+
+    <workgroup>dnsop</workgroup>
+
+    <abstract>
+      <t>This document describes the minimum requirements which a
+      publisher of a zone must wait before using a new DNSKEY
+      advertised using the RFC5011 DNSKEY rollover process.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section title="Introduction">
+      <t>RFC5011 <xref target="rfc5011"> defines a mechanism by which
+      DNSSEC validators can extend there list of trust anchors when
+      they've seen a new key.  However, RFC5011 [intentionally]
+      provides no feedback to publishers of DNSKEYs about how long
+      they must wait before such a new key is actually usable.
+      Because of this lack of guidance, DNSSEC publishers may derive
+      incorrect assumptions about safe usage of the RFC5011 process.
+      This document describes the minimum security requirements from a
+      publishers point of view and is indented to compliment the
+      guidance offered in RFC5011, which is designed to solely
+      represent the Validating Resolvers point of view.</t>
+
+      <t/>
+
+      <section title="Requirements notation">
+        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+        document are to be interpreted as described in <xref
+        target="RFC2119"/>.</t>
+      </section>
+    </section>
+
+    <section title="Background">
+      <t>The RFC5011 process outlines a timed process by which a
+      Validating Resolver may accept a newly published KSK as a trust
+      anchor for validating future DNSSEC signed records.  This
+      document augments that information with additional constraints,
+      as required from the DNSKEY publication point of view.  Note
+      that it does not define any other operational guidance or
+      recommendations about the RFC5011 process from a publication
+      point of view and restricts itself to solely the security
+      ramifications of switching to a new key too soon.  Failure of a
+      DNSKEY publisher to follow the minimum recommendations
+      associated with this draft will result in potential
+      denial-of-service attack opportunities against validating
+      resolvers.</t>
+    </section>
+
+    <section title="Terminology">
+      <t><list style="hanging">
+	      <t hangText="foo"> bar
+        </list></t>
+    </section>
+
+    <section title="Timing associated with RFC5011 processing">
+	    <t>TBD</t>
+    </section>
+
+    <section title="Denial of Service Attack Considerations">
+      <t>If an attacker is able to provide a RFC5011 validating engine
+      with past responses, such as when it is in-path or able to
+      otherwise perform any number of cache poising attacks, the
+      following timeline depicts an attack where the subscribing
+      RFC5011-compliant validator will be left without an appropriate
+      DNSKEY trust anchor.</t>
+
+      <section title="Numerical Concrete Attack Example">
+	      <t>These assumptions are used in the example scenario within
+	      this section. 
+
+	      <list style="hanging">
+		      <t hangText="TTL (all records)">1 day</t>
+		      <t hangText="RRSIG Signature Validity">10 days</t>
+		      <t hangText="Zone resigned every">1 day</t>
+	      </list>
+	      </t>
+
+	      <t>Given these assumptions, then the following sequence of
+	      events depicts how a Trust Anchor Publisher (XXX: TERM!) which
+	      waits for only the RFC5011 hold time timer length of 30 days
+	      subjects its users to a potential Denial of Service attack.  The
+	      timing schedule listed below is based on a new key being
+	      published at T+0, and where all numbers in this sequence refer to
+	      days before and after such an event.  Thus, T-1 is the day
+	      before the introduction of the new key, and T+15 is the 15th day
+	      after the key was introduced into the zone being discussed..</t>
+
+	      <t>In this dialog, we consider two keys being published:
+	      <list style="hanging">
+		      <t hangText="Kold">The older key being replaced.</t>
+		      <t hangText="Knew">The new key being transitioned into
+		      active use, through the RFC5011 process.</t>
+	      </list> </t>
+
+	      <section title="Timing Breakdown">
+
+		      <p>The following series of steps depicts the timeline in
+		      which an attack occurs that foils the publisher of a new
+		      key who revokes the old key too quickly.</p>
+		      
+		      <list style="hanging">
+			      <t hangText="T-1">Last signatures published that
+			      only signs Kold.</t>
+		      </list>
+	      </section>
+      </section
+</section>
+
+    <section title="IANA Considerations">
+      <t>This document contains no IANA considerations.</t>
+
+
+    <section anchor="security" title="Security Considerations">
+      <t>This document, in its entirety, is solely about the security
+      considerations with respect to the publisher of RFC5011 trust
+      anchors / keys.</t>
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='reference.RFC.5011 ?>
+    </references>
+
+    <!--
+        <references title="Informative References">
+        </references>
+    -->
+
+    <section title="Changes / Author Notes.">
+      <t>None yet</t>
+    </section>
+  </back>
+</rfc>
