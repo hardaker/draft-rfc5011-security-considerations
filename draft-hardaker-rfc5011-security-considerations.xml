@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
-<!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
-<!ENTITY rfc5011 PUBLIC "" ".//reference.RFC.5011.xml">
+<!ENTITY rfc2119 PUBLIC "" "reference.RFC.2119.xml">
+<!ENTITY rfc5011 PUBLIC "" "reference.RFC.5011.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
 <rfc category="std" docName="draft-wkumari-dnsop-multiple-responses-03"
@@ -24,7 +24,7 @@
 		<!-- WK: Set long title. -->
 
 		<title abbrev="RFC5011 Security Considerations ">Security
-		Considerations for RFC5011 Publishers.</title>
+		Considerations for RFC5011 Publishers</title>
 
 		<author fullname="Wes Hardaker" initials="W." surname="Hardaker">
 			<organization>Parsons, Inc.</organization>
@@ -77,17 +77,17 @@
 
 	<middle>
 		<section title="Introduction">
-			<t>RFC5011 <xref target="rfc5011" /> defines a mechanism by which
-			DNSSEC validators can extend there list of trust anchors when
+			<t>RFC5011 <xref target="RFC5011" /> defines a mechanism by which
+			DNSSEC validators can extend their list of trust anchors when
 			they've seen a new key.  However, RFC5011 [intentionally]
-			provides no feedback to publishers of DNSKEYs about how long
+			provides no guidance to publishers of DNSKEYs about how long
 			they must wait before such a new key is actually usable.
 			Because of this lack of guidance, DNSSEC publishers may derive
 			incorrect assumptions about safe usage of the RFC5011 process.
 			This document describes the minimum security requirements from a
 			publishers point of view and is indented to compliment the
-			guidance offered in RFC5011, which is designed to solely
-			represent the Validating Resolvers point of view.</t>
+			guidance offered in RFC5011 (which is designed to solely
+			represent the Validating Resolvers point of view).</t>
 
 			<t/>
 
@@ -100,14 +100,15 @@
 		</section>
 
 		<section title="Background">
-			<t>The RFC5011 process outlines a timed process by which a
+			<t>The RFC5011 process describes a process by which a
 			Validating Resolver may accept a newly published KSK as a trust
 			anchor for validating future DNSSEC signed records.  This
 			document augments that information with additional constraints,
 			as required from the DNSKEY publication point of view.  Note
 			that it does not define any other operational guidance or
 			recommendations about the RFC5011 process from a publication
-			point of view and restricts itself to solely the security
+			point of view and restricts itself to solely
+			the security and operational
 			ramifications of switching to a new key too soon.  Failure of a
 			DNSKEY publisher to follow the minimum recommendations
 			associated with this draft will result in potential
@@ -128,10 +129,11 @@
 		<section title="Denial of Service Attack Considerations">
 			<t>If an attacker is able to provide a RFC5011 validating engine
 			with past responses, such as when it is in-path or able to
-			otherwise perform any number of cache poising attacks, the
-			following timeline depicts an attack where the subscribing
-			RFC5011-compliant validator will be left without an appropriate
-			DNSKEY trust anchor.</t>
+			otherwise perform any number of cache poising
+			attacks, she may be able to leave the
+			RFC5011-compliant validataor without an
+			appropriate DNSKEY trust anchor.</t>
+			<t> The following timeline illustrates this situation.</t>
 
 			<section title="Numerical Concrete Attack Example">
 				<t>These assumptions are used in the example scenario within
@@ -144,7 +146,7 @@
 				</list>
 				</t>
 
-				<t>Given these assumptions, then the following sequence
+				<t>Given these assumptions, the following sequence
 				of events depicts how a Trust Anchor Publisher (XXX:
 				TERM!) which waits for only the RFC5011 hold time timer
 				length of 30 days subjects its users to a potential
@@ -160,7 +162,7 @@
 				<list style="hanging">
 					<t hangText="Kold">The older KSK being replaced.</t>
 					<t hangText="Knew">The new KSK being
-					transitioned into active use, through the
+					transitioned into active use, using the
 					RFC5011 process.</t>
 				</list> </t>
 
@@ -169,12 +171,13 @@
 				<list style="hanging">
 					<t hangText="Zone Maintainer">The owner of a
 					zone intending to publish a new Key-Signing-Keys
-					(KSKs) that will become a trustanchor by
+					(KSKs) that will become a
+					trust anchor by
 					validators following the RFC5011 process.</t>
 
 					<t hangText="RFC5011 Validator">A DNSSEC
 					validator that is using the RFC5011 processes to
-					track trust anchors and update trust
+					track and update trust
 					anchors.</t>
 
 					<t hangText="Attacker">An attacker intent on
@@ -208,7 +211,7 @@
 						<t hangText="T+5">The RFC5011 Validator
 						queries for the zone's keyset per the
 						Active Refresh schedule, discussed in
-						Section 2.3 of RFC5011.  But, instead of
+						Section 2.3 of RFC5011.  Instead of
 						receiving the intended published keyset,
 						the Attacker successfully replays the
 						keyset and associated signatures that
@@ -222,7 +225,12 @@
 
 						<t hangText="T+10">The RFC5011 Validator
 						queries for the zone's keyset and
-						discovers Knew again, signed by Kold.
+						discovers Knew again,
+						signed by Kold (the
+						attacker is unable to
+						replay the records
+						at T-1, because they
+						have now expired).
 						It starts the hold-timer for Knew
 						again.</t>
 
@@ -235,14 +243,18 @@
 						believes that this is the first time at
 						which some validators might accept Knew
 						as a new trust anchor.  The hold-down
-						timer of our RFC5011 Validator is at 20
-						days.</t>
+						timer of our RFC5011
+						Validator is at 20 days.</t>
 
 						<t hangText="T+35">The Zone Maintainer
 						mistakenly believes that all validators
 						following the Active Refresh schedule
-						should have accepted Knew as a new trust
-						anchor.  The hold-time timer of our
+						should have accepted
+						Knew as a the new trust
+						anchor (since 30 days
+						+ 1/2 the signature
+						validity period would
+						have passed).  The hold-time timer of our
 						RFC5011 Validator is at 25 days and has
 						not actually reached its 30 day
 						requirement though.</t>
@@ -267,7 +279,7 @@
 		</section>
 		
 		<section anchor="security" title="Security Considerations">
-			<t>This document, in its entirety, is solely about the security
+			<t>This document, is solely about the security
 			considerations with respect to the publisher of RFC5011 trust
 			anchors / keys.</t>
 		</section>
@@ -275,7 +287,8 @@
 
 	<back>
 		<references title="Normative References">
-			<?rfc include='reference.RFC.5011 ?>
+			&rfc2119;
+			&rfc5011;
 		</references>
 
 		<!--
