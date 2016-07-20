@@ -24,7 +24,7 @@
 		<!-- WK: Set long title. -->
 
 		<title abbrev="RFC5011 Security Considerations ">Security
-		Considerations for RFC5011 Publishers</title>
+		Considerations for RFC5011 Publishers</title>
 
 		<author fullname="Wes Hardaker" initials="W." surname="Hardaker">
 			<organization>Parsons, Inc.</organization>
@@ -278,6 +278,22 @@
 			<t>This document contains no IANA considerations.</t>
 		</section>
 		
+		<section anchor="operational" title="Operational
+		                                  Considerations">
+			<t>A companion document to RFC5011 was
+			expected to be published that describes the
+			best operational considerations from the
+			perspective of a zone publisher.  However, the
+			companion document was never written but the
+			authors of this document hope that it will at
+			some point in the future.  This document is
+			intended only to fill a single operational
+			void that results in security ramifications
+			(specifically a denial of service attack
+			against an RFC5011 Validator).  This document
+			does not attempt to document any other missing
+			operational guidance for zone publishers.</t>
+		</section>
 		<section anchor="security" title="Security Considerations">
 			<t>This document, is solely about the security
 			considerations with respect to the publisher of RFC5011 trust
