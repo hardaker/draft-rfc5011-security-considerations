@@ -89,6 +89,23 @@
 			guidance offered in RFC5011 (which is designed to solely
 			represent the Validating Resolvers point of view).</t>
 
+			<t>The authors reached out to 5 DNSSEC experts
+			and asked them how long they must wait before
+			using a new KSK that was being rolled
+			according to the 5011 process.  All 5 experts
+			answered with an insecure value, and thus the
+			authors have determined that this lack of
+			operational guidance is causing security
+			concerns.  This document will hopefully help
+			rectify this problem.</t>
+
+			<t>One important (temporary?) note about
+			ICANN's upcoming KSK rolling plan for the root
+			zone: the timing values chosen with rolling
+			the KSK in the root zone are completely safe,
+			and are not in any way affected by the timing
+			concerns introduced by this draft</t> 
+
 			<t/>
 
 			<section title="Requirements notation">
