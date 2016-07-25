@@ -101,10 +101,11 @@
 
 			<t>One important (temporary?) note about
 			ICANN's upcoming KSK rolling plan for the root
-			zone: the timing values chosen with rolling
-			the KSK in the root zone are completely safe,
-			and are not in any way affected by the timing
-			concerns introduced by this draft</t> 
+			zone: the timing values, at the time of this
+			writing, chosen for rolling the KSK in the
+			root zone appear completely safe, and are not in
+			any way affected by the timing concerns
+			introduced by this draft</t>
 
 			<t/>
 

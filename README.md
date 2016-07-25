@@ -63,7 +63,7 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-     1.1.  Requirements notation . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements notation . . . . . . . . . . . . . . . . . .   3
    2.  Background  . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    4.  Timing associated with RFC5011 processing . . . . . . . . . .   3
@@ -73,7 +73,7 @@ Table of Contents
    6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
    7.  Operational
        Considerations  . . . . . . . . . . . . . . . . . . . . . . .   5
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
    9.  Normative References  . . . . . . . . . . . . . . . . . . . .   6
    Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   6
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
@@ -99,15 +99,15 @@ Table of Contents
    help rectify this problem.
 
    One important (temporary?) note about ICANN's upcoming KSK rolling
-   plan for the root zone: the timing values chosen with rolling the KSK
-   in the root zone are completely safe, and are not in any way affected
-   by the timing concerns introduced by this draft
+   plan for the root zone: the timing values, at the time of this
+   writing, chosen for rolling the KSK in the root zone appear
+   completely safe, and are not in any way affected by the timing
+   concerns introduced by this draft
 
-1.1.  Requirements notation
 
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-   document are to be interpreted as described in [RFC2119].
+
+
+
 
 
 
@@ -115,6 +115,12 @@ Hardaker & Kumari       Expires January 21, 2017                [Page 2]
 
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
+
+1.1.  Requirements notation
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [RFC2119].
 
 2.  Background
 
@@ -159,12 +165,6 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
 
    Zone resigned every  1 day
 
-   Given these assumptions, the following sequence of events depicts how
-   a Trust Anchor Publisher (XXX: TERM!) which waits for only the
-   RFC5011 hold time timer length of 30 days subjects its users to a
-   potential Denial of Service attack.  The timing schedule listed below
-   is based on a new Key Signing Key (KSK) being published at T+0, and
-
 
 
 Hardaker & Kumari       Expires January 21, 2017                [Page 3]
@@ -172,6 +172,11 @@ Hardaker & Kumari       Expires January 21, 2017                [Page 3]
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
 
+   Given these assumptions, the following sequence of events depicts how
+   a Trust Anchor Publisher (XXX: TERM!) which waits for only the
+   RFC5011 hold time timer length of 30 days subjects its users to a
+   potential Denial of Service attack.  The timing schedule listed below
+   is based on a new Key Signing Key (KSK) being published at T+0, and
    where all numbers in this sequence refer to days before and after
    such an event.  Thus, T-1 is the day before the introduction of the
    new key, and T+15 is the 15th day after the key was introduced into
@@ -215,11 +220,6 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
       Active Refresh schedule, discussed in Section 2.3 of RFC5011.
       Instead of receiving the intended published keyset, the Attacker
       successfully replays the keyset and associated signatures that
-      they recorded at T-1.  Because the signature lifetime is 10 days
-      (in this example), the replayed signature and keyset is accepted
-      as valid (being only 6 days old) and the RFC5011 Validator cancels
-      the hold-down timer for Knew.
-
 
 
 
@@ -227,6 +227,11 @@ Hardaker & Kumari       Expires January 21, 2017                [Page 4]
 
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
+
+      they recorded at T-1.  Because the signature lifetime is 10 days
+      (in this example), the replayed signature and keyset is accepted
+      as valid (being only 6 days old) and the RFC5011 Validator cancels
+      the hold-down timer for Knew.
 
    T+10  The RFC5011 Validator queries for the zone's keyset and
       discovers Knew again, signed by Kold (the attacker is unable to
@@ -270,11 +275,6 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
    document does not attempt to document any other missing operational
    guidance for zone publishers.
 
-8.  Security Considerations
-
-   This document, is solely about the security considerations with
-   respect to the publisher of RFC5011 trust anchors / keys.
-
 
 
 
@@ -283,6 +283,11 @@ Hardaker & Kumari       Expires January 21, 2017                [Page 5]
 
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
+
+8.  Security Considerations
+
+   This document, is solely about the security considerations with
+   respect to the publisher of RFC5011 trust anchors / keys.
 
 9.  Normative References
 
@@ -317,11 +322,6 @@ Authors' Addresses
    US
 
    Email: warren@kumari.net
-
-
-
-
-
 
 
 
