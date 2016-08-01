@@ -62,7 +62,7 @@
 			</address>
 		</author>
 
-		<date day="20" month="July" year="2016"/>
+		<date day="25" month="July" year="2016"/>
 
 		<area>template</area>
 
@@ -159,7 +159,7 @@
 
 				<list style="hanging">
 					<t hangText="TTL (all records)">1 day</t>
-					<t hangText="RRSIG Signature Validity">10 days</t>
+					<t hangText="DNSKEY RRSIG Signature Validity">10 days</t>
 					<t hangText="Zone resigned every">1 day</t>
 				</list>
 				</t>
