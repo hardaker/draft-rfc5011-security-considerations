@@ -85,7 +85,7 @@
 			Because of this lack of guidance, DNSSEC publishers may derive
 			incorrect assumptions about safe usage of the RFC5011 process.
 			This document describes the minimum security requirements from a
-			publishers point of view and is indented to compliment the
+			publishers point of view and is intended to compliment the
 			guidance offered in RFC5011 (which is designed to solely
 			represent the Validating Resolvers point of view).</t>
 
@@ -149,7 +149,7 @@
 			with past responses, such as when it is in-path or able to
 			otherwise perform any number of cache poising
 			attacks, she may be able to leave the
-			RFC5011-compliant validataor without an
+			RFC5011-compliant validator without an
 			appropriate DNSKEY trust anchor.</t>
 			<t> The following timeline illustrates this situation.</t>
 
