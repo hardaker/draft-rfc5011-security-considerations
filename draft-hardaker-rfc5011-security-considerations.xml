@@ -187,7 +187,7 @@
 				<t>In this dialog, the following actors are
 				discussed:
 				<list style="hanging">
-					<t hangText="Zone Maintainer">The owner of a
+					<t hangText="Zone Signer">The owner of a
 					zone intending to publish a new Key-Signing-Keys
 					(KSKs) that will become a
 					trust anchor by
@@ -200,7 +200,7 @@
 
 					<t hangText="Attacker">An attacker intent on
 					foiling the RFC5011 Validator's ability to
-					successfully adopt the Zone Maintainer's Knew
+					successfully adopt the Zone Signer's Knew
 					key as a trust anchor.</t>
 				</list>
 				</t>
@@ -214,10 +214,10 @@
 					
 					<list style="hanging">
 						<t hangText="T-1">The last signatures
-						are published by the Zone Maintainer
+						are published by the Zone Signer
 						that signs only Kold using Kold.</t>
 
-						<t hangText="T-0">The Zone Maintainer
+						<t hangText="T-0">The Zone Signer
 						adds Knew to his zone and signs the
 						zone's key set with Kold.  The RFC5011
 						Validator retrieves the new key set and
@@ -257,14 +257,14 @@
 						and lets the hold-down timer keep
 						running without resetting it.</t>
 
-						<t hangText="T+30">The Zone Maintainer
+						<t hangText="T+30">The Zone Signer
 						believes that this is the first time at
 						which some validators might accept Knew
 						as a new trust anchor.  The hold-down
 						timer of our RFC5011
 						Validator is at 20 days.</t>
 
-						<t hangText="T+35">The Zone Maintainer
+						<t hangText="T+35">The Zone Signer
 						mistakenly believes that all validators
 						following the Active Refresh schedule
 						should have accepted
@@ -277,7 +277,7 @@
 						not actually reached its 30 day
 						requirement though.</t>
 
-						<t hangText="T+36">The Zone Maintainer,
+						<t hangText="T+36">The Zone Signer,
 						believing Knew is safe to use, switches
 						their active KSK to Knew and publishes a
 						new key set signature using Knew as the
