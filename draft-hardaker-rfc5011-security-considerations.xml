@@ -180,8 +180,8 @@
 
 				<t>In this dialog, we consider two keys being published:
 				<list style="hanging">
-					<t hangText="Kold">The older KSK being replaced.</t>
-					<t hangText="Knew">The new KSK being
+					<t hangText="K_old">The older KSK being replaced.</t>
+					<t hangText="K_new">The new KSK being
 					transitioned into active use, using the
 					RFC5011 process.</t>
 				</list> </t>
@@ -202,7 +202,7 @@
 
 					<t hangText="Attacker">An attacker intent on
 					foiling the RFC5011 Validator's ability to
-					successfully adopt the Zone Signer's Knew
+					successfully adopt the Zone Signer's K_new
 					key as a trust anchor.</t>
 				</list>
 				</t>
@@ -217,16 +217,16 @@
 					<list style="hanging">
 						<t hangText="T-1">The last signatures
 						are published by the Zone Signer
-						that signs only Kold using Kold.</t>
+						that signs only K_old using K_old.</t>
 
 						<t hangText="T-0">The Zone Signer
-						adds Knew to his zone and signs the
-						zone's key set with Kold.  The RFC5011
+						adds K_new to his zone and signs the
+						zone's key set with K_old.  The RFC5011
 						Validator retrieves the new key set and
 						corresponding signature set and notices
-						the publication of Knew.  The RFC5011
+						the publication of K_new.  The RFC5011
 						Validator starts the hold-down timer for
-						Knew.</t>
+						K_new.</t>
 
 						<t hangText="T+5">The RFC5011 Validator
 						queries for the zone's keyset per the
@@ -241,17 +241,17 @@
 						keyset is accepted as valid (being only
 						6 days old) and the RFC5011 Validator
 						cancels the hold-down timer for
-						Knew.</t>
+						K_new.</t>
 
 						<t hangText="T+10">The RFC5011 Validator
 						queries for the zone's keyset and
-						discovers Knew again,
-						signed by Kold (the
+						discovers K_new again,
+						signed by K_old (the
 						attacker is unable to
 						replay the records
 						at T-1, because they
 						have now expired).
-						It starts the hold-timer for Knew
+						It starts the hold-timer for K_new
 						again.</t>
 
 						<t hangText="...">The RFC5011 Validator
@@ -261,7 +261,7 @@
 
 						<t hangText="T+30">The Zone Signer
 						believes that this is the first time at
-						which some validators might accept Knew
+						which some validators might accept K_new
 						as a new trust anchor.  The hold-down
 						timer of our RFC5011
 						Validator is at 20 days.</t>
@@ -270,7 +270,7 @@
 						mistakenly believes that all validators
 						following the Active Refresh schedule
 						should have accepted
-						Knew as a the new trust
+						K_new as a the new trust
 						anchor (since 30 days
 						+ 1/2 the signature
 						validity period would
@@ -280,12 +280,12 @@
 						requirement though.</t>
 
 						<t hangText="T+36">The Zone Signer,
-						believing Knew is safe to use, switches
-						their active KSK to Knew and publishes a
-						new key set signature using Knew as the
+						believing K_new is safe to use, switches
+						their active KSK to K_new and publishes a
+						new key set signature using K_new as the
 						signing key.  Because our RFC5011
 						Validator still has a hold-down timer
-						for Knew at 26 days, it will fail to
+						for K_new at 26 days, it will fail to
 						validate this new key set and the zone
 						contents will be treated as invalid.</t>
 					</list>
@@ -298,13 +298,13 @@
 			<t>Given the attack description in <xref
 			target="attack" />, the correct length of time
 			required for the Zone Signer to wait before
-			using Knew is:
+			using K_new is:
 
                         <figure>
                                 <artwork>
   waitTime = addHoldDownTime
              + 3 * (DNSKEY RRSIG Signature Validity) / 2
-             + 2 * (TTL (all records))
+             + 2 * MAX(TTL of all records)
                                 </artwork>
                         </figure>
                         </t>

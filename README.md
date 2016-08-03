@@ -184,9 +184,9 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
 
    In this dialog, we consider two keys being published:
 
-   Kold  The older KSK being replaced.
+   K_old  The older KSK being replaced.
 
-   Knew  The new KSK being transitioned into active use, using the
+   K_new  The new KSK being transitioned into active use, using the
       RFC5011 process.
 
    In this dialog, the following actors are discussed:
@@ -199,7 +199,7 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
       processes to track and update trust anchors.
 
    Attacker  An attacker intent on foiling the RFC5011 Validator's
-      ability to successfully adopt the Zone Signer's Knew key as a
+      ability to successfully adopt the Zone Signer's K_new key as a
       trust anchor.
 
 5.1.1.  Attack Timing Breakdown
@@ -209,17 +209,17 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
    too quickly.
 
    T-1  The last signatures are published by the Zone Signer that signs
-      only Kold using Kold.
+      only K_old using K_old.
 
-   T-0  The Zone Signer adds Knew to his zone and signs the zone's key
-      set with Kold.  The RFC5011 Validator retrieves the new key set
+   T-0  The Zone Signer adds K_new to his zone and signs the zone's key
+      set with K_old.  The RFC5011 Validator retrieves the new key set
       and corresponding signature set and notices the publication of
-      Knew.  The RFC5011 Validator starts the hold-down timer for Knew.
+      K_new.  The RFC5011 Validator starts the hold-down timer for
+      K_new.
 
    T+5  The RFC5011 Validator queries for the zone's keyset per the
       Active Refresh schedule, discussed in Section 2.3 of RFC5011.
       Instead of receiving the intended published keyset, the Attacker
-      successfully replays the keyset and associated signatures that
 
 
 
@@ -228,50 +228,50 @@ Hardaker & Kumari       Expires January 26, 2017                [Page 4]
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
 
+      successfully replays the keyset and associated signatures that
       they recorded at T-1.  Because the signature lifetime is 10 days
       (in this example), the replayed signature and keyset is accepted
       as valid (being only 6 days old) and the RFC5011 Validator cancels
-      the hold-down timer for Knew.
+      the hold-down timer for K_new.
 
    T+10  The RFC5011 Validator queries for the zone's keyset and
-      discovers Knew again, signed by Kold (the attacker is unable to
+      discovers K_new again, signed by K_old (the attacker is unable to
       replay the records at T-1, because they have now expired).  It
-      starts the hold-timer for Knew again.
+      starts the hold-timer for K_new again.
 
    ...  The RFC5011 Validator continues checking the zone's key set and
       lets the hold-down timer keep running without resetting it.
 
    T+30  The Zone Signer believes that this is the first time at which
-      some validators might accept Knew as a new trust anchor.  The
+      some validators might accept K_new as a new trust anchor.  The
       hold-down timer of our RFC5011 Validator is at 20 days.
 
    T+35  The Zone Signer mistakenly believes that all validators
-      following the Active Refresh schedule should have accepted Knew as
-      a the new trust anchor (since 30 days + 1/2 the signature validity
-      period would have passed).  The hold-time timer of our RFC5011
-      Validator is at 25 days and has not actually reached its 30 day
-      requirement though.
+      following the Active Refresh schedule should have accepted K_new
+      as a the new trust anchor (since 30 days + 1/2 the signature
+      validity period would have passed).  The hold-time timer of our
+      RFC5011 Validator is at 25 days and has not actually reached its
+      30 day requirement though.
 
-   T+36  The Zone Signer, believing Knew is safe to use, switches their
-      active KSK to Knew and publishes a new key set signature using
-      Knew as the signing key.  Because our RFC5011 Validator still has
-      a hold-down timer for Knew at 26 days, it will fail to validate
+   T+36  The Zone Signer, believing K_new is safe to use, switches their
+      active KSK to K_new and publishes a new key set signature using
+      K_new as the signing key.  Because our RFC5011 Validator still has
+      a hold-down timer for K_new at 26 days, it will fail to validate
       this new key set and the zone contents will be treated as invalid.
 
 6.  Proper Timing Requirements
 
    Given the attack description in Section 5, the correct length of time
-   required for the Zone Signer to wait before using Knew is:
+   required for the Zone Signer to wait before using K_new is:
 
      waitTime = addHoldDownTime
                 + 3 * (DNSKEY RRSIG Signature Validity) / 2
-                + 2 * (TTL (all records))
+                + 2 * MAX(TTL of all records)
 
    For the parameters listed in Section 5.1, this becomes:
 
      waitTime = 30 + 3 * (10) / 2 + 2 * (1)  (days)
      waitTime = 47                           (days)
-
 
 
 
@@ -308,8 +308,8 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
 10.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
+              Requirement Levels", BCP 14, RFC 2119, DOI 10.17487/
+              RFC2119, March 1997,
               <http://www.rfc-editor.org/info/rfc2119>.
 
    [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
