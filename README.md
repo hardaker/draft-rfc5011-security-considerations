@@ -7,8 +7,8 @@
 dnsop                                                        W. Hardaker
 Internet-Draft                                             Parsons, Inc.
 Intended status: Standards Track                               W. Kumari
-Expires: January 21, 2017                                         Google
-                                                           July 20, 2016
+Expires: January 26, 2017                                         Google
+                                                           July 25, 2016
 
 
              Security Considerations for RFC5011 Publishers
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on January 21, 2017.
+   This Internet-Draft will expire on January 26, 2017.
 
 Copyright Notice
 
@@ -55,7 +55,7 @@ Copyright Notice
 
 
 
-Hardaker & Kumari       Expires January 21, 2017                [Page 1]
+Hardaker & Kumari       Expires January 26, 2017                [Page 1]
 
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
@@ -67,14 +67,15 @@ Table of Contents
    2.  Background  . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    4.  Timing associated with RFC5011 processing . . . . . . . . . .   3
-   5.  Denial of Service Attack Considerations . . . . . . . . . . .   3
-     5.1.  Numerical Concrete Attack Example . . . . . . . . . . . .   3
+   5.  Denial of Service Attack                   Considerations . .   3
+     5.1.  Numerical Concrete Attack                    Example  . .   3
        5.1.1.  Attack Timing Breakdown . . . . . . . . . . . . . . .   4
-   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
-   7.  Operational
-       Considerations  . . . . . . . . . . . . . . . . . . . . . . .   5
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
-   9.  Normative References  . . . . . . . . . . . . . . . . . . . .   6
+   6.  Proper Timing Requirements  . . . . . . . . . . . . . . . . .   5
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   8.  Operational
+       Considerations  . . . . . . . . . . . . . . . . . . . . . . .   6
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   10. Normative References  . . . . . . . . . . . . . . . . . . . .   6
    Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   6
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
 
@@ -87,7 +88,7 @@ Table of Contents
    actually usable.  Because of this lack of guidance, DNSSEC publishers
    may derive incorrect assumptions about safe usage of the RFC5011
    process.  This document describes the minimum security requirements
-   from a publishers point of view and is indented to compliment the
+   from a publishers point of view and is intended to compliment the
    guidance offered in RFC5011 (which is designed to solely represent
    the Validating Resolvers point of view).
 
@@ -110,8 +111,7 @@ Table of Contents
 
 
 
-
-Hardaker & Kumari       Expires January 21, 2017                [Page 2]
+Hardaker & Kumari       Expires January 26, 2017                [Page 2]
 
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
@@ -149,7 +149,7 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
    If an attacker is able to provide a RFC5011 validating engine with
    past responses, such as when it is in-path or able to otherwise
    perform any number of cache poising attacks, she may be able to leave
-   the RFC5011-compliant validataor without an appropriate DNSKEY trust
+   the RFC5011-compliant validator without an appropriate DNSKEY trust
    anchor.
 
    The following timeline illustrates this situation.
@@ -161,13 +161,13 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
 
    TTL (all records)  1 day
 
-   RRSIG Signature Validity  10 days
+   DNSKEY RRSIG Signature Validity  10 days
 
    Zone resigned every  1 day
 
 
 
-Hardaker & Kumari       Expires January 21, 2017                [Page 3]
+Hardaker & Kumari       Expires January 26, 2017                [Page 3]
 
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
@@ -191,7 +191,7 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
 
    In this dialog, the following actors are discussed:
 
-   Zone Maintainer  The owner of a zone intending to publish a new Key-
+   Zone Signer  The owner of a zone intending to publish a new Key-
       Signing-Keys (KSKs) that will become a trust anchor by validators
       following the RFC5011 process.
 
@@ -199,7 +199,7 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
       processes to track and update trust anchors.
 
    Attacker  An attacker intent on foiling the RFC5011 Validator's
-      ability to successfully adopt the Zone Maintainer's Knew key as a
+      ability to successfully adopt the Zone Signer's Knew key as a
       trust anchor.
 
 5.1.1.  Attack Timing Breakdown
@@ -208,12 +208,12 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
    occurs that foils the publisher of a new key who revokes the old key
    too quickly.
 
-   T-1  The last signatures are published by the Zone Maintainer that
-      signs only Kold using Kold.
+   T-1  The last signatures are published by the Zone Signer that signs
+      only Kold using Kold.
 
-   T-0  The Zone Maintainer adds Knew to his zone and signs the zone's
-      key set with Kold.  The RFC5011 Validator retrieves the new key
-      set and corresponding signature set and notices the publication of
+   T-0  The Zone Signer adds Knew to his zone and signs the zone's key
+      set with Kold.  The RFC5011 Validator retrieves the new key set
+      and corresponding signature set and notices the publication of
       Knew.  The RFC5011 Validator starts the hold-down timer for Knew.
 
    T+5  The RFC5011 Validator queries for the zone's keyset per the
@@ -223,7 +223,7 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
 
 
 
-Hardaker & Kumari       Expires January 21, 2017                [Page 4]
+Hardaker & Kumari       Expires January 26, 2017                [Page 4]
 
 Internet-Draft       RFC5011 Security Considerations           July 2016
 
@@ -241,29 +241,54 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
    ...  The RFC5011 Validator continues checking the zone's key set and
       lets the hold-down timer keep running without resetting it.
 
-   T+30  The Zone Maintainer believes that this is the first time at
-      which some validators might accept Knew as a new trust anchor.
-      The hold-down timer of our RFC5011 Validator is at 20 days.
+   T+30  The Zone Signer believes that this is the first time at which
+      some validators might accept Knew as a new trust anchor.  The
+      hold-down timer of our RFC5011 Validator is at 20 days.
 
-   T+35  The Zone Maintainer mistakenly believes that all validators
+   T+35  The Zone Signer mistakenly believes that all validators
       following the Active Refresh schedule should have accepted Knew as
       a the new trust anchor (since 30 days + 1/2 the signature validity
       period would have passed).  The hold-time timer of our RFC5011
       Validator is at 25 days and has not actually reached its 30 day
       requirement though.
 
-   T+36  The Zone Maintainer, believing Knew is safe to use, switches
-      their active KSK to Knew and publishes a new key set signature
-      using Knew as the signing key.  Because our RFC5011 Validator
-      still has a hold-down timer for Knew at 26 days, it will fail to
-      validate this new key set and the zone contents will be treated as
-      invalid.
+   T+36  The Zone Signer, believing Knew is safe to use, switches their
+      active KSK to Knew and publishes a new key set signature using
+      Knew as the signing key.  Because our RFC5011 Validator still has
+      a hold-down timer for Knew at 26 days, it will fail to validate
+      this new key set and the zone contents will be treated as invalid.
 
-6.  IANA Considerations
+6.  Proper Timing Requirements
+
+   Given the attack description in Section 5, the correct length of time
+   required for the Zone Signer to wait before using Knew is:
+
+     waitTime = addHoldDownTime
+                + 3 * (DNSKEY RRSIG Signature Validity) / 2
+                + 2 * (TTL (all records))
+
+   For the parameters listed in Section 5.1, this becomes:
+
+     waitTime = 30 + 3 * (10) / 2 + 2 * (1)  (days)
+     waitTime = 46                           (days)
+
+
+
+
+
+
+
+
+Hardaker & Kumari       Expires January 26, 2017                [Page 5]
+
+Internet-Draft       RFC5011 Security Considerations           July 2016
+
+
+7.  IANA Considerations
 
    This document contains no IANA considerations.
 
-7.  Operational Considerations
+8.  Operational Considerations
 
    A companion document to RFC5011 was expected to be published that
    describes the best operational considerations from the perspective of
@@ -275,21 +300,12 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
    document does not attempt to document any other missing operational
    guidance for zone publishers.
 
-
-
-
-
-Hardaker & Kumari       Expires January 21, 2017                [Page 5]
-
-Internet-Draft       RFC5011 Security Considerations           July 2016
-
-
-8.  Security Considerations
+9.  Security Considerations
 
    This document, is solely about the security considerations with
    respect to the publisher of RFC5011 trust anchors / keys.
 
-9.  Normative References
+10.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -315,6 +331,15 @@ Authors' Addresses
    Email: ietf@hardakers.net
 
 
+
+
+
+
+Hardaker & Kumari       Expires January 26, 2017                [Page 6]
+
+Internet-Draft       RFC5011 Security Considerations           July 2016
+
+
    Warren Kumari
    Google
    1600 Amphitheatre Parkway
@@ -335,5 +360,36 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari       Expires January 21, 2017                [Page 6]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hardaker & Kumari       Expires January 26, 2017                [Page 7]
 ```
