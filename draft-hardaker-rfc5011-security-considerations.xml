@@ -144,7 +144,8 @@
 			<t>TBD</t>
 		</section>
 
-		<section title="Denial of Service Attack Considerations">
+		<section title="Denial of Service Attack
+		                Considerations" anchor="attack">
 			<t>If an attacker is able to provide a RFC5011 validating engine
 			with past responses, such as when it is in-path or able to
 			otherwise perform any number of cache poising
@@ -153,7 +154,8 @@
 			appropriate DNSKEY trust anchor.</t>
 			<t> The following timeline illustrates this situation.</t>
 
-			<section title="Numerical Concrete Attack Example">
+			<section title="Numerical Concrete Attack
+			                Example" anchor="examplenumbers">
 				<t>These assumptions are used in the example scenario within
 				this section. 
 
@@ -292,6 +294,33 @@
 			</section>
 		</section>
 
+		<section title="Proper Timing Requirements">
+			<t>Given the attack description in <xref
+			target="attack" />, the correct length of time
+			required for the Zone Signer to wait before
+			using Knew is:
+
+                        <figure>
+                                <artwork>
+  waitTime = addHoldDownTime
+             + 3 * (DNSKEY RRSIG Signature Validity) / 2
+             + 2 * (TTL (all records))
+                                </artwork>
+                        </figure>
+                        </t>
+                        
+                        <t>For the parameters listed in <xref
+                        target="examplenumbers" />, this becomes:
+
+                        <figure>
+                                <artwork>
+  waitTime = 30 + 3 * (10) / 2 + 2 * (1)  (days)
+  waitTime = 46                           (days)
+                                </artwork>
+                        </figure>
+                        </t>
+		</section>			
+				
 		<section title="IANA Considerations">
 			<t>This document contains no IANA considerations.</t>
 		</section>
