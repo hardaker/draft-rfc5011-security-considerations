@@ -315,7 +315,7 @@
                         <figure>
                                 <artwork>
   waitTime = 30 + 3 * (10) / 2 + 2 * (1)  (days)
-  waitTime = 46                           (days)
+  waitTime = 47                           (days)
                                 </artwork>
                         </figure>
                         </t>

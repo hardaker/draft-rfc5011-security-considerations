@@ -270,7 +270,7 @@ Internet-Draft       RFC5011 Security Considerations           July 2016
    For the parameters listed in Section 5.1, this becomes:
 
      waitTime = 30 + 3 * (10) / 2 + 2 * (1)  (days)
-     waitTime = 46                           (days)
+     waitTime = 47                           (days)
 
 
 
