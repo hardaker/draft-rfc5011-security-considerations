@@ -143,28 +143,63 @@
 
 		<section title="Terminology">
 			<t><list style="hanging">
-				<t hangText="foo"> bar</t>
+				<t hangText="Trust Anchor
+				             Publisher">The entity
+				responsible for publishing a DNSKEY that
+				can be used as a trust anchor.</t>
 			</list></t>
 		</section>
 
 		<section title="Timing associated with RFC5011 processing">
-			<t>TBD</t>
+			<t>RFC5011's process of safely publishing a
+			new key and then making use of that key falls
+			into a number of high-level steps:</t>
+
+			<t>
+				<list style="numbers">
+					<t>Publishes a new DNSKEY in the
+					zone but continue to sign with
+					the old one.</t>
+					<t>Waits a period of time.</t>
+					<t>Begins using the new DNSKEY
+					to sign the appropriate
+					resource records.</t>
+					<t>Optionally marks the older
+					DNSKEY as revoked and
+					publishes the revoked key.</t>
+				</list>
+			</t>
+
+			<t>It is during Step 2
+			above that this document is discussing.  
+			Some interpretations of RFC5011 have
+			erroneously determined that the wait time is
+			equal to RFC5011's "hold down time".  In this
+			document we describe an attack against that
+			common belief that results in a denial of
+			service attack against the zone if that value
+			is used.</t>
 		</section>
 
 		<section title="Denial of Service Attack
 		                Considerations" anchor="attack">
-			<t>If an attacker is able to provide a RFC5011 validating engine
-			with past responses, such as when it is in-path or able to
-			otherwise perform any number of cache poising
-			attacks, she may be able to leave the
-			RFC5011-compliant validator without an
-			appropriate DNSKEY trust anchor.</t>
+			<t>If an attacker is able to provide a RFC5011
+			validating engine with past responses, such as
+			when it is in-path or able to otherwise
+			perform any number of cache poising attacks,
+			she may be able to leave the RFC5011-compliant
+			validator without an appropriate DNSKEY trust
+			anchor.  This scenario will remain until an
+			administrator manually fixes the
+			situation.</t>
+
 			<t> The following timeline illustrates this situation.</t>
 
-			<section title="Numerical Concrete Attack
+			<section title="Enumerated Attack
 			                Example" anchor="examplenumbers">
-				<t>These assumptions are used in the example scenario within
-				this section. 
+				<t>These following example settings
+				are used in the example scenario
+				within this section:
 
 				<list style="hanging">
 					<t hangText="TTL (all records)">1 day</t>
@@ -173,17 +208,18 @@
 				</list>
 				</t>
 
-				<t>Given these assumptions, the following sequence
-				of events depicts how a Trust Anchor Publisher (XXX:
-				TERM!) which waits for only the RFC5011 hold time timer
+				<t>Given these settings, the following sequence
+				of events depicts how a Trust Anchor Publisher
+				that waits for only the RFC5011 hold time timer
 				length of 30 days subjects its users to a potential
 				Denial of Service attack.  The timing schedule listed
-				below is based on a new Key Signing Key (KSK) being
-				published at T+0, and where all numbers in this sequence
+				below is based on a new trust anchor
+				(a Key Signing Key (KSK)) being
+				published at time T+0.  All numbers in this sequence
 				refer to days before and after such an event.  Thus, T-1
 				is the day before the introduction of the new key, and
 				T+15 is the 15th day after the key was introduced into
-				the zone being discussed..</t>
+				the fictitious zone being discussed.</t>
 
 				<t>In this dialog, we consider two keys being published:
 				<list style="hanging">
@@ -194,23 +230,22 @@
 				</list> </t>
 
 				<t>In this dialog, the following actors are
-				discussed:
+				playing roles in this situation:
 				<list style="hanging">
 					<t hangText="Zone Signer">The owner of a
-					zone intending to publish a new Key-Signing-Keys
-					(KSKs) that will become a
+					zone intending to publish a new Key-Signing-Key
+					(KSK) that will become a
 					trust anchor by
 					validators following the RFC5011 process.</t>
 
 					<t hangText="RFC5011 Validator">A DNSSEC
 					validator that is using the RFC5011 processes to
-					track and update trust
-					anchors.</t>
+					track and update trust anchors.</t>
 
 					<t hangText="Attacker">An attacker intent on
 					foiling the RFC5011 Validator's ability to
 					successfully adopt the Zone Signer's K_new
-					key as a trust anchor.</t>
+					key as a new trust anchor.</t>
 				</list>
 				</t>
 				
@@ -218,13 +253,20 @@
 				<section title="Attack Timing Breakdown">
 
 					<t>The following series of steps depicts the timeline in
-					which an attack occurs that foils the publisher of a new
-					key who revokes the old key too quickly.
+					which an attack occurs that
+					foils the adoption of a new
+					DNSKEY by a Trust Anchor
+					Publisher that revokes the old key too quickly.
 					
 					<list style="hanging">
 						<t hangText="T-1">The last signatures
 						are published by the Zone Signer
-						that signs only K_old using K_old.</t>
+						that signs only K_old
+						using K_old.  The
+						Attacker queries for,
+						retrieves and caches this keyset
+						and corresponding signatures.
+						</t>
 
 						<t hangText="T-0">The Zone Signer
 						adds K_new to his zone and signs the
@@ -232,7 +274,8 @@
 						Validator retrieves the new key set and
 						corresponding signature set and notices
 						the publication of K_new.  The RFC5011
-						Validator starts the hold-down timer for
+						Validator starts the (30-day)
+						hold-down timer for
 						K_new.</t>
 
 						<t hangText="T+5">The RFC5011 Validator
@@ -255,55 +298,98 @@
 						discovers K_new again,
 						signed by K_old (the
 						attacker is unable to
-						replay the records
+						replay the records cached
 						at T-1, because they
 						have now expired).
-						It starts the hold-timer for K_new
-						again.</t>
+						The RFC5011 Validator starts (a new)
+						the hold-timer for K_new.</t>
 
-						<t hangText="...">The RFC5011 Validator
+						<t hangText="T+15,T+20, and T+25">
+						The RFC5011 Validator
 						continues checking the zone's key set
 						and lets the hold-down timer keep
 						running without resetting it.</t>
 
 						<t hangText="T+30">The Zone Signer
-						believes that this is the first time at
+						knows that that
+						this is the first time at
 						which some validators might accept K_new
-						as a new trust anchor.  The hold-down
-						timer of our RFC5011
-						Validator is at 20 days.</t>
+						as a new trust anchor,
+						since the hold-down
+						timer of a RFC5011
+						Validator not under
+						attack that had
+						queried and retrieved
+						K_new at T+0 would now
+						have reached 30 days.
+						However, the hold-down
+						timer of our attacked RFC5011
+						Validator is only at 20 days.</t>
 
 						<t hangText="T+35">The Zone Signer
-						mistakenly believes that all validators
+						(mistakenly) believes that all validators
 						following the Active Refresh schedule
+						(Section 2.3 of RFC5011)
 						should have accepted
 						K_new as a the new trust
-						anchor (since 30 days
+						anchor (since the hold
+						down time of 30 days
 						+ 1/2 the signature
 						validity period would
-						have passed).  The hold-time timer of our
-						RFC5011 Validator is at 25 days and has
-						not actually reached its 30 day
-						requirement though.</t>
+						have passed).
+						However, the hold-down
+						timer of our attacked
+						RFC5011 Validator is only at 25 days;
+						The replay attack
+						at T+5 means its
+						new hold-time timer
+						actually started at
+						T+10, and thus at this
+						time it's real
+						hold-down
+						timer is at T+35 -
+						T+10 = 25 days, which
+						is less than the
+						RFC5011 required 30 days.</t>
 
 						<t hangText="T+36">The Zone Signer,
 						believing K_new is safe to use, switches
-						their active KSK to K_new and publishes a
-						new key set signature using K_new as the
-						signing key.  Because our RFC5011
+						their active signing
+						KSK to K_new and publishes a
+						new DNSKEY set
+						signature signed with
+						K_new. Non-attacked
+						RFC5011 validators,
+						with a hold-down
+						timer of at least 30
+						days, would have accepted
+						K_new into their set
+						of trusted keys.  But,
+						because our attacked RFC5011
 						Validator still has a hold-down timer
 						for K_new at 26 days, it will fail to
-						validate this new key set and the zone
-						contents will be treated as invalid.</t>
+						accept K_new as a
+						trust anchor and since
+						K_old is no longer
+						being used, all the
+						KSK records from the zone
+						signed by K_new
+						will be treated as
+						invalid.
+						Subsequently, all keys
+						in the key set are now
+						unusable, invalidating
+						all records in the
+						zone of any type and name.</t>
 					</list>
 					</t>
 				</section>
 			</section>
 		</section>
 
-		<section title="Proper Timing Requirements">
+		<section title="Minimum RFC5011 Timing Requirements">
 			<t>Given the attack description in <xref
-			target="attack" />, the correct length of time
+			target="attack" />, the correct minimum length of time
 			required for the Zone Signer to wait before
 			using K_new is:
 
@@ -321,11 +407,17 @@
 
                         <figure>
                                 <artwork>
-  waitTime = 30 + 3 * (10) / 2 + 2 * (1)  (days)
+  waitTime = 30
+             + 3 * (10) / 2 
+             + 2 * (1)  (days)
+
   waitTime = 47                           (days)
                                 </artwork>
                         </figure>
                         </t>
+
+                        <t>This hold-down time of 47 days is 11 days
+                        longer than the frequently perceived 35 days in T+35 above.</t>
 		</section>			
 				
 		<section title="IANA Considerations">
@@ -336,13 +428,15 @@
 		                                  Considerations">
 			<t>A companion document to RFC5011 was
 			expected to be published that describes the
-			best operational considerations from the
-			perspective of a zone publisher.  However, the
-			companion document was never written but the
-			authors of this document hope that it will at
-			some point in the future.  This document is
-			intended only to fill a single operational
-			void that results in security ramifications
+			best operational practice considerations from
+			the perspective of a zone publisher and Trust
+			Anchor Publisher.  However, this companion
+			document was never written.  The authors of
+			this document hope that it will at some point
+			in the future, as RFC5011 timing can be tricky
+			as we have shown.  This document is intended
+			only to fill a single operational void that
+			results in security ramifications
 			(specifically a denial of service attack
 			against an RFC5011 Validator).  This document
 			does not attempt to document any other missing
@@ -350,8 +444,10 @@
 		</section>
 		<section anchor="security" title="Security Considerations">
 			<t>This document, is solely about the security
-			considerations with respect to the publisher of RFC5011 trust
-			anchors / keys.</t>
+			considerations with respect to the Trust
+			Anchor Publisher of RFC5011 trust
+			anchors / keys.  Thus the entire document is a
+			discussion of Security Considerations</t>
 		</section>
 	</middle>
 
