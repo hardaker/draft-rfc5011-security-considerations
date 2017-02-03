@@ -357,6 +357,9 @@
       <t>From -00 to -01:<list>
           <t>Additional background and clarifications in abstract.</t>
 
+          <t>Better separation in attack description between attacked and
+          non-attacked resolvers.</t>
+
           <t>Some language cleanup.</t>
 
           <t>Clarified that this is maths ( and math is hard, let's go
