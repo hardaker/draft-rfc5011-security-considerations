@@ -128,7 +128,7 @@
 
     <section title="Terminology">
       <t><list style="hanging">
-          <t hangText="Trust Anchor                  Publisher">The entity
+          <t hangText="Trust Anchor Publisher">The entity
           responsible for publishing a DNSKEY that can be used as a trust
           anchor.</t>
         </list></t>
@@ -161,10 +161,10 @@
     </section>
 
     <section anchor="attack"
-             title="Denial of Service Attack                   Considerations">
+             title="Denial of Service Attack Considerations">
       <t>If an attacker is able to provide a RFC5011 validating engine with
       past responses, such as when it is in-path or able to otherwise perform
-      any number of cache poising attacks, the attacker may be able to leave
+      any number of cache poisoning attacks, the attacker may be able to leave
       the RFC5011-compliant validator without an appropriate DNSKEY trust
       anchor. This scenario will remain until an administrator manually fixes
       the situation.</t>
@@ -172,7 +172,7 @@
       <t>The following timeline illustrates this situation.</t>
 
       <section anchor="examplenumbers"
-               title="Enumerated Attack                    Example">
+               title="Enumerated Attack Example">
         <t>The following example settings are used in the example scenario
         within this section: <list style="hanging">
             <t hangText="TTL (all records)">1 day</t>
@@ -242,7 +242,7 @@
               <t hangText="T+10">The RFC5011 Validator queries for the zone's
               keyset and discovers K_new again, signed by K_old (the attacker
               is unable to replay the records cached at T-1, because they have
-              now expired). The RFC5011 Validator starts (a new) the
+              now expired). The RFC5011 Validator starts (anew) the
               hold-timer for K_new.</t>
 
               <t hangText="T+15,T+20, and T+25">The RFC5011 Validator
@@ -299,13 +299,13 @@
           <artwork><![CDATA[
   waitTime = 30
              + 3 * (10) / 2 
-             + 2 * (1)  (days)
+             + 2 * (1)        (days)
 
-  waitTime = 47                           (days)
+  waitTime = 47               (days)
                                 ]]></artwork>
         </figure></t>
 
-      <t>This hold-down time of 47 days is 11 days longer than the frequently
+      <t>This hold-down time of 47 days is 12 days longer than the frequently
       perceived 35 days in T+35 above.</t>
     </section>
 
@@ -313,8 +313,7 @@
       <t>This document contains no IANA considerations.</t>
     </section>
 
-    <section anchor="operational"
-             title="Operational                                     Considerations">
+    <section anchor="operational" title="Operational Considerations">
       <t>A companion document to RFC5011 was expected to be published that
       describes the best operational practice considerations from the
       perspective of a zone publisher and Trust Anchor Publisher. However,
