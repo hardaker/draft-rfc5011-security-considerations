@@ -291,7 +291,7 @@
 	      <artwork><![CDATA[
   waitTime = addHoldDownTime
              + MIN(3 * (DNSKEY RRSIG Signature Validity) / 2,
-                   3 * MAX(original TTL of the K_old DNSKEY RRSet) / 2,
+                   3 * MAX(original TTL of K_old DNSKEY RRSet) / 2,
                    15 days)
              + 2 * MAX(TTL of all records)
                                 ]]>
@@ -307,12 +307,12 @@
 
       <figure>
 	      <artwork><![CDATA[
-         A resolver that has been configured for an automatic update
-         of keys from a particular trust point MUST query that trust
-         point (e.g., do a lookup for the DNSKEY RRSet and related
-         RRSIG records) no less often than the lesser of 15 days, half
-         the original TTL for the DNSKEY RRSet, or half the RRSIG
-         expiration interval and no more often than once per hour.
+  A resolver that has been configured for an automatic update
+  of keys from a particular trust point MUST query that trust
+  point (e.g., do a lookup for the DNSKEY RRSet and related
+  RRSIG records) no less often than the lesser of 15 days, half
+  the original TTL for the DNSKEY RRSet, or half the RRSIG
+  expiration interval and no more often than once per hour.
                           ]]>
 	      </artwork>
       </figure></t>
@@ -324,9 +324,9 @@
       K_new will be seen.  For the following paragraph, we use the
       more common case where (DNSKEY RRSIG Signature Validity) is
       greater than (original TTL for the DNSKEY RRSet), although the
-      equation above takes both cases into account.
+      equation above takes both cases into account.</t>
 
-      Thus, the worst case scenario of this attack is when the
+      <t>Thus, the worst case scenario of this attack is when the
       attacker can replay K_old at just before (DNSKEY RRSIG Signature
       Validity).  If a RFC5011 validator picks up K_old at this this
       point, it will not have a hold down timer started at all.  It's
@@ -334,13 +334,13 @@
       K_new with assurance, and thus start their hold down timer.
       Thus, this is not at (DNSKEY RRSIG Signature Validity) time past
       publication, but rather 3 * (DNSKEY RRSIG Signature
-      Validity) / 2.
+      Validity) / 2.</t>
 
-      The extra 2 * MAX(TTL of all records) is the standard added
+      <t>The extra 2 * MAX(TTL of all records) is the standard added
       safety margin when dealing with DNSSEC due to caching that can
       take place.  Because the 5011 steps require direct validation
       using the signature validity, the authors aren't yet convinced
-      it is needed in this particular case.
+      it is needed in this particular case.</t>
 
       <t>For the parameters listed in <xref target="examplenumbers"/>,
       our example: <figure>
