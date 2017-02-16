@@ -286,16 +286,64 @@
     <section title="Minimum RFC5011 Timing Requirements">
       <t>Given the attack description in <xref target="attack"/>, the correct
       minimum length of time required for the Zone Signer to wait before using
-      K_new is: <figure>
-          <artwork><![CDATA[
+      K_new is:
+      <figure>
+	      <artwork><![CDATA[
   waitTime = addHoldDownTime
-             + 3 * (DNSKEY RRSIG Signature Validity) / 2
+             + MIN(3 * (DNSKEY RRSIG Signature Validity) / 2,
+                   3 * MAX(original TTL of the K_old DNSKEY RRSet) / 2,
+                   15 days)
              + 2 * MAX(TTL of all records)
-                                ]]></artwork>
-        </figure></t>
+                                ]]>
+	      </artwork>
+      </figure>
+      </t>
 
-      <t>For the parameters listed in <xref target="examplenumbers"/>, this
-      becomes: <figure>
+      <t>The most confusing element of the above equation comes from
+      the "3 * (DNSKEY RRSIG Signature Validity) / 2" element, but is
+      the most critical to understand and get right.</t>
+
+      <t>The RFC5011 "Active Refresh" requirements state that:
+
+      <figure>
+	      <artwork><![CDATA[
+         A resolver that has been configured for an automatic update
+         of keys from a particular trust point MUST query that trust
+         point (e.g., do a lookup for the DNSKEY RRSet and related
+         RRSIG records) no less often than the lesser of 15 days, half
+         the original TTL for the DNSKEY RRSet, or half the RRSIG
+         expiration interval and no more often than once per hour.
+                          ]]>
+	      </artwork>
+      </figure></t>
+
+      <t>The important timing constraint that must be considered is
+      the last point at which a validating resolver may have received
+      a replayed the original DNSKEY set (K_old) without the new key.
+      It's the next query of the RFC5011 validator that the assured
+      K_new will be seen.  For the following paragraph, we use the
+      more common case where (DNSKEY RRSIG Signature Validity) is
+      greater than (original TTL for the DNSKEY RRSet), although the
+      equation above takes both cases into account.
+
+      Thus, the worst case scenario of this attack is when the
+      attacker can replay K_old at just before (DNSKEY RRSIG Signature
+      Validity).  If a RFC5011 validator picks up K_old at this this
+      point, it will not have a hold down timer started at all.  It's
+      not until the next "Active Refresh" time that they'll pick up
+      K_new with assurance, and thus start their hold down timer.
+      Thus, this is not at (DNSKEY RRSIG Signature Validity) time past
+      publication, but rather 3 * (DNSKEY RRSIG Signature
+      Validity) / 2.
+
+      The extra 2 * MAX(TTL of all records) is the standard added
+      safety margin when dealing with DNSSEC due to caching that can
+      take place.  Because the 5011 steps require direct validation
+      using the signature validity, the authors aren't yet convinced
+      it is needed in this particular case.
+
+      <t>For the parameters listed in <xref target="examplenumbers"/>,
+      our example: <figure>
           <artwork><![CDATA[
   waitTime = 30
              + 3 * (10) / 2 
@@ -307,6 +355,7 @@
 
       <t>This hold-down time of 47 days is 12 days longer than the frequently
       perceived 35 days in T+35 above.</t>
+
     </section>
 
     <section title="IANA Considerations">
