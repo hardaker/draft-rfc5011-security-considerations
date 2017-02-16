@@ -416,6 +416,12 @@
           <t>Changed to " &lt;?rfc include='reference....'?&gt; " style
           references.</t>
         </list></t>
+     <t>From -01 to -02:<list>
+         <t>Minor changes from Bob Harold</t>
+         <t>Clarified why 3/2 signature validity is needed</t>
+         <t>Changed min wait time math to include TTL value as well</t>
+     </t>
+      </list></t>
     </section>
   </back>
 </rfc>
