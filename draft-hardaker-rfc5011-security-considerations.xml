@@ -430,6 +430,13 @@
          <t>Clarified why 3/2 signature validity is needed</t>
          <t>Changed min wait time math to include TTL value as well</t>
       </list></t>
+      <t>From -03 to -04:<list>
+         <t>Fixed the waitTime equation to handle the difference
+         between the usage of the expiration time and the Active
+         Refresh time.</t>
+         <t>More clarification text and text changes proposed by Petr
+         Špaček</t>
+       </list></t>
     </section>
   </back>
 </rfc>
