@@ -323,13 +323,16 @@
       the last point at which a validating resolver may have received
       a replayed the original DNSKEY set (K_old) without the new key.
       It's the next query of the RFC5011 validator that the assured
-      K_new will be seen.</t>
+      K_new will be seen.  Thus, the latest time a RFC5011 validator
+      may begin their hold down timer is an "Active Refresh" period
+      after the last point that an attacker can replay the K_old
+      DNSKEY set.</t>
 
-      <t>The interval used by RFC5011 resolver is determined by the
-      larger of (DNSKEY RRSIG Signature Validity) and (original TTL for
-      the DNSKEY RRSet). The Following text assumes that (DNSKEY RRSIG
-      Signature Validity) is larger of the two, which is operationally
-      more common today.</t>
+      <t>The "Active Refresh" interval used by RFC5011 validator is
+      determined by the larger of (DNSKEY RRSIG Signature Validity)
+      and (original TTL for the DNSKEY RRSet). The Following text
+      assumes that (DNSKEY RRSIG Signature Validity) is larger of the
+      two, which is operationally more common today.</t>
 
       <t>Thus, the worst case scenario of this attack is when the
       attacker can replay K_old at just before (DNSKEY RRSIG Signature
