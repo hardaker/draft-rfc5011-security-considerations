@@ -290,9 +290,10 @@
       <figure>
 	      <artwork><![CDATA[
   waitTime = addHoldDownTime
-             + MIN(3 * (DNSKEY RRSIG Signature Validity) / 2,
-                   3 * MAX(original TTL of K_old DNSKEY RRSet) / 2,
-                   15 days)
+             + MAX(MIN(3 * (DNSKEY RRSIG Signature Validity) / 2,
+                       3 * MAX(original TTL of K_old DNSKEY RRSet) / 2,
+                       15 days),
+                   1 hour)
              + 2 * MAX(TTL of all records)
                                 ]]>
 	      </artwork>
@@ -321,10 +322,13 @@
       the last point at which a validating resolver may have received
       a replayed the original DNSKEY set (K_old) without the new key.
       It's the next query of the RFC5011 validator that the assured
-      K_new will be seen.  For the following paragraph, we use the
-      more common case where (DNSKEY RRSIG Signature Validity) is
-      greater than (original TTL for the DNSKEY RRSet), although the
-      equation above takes both cases into account.</t>
+      K_new will be seen.</t>
+
+      <t>The interval used by RFC5011 resolver is determined by the
+      larger of (DNSKEY RRSIG Signature Validity) and (original TTL for
+      the DNSKEY RRSet). The Following text assumes that (DNSKEY RRSIG
+      Signature Validity) is larger of the two, which is operationally
+      more common today.</t>
 
       <t>Thus, the worst case scenario of this attack is when the
       attacker can replay K_old at just before (DNSKEY RRSIG Signature
@@ -382,10 +386,10 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>The authors would like to especially thank to Michael StJohns for his
-      help and advice. We would also like to thank Bob Harold, Shane Kerr,
-      Matthijs Mekking, Duane Wessels, and everyone else who assisted with
-      this document. </t>
+      <t>The authors would like to especially thank to Michael StJohns
+      for his help and advice. We would also like to thank Bob Harold,
+      Shane Kerr, Matthijs Mekking, Duane Wessels, Petr Špaček, and
+      everyone else who assisted with this document. </t>
     </section>
   </middle>
 
