@@ -12,7 +12,7 @@ Expires: August 6, 2017                                           Google
 
 
              Security Considerations for RFC5011 Publishers
-           draft-hardaker-rfc5011-security-considerations-01
+           draft-hardaker-rfc5011-security-considerations-04
 
 Abstract
 
@@ -67,18 +67,17 @@ Table of Contents
    2.  Background  . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    4.  Timing associated with RFC5011 processing . . . . . . . . . .   3
-   5.  Denial of Service Attack                   Considerations . .   4
-     5.1.  Enumerated Attack                    Example  . . . . . .   4
+   5.  Denial of Service Attack Considerations . . . . . . . . . . .   4
+     5.1.  Enumerated Attack Example . . . . . . . . . . . . . . . .   4
        5.1.1.  Attack Timing Breakdown . . . . . . . . . . . . . . .   5
    6.  Minimum RFC5011 Timing Requirements . . . . . . . . . . . . .   6
-   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
-   8.  Operational
-       Considerations  . . . . . . . . . . . . . . . . . . . . . . .   6
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
-   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
-   11. Normative References  . . . . . . . . . . . . . . . . . . . .   7
-   Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   7
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   8.  Operational Considerations  . . . . . . . . . . . . . . . . .   8
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
+   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
+   11. Normative References  . . . . . . . . . . . . . . . . . . . .   8
+   Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
 
 1.  Introduction
 
@@ -111,6 +110,7 @@ Table of Contents
 
 
 
+
 Hardaker & Kumari        Expires August 6, 2017                 [Page 2]
 
 Internet-Draft       RFC5011 Security Considerations       February 2017
@@ -138,8 +138,8 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
 3.  Terminology
 
-   Trust Anchor                  Publisher  The entity responsible for
-      publishing a DNSKEY that can be used as a trust anchor.
+   Trust Anchor Publisher  The entity responsible for publishing a
+      DNSKEY that can be used as a trust anchor.
 
 4.  Timing associated with RFC5011 processing
 
@@ -176,8 +176,8 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
    If an attacker is able to provide a RFC5011 validating engine with
    past responses, such as when it is in-path or able to otherwise
-   perform any number of cache poising attacks, the attacker may be able
-   to leave the RFC5011-compliant validator without an appropriate
+   perform any number of cache poisoning attacks, the attacker may be
+   able to leave the RFC5011-compliant validator without an appropriate
    DNSKEY trust anchor.  This scenario will remain until an
    administrator manually fixes the situation.
 
@@ -260,7 +260,7 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
    T+10  The RFC5011 Validator queries for the zone's keyset and
       discovers K_new again, signed by K_old (the attacker is unable to
       replay the records cached at T-1, because they have now expired).
-      The RFC5011 Validator starts (a new) the hold-timer for K_new.
+      The RFC5011 Validator starts (anew) the hold-timer for K_new.
 
    T+15,T+20, and T+25  The RFC5011 Validator continues checking the
       zone's key set and lets the hold-down timer keep running without
@@ -309,29 +309,29 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
    of time required for the Zone Signer to wait before using K_new is:
 
      waitTime = addHoldDownTime
-                + 3 * (DNSKEY RRSIG Signature Validity) / 2
+                + (DNSKEY RRSIG Signature Validity)
+                + MAX(MIN((DNSKEY RRSIG Signature Validity) / 2,
+                          MAX(original TTL of K_old DNSKEY RRSet) / 2,
+                          15 days),
+                      1 hour)
                 + 2 * MAX(TTL of all records)
 
-   For the parameters listed in Section 5.1, this becomes:
 
-     waitTime = 30
-                + 3 * (10) / 2
-                + 2 * (1)  (days)
+   The most confusing element of the above equation comes from the "3 *
+   (DNSKEY RRSIG Signature Validity) / 2" element, but is the most
+   critical to understand and get right.
 
-     waitTime = 47                           (days)
+   The RFC5011 "Active Refresh" requirements state that:
 
-   This hold-down time of 47 days is 11 days longer than the frequently
-   perceived 35 days in T+35 above.
+     A resolver that has been configured for an automatic update
+     of keys from a particular trust point MUST query that trust
+     point (e.g., do a lookup for the DNSKEY RRSet and related
+     RRSIG records) no less often than the lesser of 15 days, half
+     the original TTL for the DNSKEY RRSet, or half the RRSIG
+     expiration interval and no more often than once per hour.
 
-7.  IANA Considerations
 
-   This document contains no IANA considerations.
 
-8.  Operational Considerations
-
-   A companion document to RFC5011 was expected to be published that
-   describes the best operational practice considerations from the
-   perspective of a zone publisher and Trust Anchor Publisher.  However,
 
 
 
@@ -340,6 +340,67 @@ Hardaker & Kumari        Expires August 6, 2017                 [Page 6]
 Internet-Draft       RFC5011 Security Considerations       February 2017
 
 
+   The important timing constraint that must be considered is the last
+   point at which a validating resolver may have received a replayed the
+   original DNSKEY set (K_old) without the new key.  It's the next query
+   of the RFC5011 validator that the assured K_new will be seen.  Thus,
+   the latest time a RFC5011 validator may begin their hold down timer
+   is an "Active Refresh" period after the last point that an attacker
+   can replay the K_old DNSKEY set.
+
+   The "Active Refresh" interval used by RFC5011 validator is determined
+   by the larger of (DNSKEY RRSIG Signature Validity) and (original TTL
+   for the DNSKEY RRSet).  The Following text assumes that (DNSKEY RRSIG
+   Signature Validity) is larger of the two, which is operationally more
+   common today.
+
+   Thus, the worst case scenario of this attack is when the attacker can
+   replay K_old at just before (DNSKEY RRSIG Signature Validity).  If a
+   RFC5011 validator picks up K_old at this this point, it will not have
+   a hold down timer started at all.  It's not until the next "Active
+   Refresh" time that they'll pick up K_new with assurance, and thus
+   start their hold down timer.  Thus, this is not at (DNSKEY RRSIG
+   Signature Validity) time past publication, but rather 3 * (DNSKEY
+   RRSIG Signature Validity) / 2.
+
+   The extra 2 * MAX(TTL of all records) is the standard added safety
+   margin when dealing with DNSSEC due to caching that can take place.
+   Because the 5011 steps require direct validation using the signature
+   validity, the authors aren't yet convinced it is needed in this
+   particular case.
+
+   For the parameters listed in Section 5.1, our example:
+
+     waitTime = 30
+                + 10
+                + 10 / 2
+                + 2 * (1)        (days)
+
+     waitTime = 47               (days)
+
+   This hold-down time of 47 days is 12 days longer than the frequently
+   perceived 35 days in T+35 above.
+
+7.  IANA Considerations
+
+   This document contains no IANA considerations.
+
+
+
+
+
+
+
+Hardaker & Kumari        Expires August 6, 2017                 [Page 7]
+
+Internet-Draft       RFC5011 Security Considerations       February 2017
+
+
+8.  Operational Considerations
+
+   A companion document to RFC5011 was expected to be published that
+   describes the best operational practice considerations from the
+   perspective of a zone publisher and Trust Anchor Publisher.  However,
    this companion document was never written.  The authors of this
    document hope that it will at some point in the future, as RFC5011
    timing can be tricky as we have shown.  This document is intended
@@ -359,8 +420,8 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
    The authors would like to especially thank to Michael StJohns for his
    help and advice.  We would also like to thank Bob Harold, Shane Kerr,
-   Matthijs Mekking, Duane Wessels, and everyone else who assisted with
-   this document.
+   Matthijs Mekking, Duane Wessels, Petr &#352;pa&#269;ek, and everyone
+   else who assisted with this document.
 
 11.  Normative References
 
@@ -375,26 +436,42 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
 Appendix A.  Changes / Author Notes.
 
-   From -00 to -01:
+   From -00 to -02:
 
       Additional background and clarifications in abstract.
 
+      Better separation in attack description between attacked and non-
+      attacked resolvers.
+
       Some language cleanup.
+
+
+
+Hardaker & Kumari        Expires August 6, 2017                 [Page 8]
+
+Internet-Draft       RFC5011 Security Considerations       February 2017
+
 
       Clarified that this is maths ( and math is hard, let's go
       shopping!)
 
       Changed to " <?rfc include='reference....'?> " style references.
 
+   From -02 to -03:
 
+      Minor changes from Bob Harold
 
+      Clarified why 3/2 signature validity is needed
 
+      Changed min wait time math to include TTL value as well
 
+   From -03 to -04:
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 7]
-
-Internet-Draft       RFC5011 Security Considerations       February 2017
+      Fixed the waitTime equation to handle the difference between the
+      usage of the expiration time and the Active Refresh time.
 
+      More clarification text and text changes proposed by Petr
+      &#352;pa&#269;ek
 
 Authors' Addresses
 
@@ -426,26 +503,5 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hardaker & Kumari        Expires August 6, 2017                 [Page 8]
+Hardaker & Kumari        Expires August 6, 2017                 [Page 9]
 ```
