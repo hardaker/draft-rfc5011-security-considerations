@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="us-ascii"?>
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 <!ENTITY rfc5011 PUBLIC "" ".//reference.RFC.5011.xml">
@@ -393,7 +393,7 @@
     <section title="Acknowledgements">
       <t>The authors would like to especially thank to Michael StJohns
       for his help and advice. We would also like to thank Bob Harold,
-      Shane Kerr, Matthijs Mekking, Duane Wessels, Petr Špaček, and
+      Shane Kerr, Matthijs Mekking, Duane Wessels, Petr ?pa?ek, and
       everyone else who assisted with this document. </t>
     </section>
   </middle>
