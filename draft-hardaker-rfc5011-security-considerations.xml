@@ -434,8 +434,7 @@
          <t>Fixed the waitTime equation to handle the difference
          between the usage of the expiration time and the Active
          Refresh time.</t>
-         <t>More clarification text and text changes proposed by Petr
-         Špaček</t>
+         <t>More clarification text and text changes proposed by Petr Spacek</t>
        </list></t>
     </section>
   </back>
