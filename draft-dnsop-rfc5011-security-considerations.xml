@@ -288,7 +288,7 @@
       minimum length of time required for the Zone Signer to wait before using
       K_new is:
       <figure>
-	      <artwork><![CDATA[
+              <artwork><![CDATA[
   waitTime = addHoldDownTime
              + (DNSKEY RRSIG Signature Validity)
              + MAX(MIN((DNSKEY RRSIG Signature Validity) / 2,
@@ -297,7 +297,7 @@
                    1 hour)
              + 2 * MAX(TTL of all records)
                                 ]]>
-	      </artwork>
+              </artwork>
       </figure>
       </t>
 
@@ -308,7 +308,7 @@
       <t>The RFC5011 "Active Refresh" requirements state that:
 
       <figure>
-	      <artwork><![CDATA[
+              <artwork><![CDATA[
   A resolver that has been configured for an automatic update
   of keys from a particular trust point MUST query that trust
   point (e.g., do a lookup for the DNSKEY RRSet and related
@@ -316,7 +316,7 @@
   the original TTL for the DNSKEY RRSet, or half the RRSIG
   expiration interval and no more often than once per hour.
                           ]]>
-	      </artwork>
+              </artwork>
       </figure></t>
 
       <t>The important timing constraint that must be considered is
