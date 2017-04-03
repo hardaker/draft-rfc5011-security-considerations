@@ -7,12 +7,12 @@
 dnsop                                                        W. Hardaker
 Internet-Draft                                             Parsons, Inc.
 Intended status: Standards Track                               W. Kumari
-Expires: August 6, 2017                                           Google
-                                                        February 2, 2017
+Expires: October 5, 2017                                          Google
+                                                           April 3, 2017
 
 
              Security Considerations for RFC5011 Publishers
-           draft-hardaker-rfc5011-security-considerations-04
+             draft-dnsop-rfc5011-security-considerations-04
 
 Abstract
 
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 6, 2017.
+   This Internet-Draft will expire on October 5, 2017.
 
 Copyright Notice
 
@@ -55,9 +55,9 @@ Copyright Notice
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 1]
+Hardaker & Kumari        Expires October 5, 2017                [Page 1]
 
-Internet-Draft       RFC5011 Security Considerations       February 2017
+Internet-Draft       RFC5011 Security Considerations          April 2017
 
 
 Table of Contents
@@ -111,9 +111,9 @@ Table of Contents
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 2]
+Hardaker & Kumari        Expires October 5, 2017                [Page 2]
 
-Internet-Draft       RFC5011 Security Considerations       February 2017
+Internet-Draft       RFC5011 Security Considerations          April 2017
 
 
 1.1.  Requirements notation
@@ -167,9 +167,9 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 3]
+Hardaker & Kumari        Expires October 5, 2017                [Page 3]
 
-Internet-Draft       RFC5011 Security Considerations       February 2017
+Internet-Draft       RFC5011 Security Considerations          April 2017
 
 
 5.  Denial of Service Attack Considerations
@@ -223,9 +223,9 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 4]
+Hardaker & Kumari        Expires October 5, 2017                [Page 4]
 
-Internet-Draft       RFC5011 Security Considerations       February 2017
+Internet-Draft       RFC5011 Security Considerations          April 2017
 
 
    Attacker  An attacker intent on foiling the RFC5011 Validator's
@@ -279,9 +279,9 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 5]
+Hardaker & Kumari        Expires October 5, 2017                [Page 5]
 
-Internet-Draft       RFC5011 Security Considerations       February 2017
+Internet-Draft       RFC5011 Security Considerations          April 2017
 
 
       hold down time of 30 days + 1/2 the signature validity period
@@ -335,9 +335,9 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 6]
+Hardaker & Kumari        Expires October 5, 2017                [Page 6]
 
-Internet-Draft       RFC5011 Security Considerations       February 2017
+Internet-Draft       RFC5011 Security Considerations          April 2017
 
 
    The important timing constraint that must be considered is the last
@@ -391,9 +391,9 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 7]
+Hardaker & Kumari        Expires October 5, 2017                [Page 7]
 
-Internet-Draft       RFC5011 Security Considerations       February 2017
+Internet-Draft       RFC5011 Security Considerations          April 2017
 
 
 8.  Operational Considerations
@@ -420,14 +420,14 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
 
    The authors would like to especially thank to Michael StJohns for his
    help and advice.  We would also like to thank Bob Harold, Shane Kerr,
-   Matthijs Mekking, Duane Wessels, Petr &#352;pa&#269;ek, and everyone
-   else who assisted with this document.
+   Matthijs Mekking, Duane Wessels, Petr ?pa?ek, and everyone else who
+   assisted with this document.
 
 11.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119, DOI 10.17487/
-              RFC2119, March 1997,
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
               <http://www.rfc-editor.org/info/rfc2119>.
 
    [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
@@ -447,9 +447,9 @@ Appendix A.  Changes / Author Notes.
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 8]
+Hardaker & Kumari        Expires October 5, 2017                [Page 8]
 
-Internet-Draft       RFC5011 Security Considerations       February 2017
+Internet-Draft       RFC5011 Security Considerations          April 2017
 
 
       Clarified that this is maths ( and math is hard, let's go
@@ -470,8 +470,7 @@ Internet-Draft       RFC5011 Security Considerations       February 2017
       Fixed the waitTime equation to handle the difference between the
       usage of the expiration time and the Active Refresh time.
 
-      More clarification text and text changes proposed by Petr
-      &#352;pa&#269;ek
+      More clarification text and text changes proposed by Petr Spacek
 
 Authors' Addresses
 
@@ -503,5 +502,6 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari        Expires August 6, 2017                 [Page 9]
+
+Hardaker & Kumari        Expires October 5, 2017                [Page 9]
 ```
