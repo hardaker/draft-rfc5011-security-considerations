@@ -283,7 +283,7 @@
       </section>
     </section>
 
-    <section title="Minimum RFC5011 Timing Requirements">
+    <section title="Minimum RFC5011 Timing Requirements" anchor="minimum">
       <t>Given the attack description in <xref target="attack"/>, the correct
       minimum length of time required for the Zone Signer to wait before using
       K_new is:
@@ -405,6 +405,58 @@
 		    <references title="Informative References">
 		    </references>
 		-->
+
+    <section title="Real World Example: The 2017 KSK Key Roll">
+        <t>In 2017, ICANN expects to (or has) rolled the key signing
+        key for the root zone.  The relevant data associated with the
+        root zone is as follows:
+         <figure>
+          <artwork><![CDATA[
+      addHoldDownTime:                      30 days
+      Old DNSKEY RRSIG Signature Validity:  21 days
+      Old DNSKEY TTL:                        2 days
+	        ]]></artwork>
+         </figure>
+        </t>
+
+        <t>Thus, sticking this information into the equation in
+        Section <xref target="minimum" /> yields (in days):
+
+         <figure>
+          <artwork><![CDATA[
+  waitTime = addHoldDownTime
+             + (DNSKEY RRSIG Signature Validity)
+             + MAX(MIN((DNSKEY RRSIG Signature Validity) / 2,
+                       MAX(original TTL of K_old DNSKEY RRSet) / 2,
+                       15 days),
+                   1 hour)
+             + 2 * MAX(TTL of all records)
+
+  waitTime = 30
+             + (21)
+             + MAX(MIN((21) / 2,
+                       MAX(2 / 2,
+                       15 days)),
+                   1 hour)
+             + 2 * MAX(2)
+
+  waitTime = 30 + 21 + MAX(MIN(11.5, MAX( 1, 15)), 1 hour) + 4
+
+  waitTime = 30 + 21 + 11.5 + 4
+
+  waitTime = 66.5 days 
+                ]]></artwork>
+         </figure>
+        </t>
+
+        <t>Thus, ICANN should wait 66.5 days before switching to the
+        newly published KSK and before removing the old revoked key
+        from publication.  ICANN's current plans are to wait 70 days
+        before using the new KEY and 69 days before removing the old,
+        revoked key.  Thus, their current rollover plans are
+        sufficiently secure from the attack discussed in this
+        memo.</t>
+    </section>
 
     <section title="Changes / Author Notes.">
       <t>From -00 to -02:<list>
