@@ -301,10 +301,6 @@
       </figure>
       </t>
 
-      <t>The most confusing element of the above equation comes from
-      the "3 * (DNSKEY RRSIG Signature Validity) / 2" element, but is
-      the most critical to understand and get right.</t>
-
       <t>The RFC5011 "Active Refresh" requirements state that:
 
       <figure>
@@ -341,8 +337,8 @@
       not until the next "Active Refresh" time that they'll pick up
       K_new with assurance, and thus start their hold down timer.
       Thus, this is not at (DNSKEY RRSIG Signature Validity) time past
-      publication, but rather 3 * (DNSKEY RRSIG Signature
-      Validity) / 2.</t>
+      publication but significantly longer based on the zone's
+      parameters.</t>
 
       <t>The extra 2 * MAX(TTL of all records) is the standard added
       safety margin when dealing with DNSSEC due to caching that can
