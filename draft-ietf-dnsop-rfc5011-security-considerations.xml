@@ -78,17 +78,20 @@
 
   <middle>
     <section title="Introduction">
-      <t>RFC5011 <xref target="RFC5011"/> defines a mechanism by which DNSSEC
-      validators can extend their list of trust anchors when they've seen a
-      new key published in a zone. However, RFC5011 [intentionally] provides
-      no guidance to the publishers of DNSKEYs about how long they must wait
-      before switching to the newly published key for signing records. Because
-      of this lack of guidance, zone publishers may derive incorrect
-      assumptions about safe usage of the RFC5011 DNSKEY advertising and
-      rolling process. This document describes the minimum security
-      requirements from a publishers point of view and is intended to
-      compliment the guidance offered in RFC5011 (which is written to provide
-      timing guidance solely to the Validating Resolvers point of view).</t>
+      <t>RFC5011 <xref target="RFC5011"/> defines a mechanism by which
+      DNSSEC validators can extend their list of trust anchors when
+      they've seen a new key published in a zone. However, RFC5011
+      [intentionally] provides no guidance to the publishers of
+      DNSKEYs about how long they must wait before switching to the
+      newly published key for signing records or how long they must
+      wait before removing a revoked key from a zone. Because of this
+      lack of guidance, zone publishers may derive incorrect
+      assumptions about safe usage of the RFC5011 DNSKEY advertising
+      and rolling process. This document describes the minimum
+      security requirements from a publishers point of view and is
+      intended to compliment the guidance offered in RFC5011 (which is
+      written to provide timing guidance solely to the Validating
+      Resolvers point of view).</t>
 
       <t>To verify this lack of understanding is wide-spread, the authors
       reached out to 5 DNSSEC experts to ask them how long they thought they
@@ -115,15 +118,20 @@
     <section title="Background">
       <t>The RFC5011 process describes a process by which a Validating
       Resolver may accept a newly published KSK as a trust anchor for
-      validating future DNSSEC signed records. This document augments that
-      information with additional constraints, as required from the DNSKEY
-      publication point of view. Note that it does not define any other
-      operational guidance or recommendations about the RFC5011 process from a
-      publication point of view and restricts itself to solely the security
-      and operational ramifications of switching to a new key too soon.
-      Failure of a DNSKEY publisher to follow the minimum recommendations
-      associated with this draft will result in potential denial-of-service
-      attack opportunities against validating resolvers.</t>
+      validating future DNSSEC signed records. It also describes the
+      process for publicly revoking a published KSK.  This document
+      augments that information with additional constraints, as
+      required from the DNSKEY publication and revocation points of
+      view. Note that it does not define any other operational
+      guidance or recommendations about the RFC5011 process and
+      restricts itself to solely the security and operational
+      ramifications of switching to a new key or removing a revoked
+      key soon.  Failure of a DNSKEY publisher to follow the minimum
+      recommendations associated with this draft will result in
+      potential denial-of-service attack opportunities against
+      validating resolvers or in revoked old keys remaining in the
+      trust anchor storage of validating resolvers beyond their
+      expected valid lifetime.</t>
     </section>
 
     <section title="Terminology">
@@ -134,30 +142,52 @@
         </list></t>
     </section>
 
-    <section title="Timing associated with RFC5011 processing">
-      <t>RFC5011's process of safely publishing a new key and then making use
-      of that key falls into a number of high-level steps:</t>
+    <section title="Timing Associated with RFC5011 Processing">
+      <section title="Timing Associated with Publication">
+        <t>RFC5011's process of safely publishing a new key and then making use
+        of that key falls into a number of high-level steps:</t>
 
-      <t><list style="numbers">
-          <t>Publish a new DNSKEY in the zone but continue to sign with the
-          old one.</t>
+        <t><list style="numbers">
+            <t>Publish a new DNSKEY in the zone but continue to sign with the
+            old one.</t>
 
-          <t>Wait a period of time.</t>
+            <t>Wait a period of time.</t>
 
-          <t>Begin using the new DNSKEY to sign the appropriate resource
-          records.</t>
+            <t>Begin using the new DNSKEY to sign the appropriate resource
+            records.</t>
+          </list></t>
 
-          <t>Optionally mark the older DNSKEY as revoked and publish the
-          revoked key.</t>
-        </list></t>
+        <t>This document discusses step 2 of the above process. Some
+        interpretations of RFC5011 have erroneously determined that the wait
+        time is equal to RFC5011's "hold down time". </t>
 
-      <t>This document discusses step 2 of the above process. Some
-      interpretations of RFC5011 have erroneously determined that the wait
-      time is equal to RFC5011's "hold down time". </t>
+        <t>This document describes an attack based on this (common) erroneous
+        belief, which results in a denial of service attack against the zone if
+        that value is used.</t>
+      </section>
+      <section title="Timing Associated with Revocation">
+        <t>RFC5011's process of advertising that an old key is to be
+        revoked from RFC5011 validating resolvers falls into a number
+        of high-level steps:</t>
 
-      <t>This document describes an attack based on this (common) erroneous
-      belief, which results in a denial of service attack against the zone if
-      that value is used.</t>
+        <t><list style="numbers">
+            <t>Set the revoke bit on the DNSKEY to be revoked.</t>
+
+            <t>Sign the revoked DNSKEY with itself.</t>
+
+            <t>Wait a period of time.</t>
+
+            <t>Remove the revoked key from the zone.</t>
+          </list></t>
+
+        <t>This document discusses step 3 of the above process. Some
+        interpretations of RFC5011 have erroneously determined that the wait
+        time is equal to RFC5011's "hold down time". </t>
+
+        <t>This document describes an attack based on this (common) erroneous
+        belief, which results in a revoked DNSKEY potentially staying
+        in a RFC5011 validating resolver long past its expected usage.</t>
+      </section>
     </section>
 
     <section anchor="attack"
