@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="us-ascii"?>
+<?xml version="1.0" encoding="US-ASCII"?>
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 <!ENTITY rfc5011 PUBLIC "" ".//reference.RFC.5011.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
 <rfc category="std"
-     docName="draft-ietf-dnsop-rfc5011-security-considerations-04"
+     docName="draft-ietf-dnsop-rfc5011-security-considerations-01"
      ipr="trust200902">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
@@ -63,7 +63,7 @@
       </address>
     </author>
 
-    <date day="3" month="April" year="2017"/>
+    <date day="20" month="May" year="2017"/>
 
     <area>template</area>
 
@@ -78,29 +78,28 @@
 
   <middle>
     <section title="Introduction">
-      <t>RFC5011 <xref target="RFC5011"/> defines a mechanism by which
-      DNSSEC validators can extend their list of trust anchors when
-      they've seen a new key published in a zone. However, RFC5011
-      [intentionally] provides no guidance to the publishers of
-      DNSKEYs about how long they must wait before switching to the
-      newly published key for signing records or how long they must
-      wait before removing a revoked key from a zone. Because of this
-      lack of guidance, zone publishers may derive incorrect
-      assumptions about safe usage of the RFC5011 DNSKEY advertising
-      and rolling process. This document describes the minimum
-      security requirements from a publishers point of view and is
-      intended to compliment the guidance offered in RFC5011 (which is
-      written to provide timing guidance solely to the Validating
-      Resolvers point of view).</t>
+      <t>RFC5011 <xref target="RFC5011"/> defines a mechanism by which DNSSEC
+      validators can extend their list of trust anchors when they've seen a
+      new key published in a zone. However, RFC5011 [intentionally] provides
+      no guidance to the publishers of DNSKEYs about how long they must wait
+      before switching to the newly published key for signing records or how
+      long they must wait before removing a revoked key from a zone. Because
+      of this lack of guidance, zone publishers may derive incorrect
+      assumptions about safe usage of the RFC5011 DNSKEY advertising and
+      rolling process. This document describes the minimum security
+      requirements from a publishers point of view and is intended to
+      compliment the guidance offered in RFC5011 (which is written to provide
+      timing guidance solely to the Validating Resolvers point of view).</t>
 
       <t>To verify this lack of understanding is wide-spread, the authors
       reached out to 5 DNSSEC experts to ask them how long they thought they
-      must wait before using a new KSK that was being rolled according to the
-      5011 process. All 5 experts answered with an insecure value, and thus we
-      have determined that this lack of operational guidance is causing
-      security concerns today. We hope that this document will rectify this
-      understanding and provide better guidance to zone publishers that wish
-      to make use of the RFC5011 rollover process.</t>
+      must wait before using a new KSK <xref target="RFC4033"/>that was being
+      rolled according to the 5011 process. All 5 experts answered with an
+      insecure value, and thus we have determined that this lack of
+      operational guidance is causing security concerns today. We hope that
+      this document will rectify this understanding and provide better
+      guidance to zone publishers that wish to make use of the RFC5011
+      rollover process.</t>
 
       <t>One important note about ICANN's upcoming 2017 KSK rollover plan for
       the root zone: the timing values chosen for rolling the KSK in the root
@@ -118,34 +117,31 @@
     <section title="Background">
       <t>The RFC5011 process describes a process by which a Validating
       Resolver may accept a newly published KSK as a trust anchor for
-      validating future DNSSEC signed records. It also describes the
-      process for publicly revoking a published KSK.  This document
-      augments that information with additional constraints, as
-      required from the DNSKEY publication and revocation points of
-      view. Note that it does not define any other operational
-      guidance or recommendations about the RFC5011 process and
-      restricts itself to solely the security and operational
-      ramifications of switching to a new key or removing a revoked
-      key soon.  Failure of a DNSKEY publisher to follow the minimum
-      recommendations associated with this draft will result in
-      potential denial-of-service attack opportunities against
-      validating resolvers or in revoked old keys remaining in the
-      trust anchor storage of validating resolvers beyond their
-      expected valid lifetime.</t>
+      validating future DNSSEC signed records. It also describes the process
+      for publicly revoking a published KSK. This document augments that
+      information with additional constraints, as required from the DNSKEY
+      publication and revocation points of view. Note that it does not define
+      any other operational guidance or recommendations about the RFC5011
+      process and restricts itself to solely the security and operational
+      ramifications of switching to a new key or removing a revoked key soon.
+      Failure of a DNSKEY publisher to follow the minimum recommendations
+      associated with this draft will result in potential denial-of-service
+      attack opportunities against validating resolvers or in revoked old keys
+      remaining in the trust anchor storage of validating resolvers beyond
+      their expected valid lifetime.</t>
     </section>
 
     <section title="Terminology">
       <t><list style="hanging">
-          <t hangText="Trust Anchor Publisher">The entity
-          responsible for publishing a DNSKEY that can be used as a trust
-          anchor.</t>
+          <t hangText="Trust Anchor Publisher">The entity responsible for
+          publishing a DNSKEY that can be used as a trust anchor.</t>
         </list></t>
     </section>
 
     <section title="Timing Associated with RFC5011 Processing">
       <section title="Timing Associated with Publication">
-        <t>RFC5011's process of safely publishing a new key and then making use
-        of that key falls into a number of high-level steps:</t>
+        <t>RFC5011's process of safely publishing a new key and then making
+        use of that key falls into a number of high-level steps:</t>
 
         <t><list style="numbers">
             <t>Publish a new DNSKEY in the zone but continue to sign with the
@@ -159,16 +155,17 @@
 
         <t>This document discusses step 2 of the above process. Some
         interpretations of RFC5011 have erroneously determined that the wait
-        time is equal to RFC5011's "hold down time". </t>
+        time is equal to RFC5011's "hold down time".</t>
 
         <t>This document describes an attack based on this (common) erroneous
-        belief, which results in a denial of service attack against the zone if
-        that value is used.</t>
+        belief, which results in a denial of service attack against the zone
+        if that value is used.</t>
       </section>
+
       <section title="Timing Associated with Revocation">
-        <t>RFC5011's process of advertising that an old key is to be
-        revoked from RFC5011 validating resolvers falls into a number
-        of high-level steps:</t>
+        <t>RFC5011's process of advertising that an old key is to be revoked
+        from RFC5011 validating resolvers falls into a number of high-level
+        steps:</t>
 
         <t><list style="numbers">
             <t>Set the revoke bit on the DNSKEY to be revoked.</t>
@@ -182,16 +179,15 @@
 
         <t>This document discusses step 3 of the above process. Some
         interpretations of RFC5011 have erroneously determined that the wait
-        time is equal to RFC5011's "hold down time". </t>
+        time is equal to RFC5011's "hold down time".</t>
 
         <t>This document describes an attack based on this (common) erroneous
-        belief, which results in a revoked DNSKEY potentially staying
-        in a RFC5011 validating resolver long past its expected usage.</t>
+        belief, which results in a revoked DNSKEY potentially staying in a
+        RFC5011 validating resolver long past its expected usage.</t>
       </section>
     </section>
 
-    <section anchor="attack"
-             title="Denial of Service Attack Considerations">
+    <section anchor="attack" title="Denial of Service Attack Considerations">
       <t>If an attacker is able to provide a RFC5011 validating engine with
       past responses, such as when it is in-path or able to otherwise perform
       any number of cache poisoning attacks, the attacker may be able to leave
@@ -201,8 +197,7 @@
 
       <t>The following timeline illustrates this situation.</t>
 
-      <section anchor="examplenumbers"
-               title="Enumerated Attack Example">
+      <section anchor="examplenumbers" title="Enumerated Attack Example">
         <t>The following example settings are used in the example scenario
         within this section: <list style="hanging">
             <t hangText="TTL (all records)">1 day</t>
@@ -272,8 +267,8 @@
               <t hangText="T+10">The RFC5011 Validator queries for the zone's
               keyset and discovers K_new again, signed by K_old (the attacker
               is unable to replay the records cached at T-1, because they have
-              now expired). The RFC5011 Validator starts (anew) the
-              hold-timer for K_new.</t>
+              now expired). The RFC5011 Validator starts (anew) the hold-timer
+              for K_new.</t>
 
               <t hangText="T+15,T+20, and T+25">The RFC5011 Validator
               continues checking the zone's key set and lets the hold-down
@@ -313,12 +308,11 @@
       </section>
     </section>
 
-    <section title="Minimum RFC5011 Timing Requirements" anchor="minimum">
+    <section anchor="minimum" title="Minimum RFC5011 Timing Requirements">
       <t>Given the attack description in <xref target="attack"/>, the correct
       minimum length of time required for the Zone Signer to wait before using
-      K_new is:
-      <figure>
-              <artwork><![CDATA[
+      K_new is: <figure>
+          <artwork><![CDATA[
   waitTime = addHoldDownTime
              + (DNSKEY RRSIG Signature Validity)
              + MAX(MIN((DNSKEY RRSIG Signature Validity) / 2,
@@ -326,58 +320,53 @@
                        15 days),
                    1 hour)
              + 2 * MAX(TTL of all records)
-                                ]]>
-              </artwork>
-      </figure>
-      </t>
+                                
+              ]]></artwork>
+        </figure></t>
 
-      <t>The RFC5011 "Active Refresh" requirements state that:
-
-      <figure>
-              <artwork><![CDATA[
+      <t>The RFC5011 "Active Refresh" requirements state that: <figure>
+          <artwork><![CDATA[
   A resolver that has been configured for an automatic update
   of keys from a particular trust point MUST query that trust
   point (e.g., do a lookup for the DNSKEY RRSet and related
   RRSIG records) no less often than the lesser of 15 days, half
   the original TTL for the DNSKEY RRSet, or half the RRSIG
   expiration interval and no more often than once per hour.
-                          ]]>
-              </artwork>
-      </figure></t>
+                          
+              ]]></artwork>
+        </figure></t>
 
-      <t>The important timing constraint that must be considered is
-      the last point at which a validating resolver may have received
-      a replayed the original DNSKEY set (K_old) without the new key.
-      It's the next query of the RFC5011 validator that the assured
-      K_new will be seen.  Thus, the latest time a RFC5011 validator
-      may begin their hold down timer is an "Active Refresh" period
-      after the last point that an attacker can replay the K_old
-      DNSKEY set.</t>
+      <t>The important timing constraint that must be considered is the last
+      point at which a validating resolver may have received a replayed the
+      original DNSKEY set (K_old) without the new key. It's the next query of
+      the RFC5011 validator that the assured K_new will be seen. Thus, the
+      latest time a RFC5011 validator may begin their hold down timer is an
+      "Active Refresh" period after the last point that an attacker can replay
+      the K_old DNSKEY set.</t>
 
-      <t>The "Active Refresh" interval used by RFC5011 validator is
-      determined by the larger of (DNSKEY RRSIG Signature Validity)
-      and (original TTL for the DNSKEY RRSet). The Following text
-      assumes that (DNSKEY RRSIG Signature Validity) is larger of the
-      two, which is operationally more common today.</t>
+      <t>The "Active Refresh" interval used by RFC5011 validator is determined
+      by the larger of (DNSKEY RRSIG Signature Validity) and (original TTL for
+      the DNSKEY RRSet). The Following text assumes that (DNSKEY RRSIG
+      Signature Validity) is larger of the two, which is operationally more
+      common today.</t>
 
-      <t>Thus, the worst case scenario of this attack is when the
-      attacker can replay K_old at just before (DNSKEY RRSIG Signature
-      Validity).  If a RFC5011 validator picks up K_old at this this
-      point, it will not have a hold down timer started at all.  It's
-      not until the next "Active Refresh" time that they'll pick up
-      K_new with assurance, and thus start their hold down timer.
-      Thus, this is not at (DNSKEY RRSIG Signature Validity) time past
-      publication but significantly longer based on the zone's
+      <t>Thus, the worst case scenario of this attack is when the attacker can
+      replay K_old at just before (DNSKEY RRSIG Signature Validity). If a
+      RFC5011 validator picks up K_old at this this point, it will not have a
+      hold down timer started at all. It's not until the next "Active Refresh"
+      time that they'll pick up K_new with assurance, and thus start their
+      hold down timer. Thus, this is not at (DNSKEY RRSIG Signature Validity)
+      time past publication but significantly longer based on the zone's
       parameters.</t>
 
-      <t>The extra 2 * MAX(TTL of all records) is the standard added
-      safety margin when dealing with DNSSEC due to caching that can
-      take place.  Because the 5011 steps require direct validation
-      using the signature validity, the authors aren't yet convinced
-      it is needed in this particular case.</t>
+      <t>The extra 2 * MAX(TTL of all records) is the standard added safety
+      margin when dealing with DNSSEC due to caching that can take place.
+      Because the 5011 steps require direct validation using the signature
+      validity, the authors aren't yet convinced it is needed in this
+      particular case.</t>
 
-      <t>For the parameters listed in <xref target="examplenumbers"/>,
-      our example: <figure>
+      <t>For the parameters listed in <xref target="examplenumbers"/>, our
+      example: <figure>
           <artwork><![CDATA[
   waitTime = 30
              + 10
@@ -390,7 +379,6 @@
 
       <t>This hold-down time of 47 days is 12 days longer than the frequently
       perceived 35 days in T+35 above.</t>
-
     </section>
 
     <section title="IANA Considerations">
@@ -417,10 +405,10 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>The authors would like to especially thank to Michael StJohns
-      for his help and advice. We would also like to thank Bob Harold,
-      Shane Kerr, Matthijs Mekking, Duane Wessels, Petr ?pa?ek, and
-      everyone else who assisted with this document. </t>
+      <t>The authors would like to especially thank to Michael StJohns for his
+      help and advice. We would also like to thank Bob Harold, Shane Kerr,
+      Matthijs Mekking, Duane Wessels, Petr Petr Spacek, and everyone else who
+      assisted with this document.</t>
     </section>
   </middle>
 
@@ -428,31 +416,30 @@
     <references title="Normative References">
       <?rfc include='reference.RFC.2119'?>
 
-      <?rfc include='reference.RFC.5011'?>
+      <?rfc include='reference.RFC.5011'
+?>
+
+      <?rfc include='reference.RFC.4033'?>
     </references>
 
     <!--
-		    <references title="Informative References">
-		    </references>
-		-->
+                    <references title="Informative References">
+                    </references>
+                -->
 
-    <section title="Real World Example: The 2017 KSK Key Roll">
-        <t>In 2017, ICANN expects to (or has) rolled the key signing
-        key for the root zone.  The relevant data associated with the
-        root zone is as follows:
-         <figure>
+    <section title="Real World Example: The 2017 Root KSK Key Roll">
+      <t>In 2017, ICANN expects to (or has) rolled the key signing key for the
+      root zone. The relevant data associated with the root zone is as
+      follows: <figure>
           <artwork><![CDATA[
       addHoldDownTime:                      30 days
       Old DNSKEY RRSIG Signature Validity:  21 days
       Old DNSKEY TTL:                        2 days
-	        ]]></artwork>
-         </figure>
-        </t>
+                ]]></artwork>
+        </figure></t>
 
-        <t>Thus, sticking this information into the equation in
-        Section <xref target="minimum" /> yields (in days):
-
-         <figure>
+      <t>Thus, sticking this information into the equation in Section <xref
+      target="minimum"/> yields (in days): <figure>
           <artwork><![CDATA[
   waitTime = addHoldDownTime
              + (DNSKEY RRSIG Signature Validity)
@@ -476,20 +463,29 @@
 
   waitTime = 66.5 days 
                 ]]></artwork>
-         </figure>
-        </t>
+        </figure></t>
 
-        <t>Thus, ICANN should wait 66.5 days before switching to the
-        newly published KSK and before removing the old revoked key
-        from publication.  ICANN's current plans are to wait 70 days
-        before using the new KEY and 69 days before removing the old,
-        revoked key.  Thus, their current rollover plans are
-        sufficiently secure from the attack discussed in this
-        memo.</t>
+      <t>Thus, ICANN should wait 66.5 days before switching to the newly
+      published KSK and before removing the old revoked key from publication.
+      ICANN's current plans are to wait 70 days before using the new KEY and
+      69 days before removing the old, revoked key. Thus, their current
+      rollover plans are sufficiently secure from the attack discussed in this
+      memo.</t>
     </section>
 
     <section title="Changes / Author Notes.">
-      <t>From -00 to -02:<list>
+      <t>From Individual-00 to DNSOP-00:<list style="symbols">
+          <t>Filename change.</t>
+        </list>From -00 to -01:<list style="symbols">
+          <t>Added Revocation processing (including "Timing Associated with
+          Revocation")</t>
+
+          <t>Added real world example.</t>
+
+          <t>Fixed some typoes and missing references.</t>
+        </list></t>
+
+      <t>From Ind-00 to -02:<list>
           <t>Additional background and clarifications in abstract.</t>
 
           <t>Better separation in attack description between attacked and
@@ -503,17 +499,22 @@
           <t>Changed to " &lt;?rfc include='reference....'?&gt; " style
           references.</t>
         </list></t>
-     <t>From -02 to -03:<list>
-         <t>Minor changes from Bob Harold</t>
-         <t>Clarified why 3/2 signature validity is needed</t>
-         <t>Changed min wait time math to include TTL value as well</t>
-      </list></t>
+
+      <t>From -02 to -03:<list>
+          <t>Minor changes from Bob Harold</t>
+
+          <t>Clarified why 3/2 signature validity is needed</t>
+
+          <t>Changed min wait time math to include TTL value as well</t>
+        </list></t>
+
       <t>From -03 to -04:<list>
-         <t>Fixed the waitTime equation to handle the difference
-         between the usage of the expiration time and the Active
-         Refresh time.</t>
-         <t>More clarification text and text changes proposed by Petr Spacek</t>
-       </list></t>
+          <t>Fixed the waitTime equation to handle the difference between the
+          usage of the expiration time and the Active Refresh time.</t>
+
+          <t>More clarification text and text changes proposed by Petr
+          Spacek</t>
+        </list></t>
     </section>
   </back>
 </rfc>
