@@ -91,7 +91,7 @@
       compliment the guidance offered in RFC5011 (which is written to provide
       timing guidance solely to a Validating Resolver's point of view).</t>
 
-      <section title="Background">
+      <section title="Document History and Motivation">
 	<t>To verify this lack of understanding is wide-spread, the
 	authors reached out to 5 DNSSEC experts to ask them how long
 	they thought they must wait before signing a zone using a new
@@ -103,7 +103,9 @@
 	rectify this understanding and provide better guidance to zone
 	publishers that wish to make use of the RFC5011 rollover
 	process.</t>
-
+      </section>
+	
+      <section title="Safely Rolling the Root Zone's KSK in 2017/2018"> 
 	<t>One important note about ICANN's [currently upcoming]
 	2017/2018 KSK rollover plan for the root zone: the timing
 	values chosen for rolling the KSK in the root zone appear
@@ -121,25 +123,30 @@
     <section title="Background">
       <t>The RFC5011 process describes a process by which a Validating
       Resolver may accept a newly published KSK as a trust anchor for
-      validating future DNSSEC signed records. It also describes the process
-      for publicly revoking a published KSK. This document augments that
-      information with additional constraints, as required from the DNSKEY
-      publication and revocation points of view. Note that it does not define
-      any other operational guidance or recommendations about the RFC5011
-      process and restricts itself to solely the security and operational
-      ramifications of switching to a new key or removing a revoked key soon.
-      Failure of a DNSKEY publisher to follow the minimum recommendations
-      associated with this draft will result in potential denial-of-service
-      attack opportunities against validating resolvers or in revoked old keys
-      remaining in the trust anchor storage of validating resolvers beyond
-      their expected valid lifetime.</t>
+      validating future DNSSEC signed records. It also describes the
+      process for publicly revoking a published KSK. This document
+      augments that information with additional constraints, as
+      required from the DNSKEY publication and revocation's points of
+      view. Note that it does not define any other operational
+      guidance or recommendations about the RFC5011 process and
+      restricts itself to solely the security and operational
+      ramifications of switching to a new key or removing a revoked
+      key too soon.  Failure of a DNSKEY publisher to follow the
+      minimum recommendations associated with this draft will result
+      in potential denial-of-service attack opportunities against
+      validating resolvers or in revoked old DNSKEYs remaining in the
+      trust anchor storage of validating resolvers beyond their
+      expected valid lifetime.</t>
     </section>
 
     <section title="Terminology">
       <t><list style="hanging">
           <t hangText="Trust Anchor Publisher">The entity responsible for
           publishing a DNSKEY that can be used as a trust anchor.</t>
-        </list></t>
+      </list></t>
+
+      <t>Also see Section 2 of <xref target="RFC5033" /> and <xref
+      target="RFC7719" /> for additional terminology.</t>
     </section>
 
     <section title="Timing Associated with RFC5011 Processing">
