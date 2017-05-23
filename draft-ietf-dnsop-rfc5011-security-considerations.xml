@@ -2,6 +2,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 <!ENTITY rfc5011 PUBLIC "" ".//reference.RFC.5011.xml">
+<!ENTITY rfc7719 PUBLIC "" ".//reference.RFC.7719.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
 <rfc category="std"
@@ -145,7 +146,7 @@
           publishing a DNSKEY that can be used as a trust anchor.</t>
       </list></t>
 
-      <t>Also see Section 2 of <xref target="RFC5033" /> and <xref
+      <t>Also see Section 2 of <xref target="RFC4033" /> and <xref
       target="RFC7719" /> for additional terminology.</t>
     </section>
 
@@ -426,11 +427,10 @@
   <back>
     <references title="Normative References">
       <?rfc include='reference.RFC.2119'?>
-
-      <?rfc include='reference.RFC.5011'
-?>
-
       <?rfc include='reference.RFC.4033'?>
+      <?rfc include='reference.RFC.5011'?>
+      <?rfc include='reference.RFC.7719'?>
+
     </references>
 
     <!--
