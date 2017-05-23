@@ -78,34 +78,38 @@
 
   <middle>
     <section title="Introduction">
-      <t>RFC5011 <xref target="RFC5011"/> defines a mechanism by which DNSSEC
+      <t><xref target="RFC5011"/> defines a mechanism by which DNSSEC
       validators can extend their list of trust anchors when they've seen a
       new key published in a zone. However, RFC5011 [intentionally] provides
       no guidance to the publishers of DNSKEYs about how long they must wait
-      before switching to the newly published key for signing records or how
+      before switching to a newly published key for signing records or how
       long they must wait before removing a revoked key from a zone. Because
       of this lack of guidance, zone publishers may derive incorrect
-      assumptions about safe usage of the RFC5011 DNSKEY advertising and
-      rolling process. This document describes the minimum security
-      requirements from a publishers point of view and is intended to
+      assumptions about safe usage of the RFC5011 DNSKEY advertising,
+      rolling and revocation process. This document describes the minimum security
+      requirements from a publisher's point of view and is intended to
       compliment the guidance offered in RFC5011 (which is written to provide
-      timing guidance solely to the Validating Resolvers point of view).</t>
+      timing guidance solely to a Validating Resolver's point of view).</t>
 
-      <t>To verify this lack of understanding is wide-spread, the authors
-      reached out to 5 DNSSEC experts to ask them how long they thought they
-      must wait before using a new KSK <xref target="RFC4033"/>that was being
-      rolled according to the 5011 process. All 5 experts answered with an
-      insecure value, and thus we have determined that this lack of
-      operational guidance is causing security concerns today. We hope that
-      this document will rectify this understanding and provide better
-      guidance to zone publishers that wish to make use of the RFC5011
-      rollover process.</t>
+      <section title="Background">
+	<t>To verify this lack of understanding is wide-spread, the
+	authors reached out to 5 DNSSEC experts to ask them how long
+	they thought they must wait before signing a zone using a new
+	KSK <xref target="RFC4033"/> that was being rolled according
+	to the 5011 process. All 5 experts answered with an insecure
+	value, and we determined that this lack of operational
+	guidance is causing security concerns today and wrote this
+	companion document to RFC5011. We hope that this document will
+	rectify this understanding and provide better guidance to zone
+	publishers that wish to make use of the RFC5011 rollover
+	process.</t>
 
-      <t>One important note about ICANN's upcoming 2017 KSK rollover plan for
-      the root zone: the timing values chosen for rolling the KSK in the root
-      zone appear completely safe, and are not in any way affected by the
-      timing concerns introduced by this draft</t>
-
+	<t>One important note about ICANN's [currently upcoming]
+	2017/2018 KSK rollover plan for the root zone: the timing
+	values chosen for rolling the KSK in the root zone appear
+	completely safe, and are not affected by the timing concerns
+	introduced by this draft</t>
+      </section>
       <section title="Requirements notation">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
         "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
