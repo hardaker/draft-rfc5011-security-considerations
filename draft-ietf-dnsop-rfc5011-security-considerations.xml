@@ -416,6 +416,13 @@
 
       <t>This hold-down time of 47 days is 12 days longer than the
       (frequently perceived) 35 days in the example at T+35 above.</t>
+
+      <t>It is important to note that this value affects not just the
+      publication of new DNSKEYs intended to be used as trust anchors,
+      but also the length of time required to publish a DNSKEY with
+      the revoke bit set.  Both of these publication timing
+      requirements are affected by the attacks described in this
+      document.</t>
     </section>
 
     <section title="IANA Considerations">
@@ -423,29 +430,34 @@
     </section>
 
     <section anchor="operational" title="Operational Considerations">
-      <t>A companion document to RFC5011 was expected to be published that
-      describes the best operational practice considerations from the
-      perspective of a zone publisher and Trust Anchor Publisher. However,
-      this companion document was never written. The authors of this document
-      hope that it will at some point in the future, as RFC5011 timing can be
-      tricky as we have shown. This document is intended only to fill a single
-      operational void that results in security ramifications (specifically a
-      denial of service attack against an RFC5011 Validator). This document
-      does not attempt to document any other missing operational guidance for
-      zone publishers.</t>
+      <t>A companion document to RFC5011 was expected to be published
+      that describes the best operational practice considerations from
+      the perspective of a zone publisher and Trust Anchor
+      Publisher. However, this companion document has yet to be
+      published. The authors of this document hope that it will at
+      some point in the future, as RFC5011 timing can be tricky as we
+      have shown and we do not suggest "good operational practice"
+      that might be associated with a BCP on the subject. This
+      document is intended only to fill a single operational void that
+      results in security ramifications (specifically a denial of
+      service attack against an RFC5011 Validator). This document does
+      not attempt to document any other missing operational guidance
+      for zone publishers.</t>
     </section>
 
     <section anchor="security" title="Security Considerations">
       <t>This document, is solely about the security considerations with
       respect to the Trust Anchor Publisher of RFC5011 trust anchors / keys.
-      Thus the entire document is a discussion of Security Considerations</t>
+      Thus the entire document is a discussion of Security
+      Considerations when rolling DNSKEYs using the RFC5011 process.</t>
     </section>
 
     <section title="Acknowledgements">
-      <t>The authors would like to especially thank to Michael StJohns for his
-      help and advice. We would also like to thank Bob Harold, Shane Kerr,
-      Matthijs Mekking, Duane Wessels, Petr Petr Spacek, and everyone else who
-      assisted with this document.</t>
+      <t>The authors would like to especially thank to Michael StJohns
+      for his help and advice and the care and thought he put into
+      RFC5011 itself. We would also like to thank Bob Harold, Shane
+      Kerr, Matthijs Mekking, Duane Wessels, Petr Petr Spacek, and the
+      dnsop working group who have assisted with this document.</t>
     </section>
   </middle>
 
