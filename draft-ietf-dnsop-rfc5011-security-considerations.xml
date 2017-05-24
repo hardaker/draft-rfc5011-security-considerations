@@ -277,24 +277,31 @@
               the publication of K_new. The RFC5011 Validator starts
               the (30-day) hold-down timer for K_new.</t>
 
-              <t hangText="T+5">The RFC5011 Validator queries for the zone's
-              keyset per the Active Refresh schedule, discussed in Section 2.3
-              of RFC5011. Instead of receiving the intended published keyset,
-              the Attacker successfully replays the keyset and associated
-              signatures that they recorded at T-1. Because the signature
-              lifetime is 10 days (in this example), the replayed signature
-              and keyset is accepted as valid (being only 6 days old) and the
-              RFC5011 Validator cancels the hold-down timer for K_new.</t>
+              <t hangText="T+5">The RFC5011 Validator queries for the
+              zone's keyset per the RFC5011 Active Refresh schedule,
+              discussed in Section 2.3 of RFC5011. Instead of
+              receiving the intended published keyset, the Attacker
+              successfully replays the keyset and associated
+              signatures that they recorded at T-1. Because the
+              signature lifetime is 10 days (in this example), the
+              replayed signature and keyset is accepted as valid
+              (being only 6 days old) and the RFC5011 Validator
+              cancels the hold-down timer for K_new, per the RFC5011
+              algorithm.</t>
 
-              <t hangText="T+10">The RFC5011 Validator queries for the zone's
-              keyset and discovers K_new again, signed by K_old (the attacker
-              is unable to replay the records cached at T-1, because they have
-              now expired). The RFC5011 Validator starts (anew) the hold-timer
-              for K_new.</t>
+              <t hangText="T+10">The RFC5011 Validator queries for the
+              zone's keyset and discovers the new kset which includes
+              K_new (again), signed by K_old.  Note: the attacker is
+              unable to replay the records cached at T-1, because they
+              have now expired. The RFC5011 Validator starts (anew)
+              the hold-timer for K_new.</t>
 
               <t hangText="T+15,T+20, and T+25">The RFC5011 Validator
-              continues checking the zone's key set and lets the hold-down
-              timer keep running without resetting it.</t>
+              continues checking the zone's key set at the prescribed
+              regular intervals.  The RFC5011 Validator's hold-down
+              timer keep running without being reset assuming all of
+              the validations succeed (again: the attacker can no
+              longer replay traffic to their benefit).</t>
 
               <t hangText="T+30">The Zone Signer knows that this is the first
               time at which some validators might accept K_new as a new trust
@@ -312,19 +319,23 @@
               attack at T+5 means its new hold-time timer actually started at
               T+10, and thus at this time it's real hold-down timer is at T+35
               - T+10 = 25 days, which is less than the RFC5011 required 30
-              days.</t>
+              days and the RFC5011 won't consider it a valid
+              trust anchor addition yet.</t>
 
-              <t hangText="T+36">The Zone Signer, believing K_new is safe to
-              use, switches their active signing KSK to K_new and publishes a
-              new DNSKEY set signature signed with K_new. Non-attacked RFC5011
-              validators, with a hold-down timer of at least 30 days, would
-              have accepted K_new into their set of trusted keys. But, because
-              our attacked RFC5011 Validator still has a hold-down timer for
-              K_new at 26 days, it will fail to accept K_new as a trust anchor
-              and since K_old is no longer being used, all the KSK records
-              from the zone signed by K_new will be treated as invalid.
+              <t hangText="T+36">The Zone Signer, believing K_new is
+              safe to use, switches their active signing KSK to K_new
+              and publishes a new RRSIG, signed with K_new, and
+              covering the DNSKEY set. Non-attacked RFC5011
+              validators, with a hold-down timer of at least 30 days,
+              would have accepted K_new into their set of trusted
+              keys. But, because our attacked RFC5011 Validator has a
+              hold-down timer for K_new at only 26 days, it will fail
+              to accept K_new as a trust anchor.  Since K_old is no
+              longer being used, all the DNSKEY records from the zone
+              signed by K_new will be treated as invalid.
               Subsequently, all keys in the key set are now unusable,
-              invalidating all records in the zone of any type and name.</t>
+              invalidating all of the records in the zone of any type
+              and name.</t>
             </list></t>
         </section>
       </section>
@@ -333,7 +344,8 @@
     <section anchor="minimum" title="Minimum RFC5011 Timing Requirements">
       <t>Given the attack description in <xref target="attack"/>, the correct
       minimum length of time required for the Zone Signer to wait before using
-      K_new is: <figure>
+      K_new is:</t>
+      <t> <figure>
           <artwork><![CDATA[
   waitTime = addHoldDownTime
              + (DNSKEY RRSIG Signature Validity)
@@ -346,7 +358,8 @@
               ]]></artwork>
         </figure></t>
 
-      <t>The RFC5011 "Active Refresh" requirements state that: <figure>
+      <t>The RFC5011 "Active Refresh" requirements state that:</t>
+      <t><figure>
           <artwork><![CDATA[
   A resolver that has been configured for an automatic update
   of keys from a particular trust point MUST query that trust
