@@ -371,34 +371,36 @@
               ]]></artwork>
         </figure></t>
 
-      <t>The important timing constraint that must be considered is the last
-      point at which a validating resolver may have received a replayed the
-      original DNSKEY set (K_old) without the new key. It's the next query of
-      the RFC5011 validator that the assured K_new will be seen. Thus, the
-      latest time a RFC5011 validator may begin their hold down timer is an
-      "Active Refresh" period after the last point that an attacker can replay
-      the K_old DNSKEY set.</t>
+      <t>The important timing constraint introduced by this memo
+      relates to the last point at which a validating resolver may
+      have received a replayed the original DNSKEY set (K_old) without
+      the new key. It's the next query of the RFC5011 validator that
+      the assured K_new will be seen without a potential replay
+      afterward. Thus, the latest time a RFC5011 validator may begin
+      their hold down timer is an "Active Refresh" period after the
+      last point that an attacker can replay the K_old DNSKEY set.</t>
 
-      <t>The "Active Refresh" interval used by RFC5011 validator is determined
-      by the larger of (DNSKEY RRSIG Signature Validity) and (original TTL for
-      the DNSKEY RRSet). The Following text assumes that (DNSKEY RRSIG
-      Signature Validity) is larger of the two, which is operationally more
-      common today.</t>
+      <t>The "Active Refresh" interval used by a RFC5011 validator is
+      determined by the larger of (DNSKEY RRSIG Signature Validity)
+      and (original TTL for the DNSKEY RRSet). The Following text
+      assumes that (DNSKEY RRSIG Signature Validity) is larger of the
+      two, which is operationally more common today.</t>
 
-      <t>Thus, the worst case scenario of this attack is when the attacker can
-      replay K_old at just before (DNSKEY RRSIG Signature Validity). If a
-      RFC5011 validator picks up K_old at this this point, it will not have a
-      hold down timer started at all. It's not until the next "Active Refresh"
-      time that they'll pick up K_new with assurance, and thus start their
-      hold down timer. Thus, this is not at (DNSKEY RRSIG Signature Validity)
-      time past publication but significantly longer based on the zone's
-      parameters.</t>
+      <t>Thus, the worst case scenario of this attack is when the
+      attacker can replay K_old just before (DNSKEY RRSIG Signature
+      Validity). If a RFC5011 validator picks up K_old at this this
+      point, it will not have a hold down timer started as it will
+      have been reset by previous replays. It's not until the next
+      "Active Refresh" time that they'll pick up K_new with assurance,
+      and thus start their (final) hold down timer. Thus, this is not at
+      (DNSKEY RRSIG Signature Validity) time past publication but
+      may be significantly longer based on the zone's DNSSEC parameters.</t>
 
       <t>The extra 2 * MAX(TTL of all records) is the standard added safety
       margin when dealing with DNSSEC due to caching that can take place.
       Because the 5011 steps require direct validation using the signature
       validity, the authors aren't yet convinced it is needed in this
-      particular case.</t>
+      particular case, but it is prudent to include it for added assurance.</t>
 
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
@@ -412,8 +414,8 @@
                                 ]]></artwork>
         </figure></t>
 
-      <t>This hold-down time of 47 days is 12 days longer than the frequently
-      perceived 35 days in T+35 above.</t>
+      <t>This hold-down time of 47 days is 12 days longer than the
+      (frequently perceived) 35 days in the example at T+35 above.</t>
     </section>
 
     <section title="IANA Considerations">
