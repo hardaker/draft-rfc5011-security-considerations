@@ -259,17 +259,22 @@
         <section title="Attack Timing Breakdown" anchor="timing">
           <t>The following series of steps depicts the timeline in which an
           attack occurs that foils the adoption of a new DNSKEY by a Trust
-          Anchor Publisher that revokes the old key too quickly. <list
+          Anchor Publisher that starts signing with the new DNSKEY too quickly. <list
               style="hanging">
-              <t hangText="T-1">The last signatures are published by the Zone
-              Signer that signs only K_old using K_old. The Attacker queries
-              for, retrieves and caches this keyset and corresponding
-              signatures.</t>
+              <t hangText="T-1">The last RRSIGs are published by the
+              Zone Signer that signs only K_old key using the K_old
+              key itself.  [It may also be signing ZSKs as well, but
+              they are not relevant to this event so we will not talk
+              further about them; we are only talking about RRSIGs
+              that cover the DNSKEYs.]  The Attacker queries for,
+              retrieves and caches this DNSKEY set and corresponding
+              RRSIG signatures.</t>
 
-              <t hangText="T-0">The Zone Signer adds K_new to his zone and
-              signs the zone's key set with K_old. The RFC5011 Validator
-              retrieves the new key set and corresponding signature set and
-              notices the publication of K_new. The RFC5011 Validator starts
+              <t hangText="T-0">The Zone Signer adds K_new to their
+              zone and signs the zone's key set with K_old. The
+              RFC5011 Validator (later to be under attack) retrieves
+              this new key set and corresponding RRSIGs and notices
+              the publication of K_new. The RFC5011 Validator starts
               the (30-day) hold-down timer for K_new.</t>
 
               <t hangText="T+5">The RFC5011 Validator queries for the zone's
