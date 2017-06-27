@@ -6,7 +6,7 @@
 ]>
 <!-- WK: Set category, IPR, docName -->
 <rfc category="std"
-     docName="draft-ietf-dnsop-rfc5011-security-considerations-01"
+     docName="draft-ietf-dnsop-rfc5011-security-considerations-05"
      ipr="trust200902">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
@@ -578,7 +578,15 @@
           Spacek</t>
         </list></t>
 
-      <t>From hardaker-04 to ietf-00:<list>
+      <t>From -04 to -05:<list>
+          <t>Clarifications about signing using only new keys, vs old
+          ones too</t>
+
+      </list></t>
+
+     
+
+      <t>Pre-DNSOP document: From hardaker-04 to ietf-00:<list>
           <t>Just rebranding.</t>
         </list></t>
 
