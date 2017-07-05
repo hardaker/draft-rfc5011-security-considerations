@@ -25,8 +25,6 @@
   <front>
     <!-- WK: Set long title. -->
 
-    <date day="27" month="Jun" year="2017"/>
-
     <title abbrev="RFC5011 Security Considerations ">Security Considerations
     for RFC5011 Publishers</title>
 
@@ -65,6 +63,8 @@
         <email>warren@kumari.net</email>
       </address>
     </author>
+
+    <date day="27" month="Jun" year="2017"/>
 
     <area>ops</area>
 
