@@ -75,7 +75,7 @@
       timing advice that must be followed in order to maintain
       security.  Specifically, this document describes the math behind
       the minimum time-length that a DNS zone publisher must wait
-      before signing with only recently added DNSKEYs.  This document
+      before signing exclusively with recently added DNSKEYs.  This document
       also describes the minimum time-length that a DNS zone publisher
       must wait after publishing a revoked DNSKEY before assuming that
       all active RFC5011 resolvers should have seen the
@@ -87,32 +87,34 @@
   <middle>
     <section title="Introduction">
       <t><xref target="RFC5011"/> defines a mechanism by which DNSSEC
-      validators can extend their list of trust anchors when they've
+      validators
+ can update their list of trust anchors when they've
       seen a new key published in a zone. However, RFC5011
       [intentionally] provides no guidance to the publishers of
-      DNSKEYs about how long they must wait before switching to using
-      only recently published keys for signing records, or how long
-      they must wait before removing a revoked key from a
-      zone. Because of this lack of guidance, zone publishers may
-      derive incorrect assumptions about safe usage of the RFC5011
-      DNSKEY advertising, rolling and revocation process. This
-      document describes the minimum security requirements from a
-      publisher's point of view and is intended to compliment the
-      guidance offered in RFC5011 (which is written to provide timing
-      guidance solely to a Validating Resolver's point of view).</t>
+      DNSKEYs about how long they must wait before switching to
+      exclusively using recently published keys for signing records,
+      or how long they must wait before ceasing publication of a
+      revoked key. Because of this lack of guidance, zone
+      publishers may derive incorrect assumptions about safe usage of
+      the RFC5011 DNSKEY advertising, rolling and revocation
+      process. This document describes the minimum security
+      requirements from a publisher's point of view and is intended to
+      compliment the guidance offered in RFC5011 (which is written to
+      provide timing guidance solely to a Validating Resolver's point
+      of view).</t>
 
       <section title="Document History and Motivation">
 	<t>To verify this lack of understanding is wide-spread, the
 	authors reached out to 5 DNSSEC experts to ask them how long
-	they thought they must wait before signing a zone using a new
-	KSK <xref target="RFC4033"/> that was being rolled according
-	to the 5011 process. All 5 experts answered with an insecure
-	value, and we determined that this lack of operational
-	guidance is causing security concerns today and wrote this
-	companion document to RFC5011. We hope that this document will
-	rectify this understanding and provide better guidance to zone
-	publishers that wish to make use of the RFC5011 rollover
-	process.</t>
+	they thought they must wait before signing a zone exclusively
+	with a new KSK <xref target="RFC4033"/> that was being
+	introduced according to the 5011 process. All 5 experts
+	answered with an insecure value, and we determined that this
+	lack of operational guidance is causing security concerns
+	today and wrote this companion document to RFC5011. We hope
+	that this document will rectify this understanding and provide
+	better guidance to zone publishers that wish to make use of
+	the RFC5011 rollover process.</t>
       </section>
 	
       <section title="Safely Rolling the Root Zone's KSK in 2017/2018"> 
@@ -136,19 +138,20 @@
       anchor for validating future DNSSEC signed records. It also
       describes the process for publicly revoking a published
       KSK. This document augments that information with additional
-      constraints, as required from the DNSKEY publication and
-      revocation's points of view. Note that it does not define any
+      constraints, from the DNSKEY publication and
+      revocation's points of view. Note that this document does not define any
       other operational guidance or recommendations about the RFC5011
       process and restricts itself to solely the security and
-      operational ramifications of switching to using only recently
-      added keys or removing a revoked keys too soon.  Failure of a
-      DNSKEY publisher to follow the minimum recommendations
-      associated with this draft will result in potential
-      denial-of-service attack opportunities against validating
-      resolvers.  Failure of a DNSKEY publisher to publish a revoked
-      key for a long enough period of time may result in RFC5011
-      Validating Resolvers leaving a key in their trust anchor storage
-      beyond their expected lifetime.</t>
+      operational ramifications of switching to exclusively using 
+      recently added keys or removing a revoked keys too soon.</t>
+
+      <t>Failure of a DNSKEY publisher to follow the minimum
+      recommendations associated with this draft will result in
+      potential denial-of-service attack opportunities against
+      validating resolvers.  Failure of a DNSKEY publisher to publish
+      a revoked key for a long enough period of time may result in
+      RFC5011 Validating Resolvers leaving that key in their trust anchor
+      storage beyond the key's expected lifetime.</t>
     </section>
 
     <section title="Terminology">
@@ -165,7 +168,7 @@
           the RFC5011 processes to track and update trust anchors.
           Sometimes referred to as a "RFC5011 Resolver"</t>
 
-          <t hangText="Attacker">An attacker intent on foiling the
+          <t hangText="Attacker">An entity intent on foiling the
           RFC5011 Validator's ability to successfully adopt the Zone
           Signer's new DNSKEY as a new trust anchor or to prevent the
           RFC5011 Validator from removing an old DNSKEY from its list
@@ -177,6 +180,13 @@
     </section>
 
     <section title="Timing Associated with RFC5011 Processing">
+	    <t>These sections define a high-level overview of <xref
+	    target="RFC5011" /> processing.  These steps are not
+	    sufficient for proper RFC5011 implementation, but provide
+	    enough background for the reader to follow the discussion
+	    in this document.  Readers need to fully understand <xref
+	    target="RFC5011" /> as well to fully comprehend the
+	    importance of this document.
       <section title="Timing Associated with Publication">
         <t>RFC5011's process of safely publishing a new key and then making
         use of that key falls into a number of high-level steps to be
@@ -188,7 +198,7 @@
 
             <t>Wait a period of time.</t>
 
-            <t>Begin using only recently published DNSKEYs to sign the
+            <t>Begin to exclusively use recently published DNSKEYs to sign the
             appropriate resource records.</t>
           </list></t>
 
@@ -196,9 +206,9 @@
         interpretations of RFC5011 have erroneously determined that the wait
         time is equal to RFC5011's "hold down time".</t>
 
-        <t><xref target="attack" /> describes an attack based on this (common) erroneous
-        belief, which results in a denial of service attack against the zone
-        if that value is used.</t>
+        <t><xref target="attack" /> describes an attack based on this
+        (common) erroneous belief, which results in a denial of
+        service attack against the zone if that value is used.</t>
       </section>
 
       <section title="Timing Associated with Revocation">
@@ -268,18 +278,19 @@
           </list></t>
 
         <section title="Attack Timing Breakdown" anchor="timing">
-          <t>The following series of steps depicts the timeline in which an
-          attack occurs that foils the adoption of a new DNSKEY by a Trust
-          Anchor Publisher that starts signing with the new DNSKEY too quickly. <list
+          <t>The following series of steps depicts the timeline in
+          which an attack occurs that foils the adoption of a new
+          DNSKEY by a Trust Anchor Publisher that starts signing and
+          publishing with the new DNSKEY too quickly. <list
               style="hanging">
               <t hangText="T-1">The last RRSIGs are published by the
-              Zone Signer that signs only K_old key using the K_old
-              key itself.  [It may also be signing ZSKs as well, but
-              they are not relevant to this event so we will not talk
-              further about them; we are only talking about RRSIGs
-              that cover the DNSKEYs.]  The Attacker queries for,
-              retrieves and caches this DNSKEY set and corresponding
-              RRSIG signatures.</t>
+              Zone Signer that signs only the K_old key using the
+              K_old key itself.  [It may also be signing ZSKs as well,
+              but they are not relevant to this event so we will not
+              talk further about them; we are only considering the
+              RRSIGs that cover the DNSKEYs in this document.]  The
+              Attacker queries for, retrieves and caches this DNSKEY
+              set and corresponding RRSIG signatures.</t>
 
               <t hangText="T-0">The Zone Signer adds K_new to their
               zone and signs the zone's key set with K_old. The
@@ -324,11 +335,13 @@
               <t hangText="T+35">The Zone Signer (mistakenly) believes that
               all validators following the Active Refresh schedule (Section
               2.3 of RFC5011) should have accepted K_new as a the new trust
-              anchor (since the hold down time of 30 days + 1/2 the signature
-              validity period would have passed). However, the hold-down timer
-              of our attacked RFC5011 Validator is only at 25 days; The replay
-              attack at T+5 means its new hold-time timer actually started at
-              T+10, and thus at this time it's real hold-down timer is at T+35
+              anchor (since the hold down time (30 days) + the querity
+              interval [which is just 1/2 the signature validity
+              period in this example] would have passed). However, the
+              hold-down timer of our attacked RFC5011 Validator is
+              only at 25 days; The replay attack at T+5 means its new
+              hold-time timer actually started at T+10, and thus at
+              this time it's real hold-down timer is at T+35
               - T+10 = 25 days, which is less than the RFC5011 required 30
               days and the RFC5011 won't consider it a valid
               trust anchor addition yet.</t>
@@ -353,9 +366,10 @@
     </section>
 
     <section anchor="minimum" title="Minimum RFC5011 Timing Requirements">
-      <t>Given the attack description in <xref target="attack"/>, the correct
-      minimum length of time required for the Zone Signer to wait before using
-      K_new is:</t>
+      <t>Given the attack description in <xref target="attack"/>, the
+      correct minimum length of time required for the Zone Signer to
+      wait after publishing K_new but before exclusively using it or
+      newer keys is:</t>
       <t> <figure>
           <artwork><![CDATA[
   waitTime = addHoldDownTime
