@@ -1,0 +1,200 @@
+* Notes / Edits from Mike StJohn on <2017-07-06 Thu>
+*** TODO Use "exclusively" rather than "only" where you can - "only" has
+    some issues with misunderstanding.  E.g. in the abstract you have
+    "only recently" which can be interpreted applying to "recently" rather
+    than meaning "exclusively" with " recently added DNSKEYs"
+    
+    
+    Instead in the abstract:  "... before exclusively signing with
+    recently added DNSKEYs"
+
+    + Result:
+
+*** TODO In the introduction  - "validators can update" vs "validators can
+    extend".
+
+    + Result:
+
+*** TODO In the introduction - same issue with "only recently"
+
+    + Result:
+
+*** TODO In the introduction - "ceasing publication of a revoked key" vs
+    "removing a key from a zone"
+
+    + Result:
+
+*** TODO Section 1.1 - What is the definition of "rolled"?   Your use of it
+    doesn't match 5011s and it's not defined either here or in 4033 or .
+    Also "before signing a zone" - I don't think this is exactly what you
+    asked them and the summary is probably inaccurate.
+
+    + Result:
+
+*** TODO Section 2 "which apply to" vs "as required from".
+
+    + Result:
+
+*** TODO Section 2 "Note that it does not..." - which "it" are you talking about?
+
+    + Result:
+
+*** TODO Section 2 "using only recently" - same issue as above.
+
+    + Result:
+
+*** TODO Section 2. New para at "Failure of a DNSKEY..."
+
+    + Result:
+
+*** TODO Section 2. "... leaving that key in their trust anchor storage
+    beyond the key's expected lifetime." vs "... leaving a key in their
+    trust anchor storage beyond their expected lifetime" -"their" applies
+    to two different things
+    
+    + Result:
+
+*** TODO Section 3: Attacker.  "An entity intent..." vs "An attacker
+    intent..." - self referencing definition problem
+    
+    + Result:
+
+*** TODO Section 4.1:  This doesn't actually describe what's in 5011 -
+    specifically bullet 3 was modified to clarify your concerns, but isn't
+    what was in 5011.  You need to have both here.
+    
+    + Result:
+
+*** TODO Section 4.1, bullet 3:  Same problem with "only".  Instead "Begin
+    to exclusively use recently published DNSKEYs..."
+    
+    + Result:
+
+*** TODO Section 4.2 last para:  This is only an attack if the private key
+    is compromised.  In which case, with only a steady state of a single
+    key, you've got lots of other problems.  Basically, in your one in one
+    out with a steady state of one model, once the current private key is
+    compromised you have no ability to fix the problem.    But getting the
+    numbers for figuring out when this change becomes "sticky" correct is
+    useful.
+    
+    + Result:
+
+*** TODO Section 6 - general comment.   You're doing interval calculations
+    and you want to do date/time wall clock calculations instead.   While
+    the 5011 values are based on intervals from the RRs get to the
+    validator, the publisher has to be looking at absolute times first
+    (e.g. signature inception and expiration, original TTL) and then
+    deltas from those. [Note, this is NOT a new comment - I've made it
+    previously and strongly]
+    
+    + Result:
+
+*** TODO Section 5.1.1 - You're missing a *very* important point here -
+    that DNSKEY RRSets may be signed ahead of their use.  You need to
+    assume that once signed, they are available to be published - even by
+    an attacker.  So wherever you have "signature lifetime" you want
+    something like "latest signature expiration of any DNSKEY RRSet not
+    containing the new key" or at least you want to calculate the
+    date/time value based on that.
+    
+    + Result:
+
+*** TODO Section 5.1.1 doesn't actually apply if you use the 5011 rollover
+    approach (section 6.3).   E.g. K_old (and any RRSets it signed) will
+    be revoked the first time K_new is seen and K_standby is the signing
+    key.  At this point this reduces to a normal denial of service attack
+    (where you prevent new data from being retrieved by the resolver).
+    You'd need a different section to do that analysis. [And thinking
+    about it, why is there any practical difference between this attack
+    and a normal denial of service attack in the first place?]
+    
+    + Result:
+
+*** TODO Section 5.1.1, T+35:  "since the hold down time of 30 days + 1/2
+    the signature validity... " - Two items:  Wordsmithing:  The hold down
+    time is just the 30 days, not the plus 1/2...  which I *think* given
+    the reference to 2.3 is actually the queryInterval. clarify please.
+    And queryInterval is not actually 1/2 the signature validity - its the
+    MIN (15 days, 10 days (sig life)/2 and 1 day(orig ttl)/2) or  1/2 a
+    day.
+    
+    + Result:
+
+*** TODO Section 6 - the formulas are wrong.  I also  don't understand
+    where you got MAX(originalTTL/2,15 days) - there's no support for this
+    in the text.
+    
+    The final formula should be:
+    
+    EarliestDateWhereAttackFails::=  latest SignatureExpiration of any
+    DNSKEY RRSet not containing the new key
+    
+    waitExpirationDate =  EarliestDateWhereAttackFails + 2*queryInterval
+    (from RFC5011 section 2.3) + holdDownTime + slop (let's call this
+    twice the query interval or some other number - its really there just
+    to deal with an attacker preventing the last RR_New from being
+    delivered)
+    
+    
+    In the given example, assuming a 5/1/2017 00:00UTC inception date for
+    the RR_Old, an 5/1/2017/00:01UTC inception date for the RR_new, a
+    consistent 10 day signature validity and a 1day original TTL.
+    
+    EarliestDateWhereAttackFails == 5/11/2017 00:01UTC
+    
+    queryInterval = 1/2 day
+    
+    waitExpirationDate = EarliestDateWhereAttackFails + 30 + 2 or
+    6/12/2017 00:01UTC - 42 days after the last old RRSet was signed and
+    32 days after the last possible expiration date of an RRSet without
+    the new key.
+    
+    
+    So assume you sign both the new and old RRSigs with one seconds
+    difference with identical parameters:
+    
+    At T=0 a publisher sends RR_new
+    
+    At query interval, and until EarliestDateWhereAttackFails and attacker
+    somehow manages to intercept RR_new and substitute RR_Old -
+    alternately, the attacker can let RR_new through until the next step -
+    probably the more reasonable approach.
+    
+    At T=EarliestDateWhereAttackFails-1second attacker intercepts RR_new
+    and sends its last valid RR_old
+    
+    At T=EarliestDate+queryInterval resolver receives another RR_new and
+    starts the hold down
+    
+    From T=EarliestDate+queryInterval until
+    T=EarliestDate+queryInterval+holdDownTime every queryInterval the
+    resolver gets another copy of RR_new
+    
+    At T=EarliestDate+queryInterval+holdDownTime+queryInterval resolver
+    gets the final copy of RR_New it needs to trigger the installation of
+    the new trust anchor
+    
+    An attacker can prevent or delay the installation of the trust anchor
+    by preventing delivery of RR_New (or subsequent RR with the new key),
+    but that's sort of the definition of a Denial of Service attack and
+    really no worse than keeping say "A" records from the resolver.
+    
+    In any event, the point needs to be made that this attack - while real
+    -
+    is a "retail" attack that would be difficult to prosecute by a single
+    attacker across a broad range of end-entities.  This goes to the
+    general model that no publisher of DNS data knows each and every
+    consumer of that data, nor can wait its publication on every consumer
+    getting published data.  The data protocol for DNS is unidirectional
+    and the update protocol in 5011 was designed with that in mind.
+    
+    + Result:
+
+*** TODO The value in 6 regardless of what it is is the wrong value for
+    revocation.   revocationPublicationWaitTime is basically
+    EarliestDateAttackFails + queryInterval + slop.   Revocations take
+    place immediately. You can delay them only as long as you have old
+    valid signed RRSets.
+
+#+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r)
