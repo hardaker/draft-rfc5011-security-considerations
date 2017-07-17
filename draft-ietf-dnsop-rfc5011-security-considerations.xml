@@ -173,6 +173,14 @@
           Signer's new DNSKEY as a new trust anchor or to prevent the
           RFC5011 Validator from removing an old DNSKEY from its list
           of trust anchors.</t>
+
+          <t hangText="SigExpirationTimer">The amount of time
+          remaining before a RRSIG's Signature Expiration time is
+          reached.  This will fundamentally be the RRSIG's Signature
+          Expiration time minus the RRSIG's Signature Inception time
+          when the signature is created, and will decrease over time
+          until its zero-point is reached.</t> 
+
       </list></t>
 
       <t>Also see Section 2 of <xref target="RFC4033" /> and <xref
@@ -186,7 +194,7 @@
 	    enough background for the reader to follow the discussion
 	    in this document.  Readers need to fully understand <xref
 	    target="RFC5011" /> as well to fully comprehend the
-	    importance of this document.
+	    importance of this document.</t>
       <section title="Timing Associated with Publication">
         <t>RFC5011's process of safely publishing a new key and then making
         use of that key falls into a number of high-level steps to be
@@ -251,7 +259,7 @@
         within this section: <list style="hanging">
             <t hangText="TTL (all records)">1 day</t>
 
-            <t hangText="DNSKEY RRSIG Signature Validity">10 days</t>
+            <t hangText="SigExpirationTimer">10 days</t>
 
             <t hangText="Zone resigned every">1 day</t>
           </list></t>
@@ -366,19 +374,21 @@
     </section>
 
     <section anchor="minimum" title="Minimum RFC5011 Timing Requirements">
+
+      <section title="Timing Requirements For Adding a New KSK">
       <t>Given the attack description in <xref target="attack"/>, the
       correct minimum length of time required for the Zone Signer to
       wait after publishing K_new but before exclusively using it or
       newer keys is:</t>
       <t> <figure>
           <artwork><![CDATA[
-  waitTime = addHoldDownTime
-             + (DNSKEY RRSIG Signature Validity)
-             + MAX(MIN((DNSKEY RRSIG Signature Validity) / 2,
-                       MAX(original TTL of K_old DNSKEY RRSet) / 2,
-                       15 days),
-                   1 hour)
-             + 2 * MAX(TTL of all records)
+  addWaitTime = addHoldDownTime
+                + SigExpirationTimer
+                + MAX(MIN((SigExpirationTimer) / 2,
+                          MAX(original TTL of K_old DNSKEY RRSet) / 2,
+                          15 days),
+                      1 hour)
+                + 2 * MAX(TTL of all records)
                                 
               ]]></artwork>
         </figure></t>
@@ -442,12 +452,46 @@
       <t>This hold-down time of 47 days is 12 days longer than the
       (frequently perceived) 35 days in the example at T+35 above.</t>
 
+      </section>
+      <section title="Timing Requirements For Revoking an Old KSK">
       <t>It is important to note that this value affects not just the
       publication of new DNSKEYs intended to be used as trust anchors,
       but also the length of time required to publish a DNSKEY with
       the revoke bit set.  Both of these publication timing
       requirements are affected by the attacks described in this
-      document.</t>
+      document, but with revocation the key is revoked immediately and
+      the addHoldDown timer does not apply.  Thus the minimum amount
+      of time that a Trust Anchor Publisher must wait before removing
+      a revoked key from publication is: </t>
+      <t> <figure>
+          <artwork><![CDATA[
+  remWaitTime = SigExpirationTimer
+                + MAX(MIN((SigExpirationTimer) / 2,
+                          MAX(original TTL of K_old DNSKEY RRSet) / 2,
+                          15 days),
+                      1 hour)
+                + 2 * MAX(TTL of all records)
+                                
+              ]]></artwork>
+        </figure></t>
+
+      <t>For the parameters listed in <xref target="examplenumbers"/>, our
+      example: <figure>
+          <artwork><![CDATA[
+  waitTime = 10
+             + 10 / 2 
+             + 2 * (1)        (days)
+
+  waitTime = 17               (days)
+                                ]]></artwork>
+        </figure></t>
+
+      <t>Note that for the values in this example produce a length
+      shorter than the recommended 30 days in RFC5011's section 6.6,
+      step 3.  Other values of SigExpirationTimer and the original TTL
+      of the K_old DNSKEY RRSet, however, can produce values longer
+      than 30 days.</t>
+      </section>
     </section>
 
     <section title="IANA Considerations">
@@ -508,7 +552,7 @@
       <figure>
           <artwork><![CDATA[
       addHoldDownTime:                      30 days
-      Old DNSKEY RRSIG Signature Validity:  21 days
+      Old DNSKEY SigExpirationTimer:        21 days
       Old DNSKEY TTL:                        2 days
                 ]]></artwork>
         </figure></t>
@@ -518,7 +562,7 @@
           <artwork><![CDATA[
   waitTime = addHoldDownTime
              + (DNSKEY RRSIG Signature Validity)
-             + MAX(MIN((DNSKEY RRSIG Signature Validity) / 2,
+             + MAX(MIN((DNSKEY's SigExpirationTimer) / 2,
                        MAX(original TTL of K_old DNSKEY RRSet) / 2,
                        15 days),
                    1 hour)
@@ -532,11 +576,11 @@
                    1 hour)
              + 2 * MAX(2)
 
-  waitTime = 30 + 21 + MAX(MIN(11.5, MAX( 1, 15)), 1 hour) + 4
+  waitTime = 30 + 21 + MAX(MIN(11.5, 1, 15)), 1 hour) + 4
 
-  waitTime = 30 + 21 + 11.5 + 4
+  waitTime = 30 + 21 + 1 + 4
 
-  waitTime = 66.5 days 
+  waitTime = 56 days 
                 ]]></artwork>
         </figure></t>
 
@@ -548,7 +592,6 @@
       rollover plans are sufficiently secure from the attack discussed in this
       memo.</t>
     </section>
-
     <section title="Changes / Author Notes.">
       <t>From Individual-00 to DNSOP-00:<list style="symbols">
           <t>Filename change.</t>
@@ -595,7 +638,10 @@
       <t>From -04 to -05:<list>
           <t>Clarifications about signing using only new keys, vs old
           ones too</t>
+      </list></t>
 
+      <t>From -05 to -06:<list>
+          <t>Many clarifications based on comments from MSJ.</t>
       </list></t>
 
      
