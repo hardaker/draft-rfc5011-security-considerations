@@ -95,7 +95,7 @@
       attack against the state of the validator, just not of the
       severity you allude to above.
 
-*** TODO Section 6 - general comment.   You're doing interval calculations
+*** REJECTED Section 6 - general comment.   You're doing interval calculations
     and you want to do date/time wall clock calculations instead.   While
     the 5011 values are based on intervals from the RRs get to the
     validator, the publisher has to be looking at absolute times first
@@ -113,7 +113,10 @@
     + That being said, I changed the intro text a bit to be a bit more
       clear about the fact it starts from the publication time.
 
-*** TODO Section 5.1.1 - You're missing a *very* important point here -
+      + Based on the conversation in Prague, I'll leave it as is but
+        try to clarify a bit about the issue.
+
+*** FIXED Section 5.1.1 - You're missing a *very* important point here -
     that DNSKEY RRSets may be signed ahead of their use.  You need to
     assume that once signed, they are available to be published - even by
     an attacker.  So wherever you have "signature lifetime" you want
@@ -134,7 +137,7 @@
       3. It doesn't benefit an attacker to publish the signatures
          ahead of time. So you're right that anyone can publish new
          signatures, it really doesn't affect the timing required by
-         the publisher to wait.
+         the publisher to wait, which is the point of this draft.
       4. The important take away I take from your text is that
          any delay between signing and publication will affect the
          length of time to wait, and I'm sure this is what you mean by
@@ -168,7 +171,7 @@
       stops sending packets; this is long lived until the
       configuration is manually fixed).
 
-*** TODO Section 5.1.1, T+35:  "since the hold down time of 30 days + 1/2
+*** FIXED Section 5.1.1, T+35:  "since the hold down time of 30 days + 1/2
     the signature validity... " - Two items:  Wordsmithing:  The hold down
     time is just the 30 days, not the plus 1/2...  which I *think* given
     the reference to 2.3 is actually the queryInterval. clarify please.
@@ -180,7 +183,7 @@
       time includes the math with the + and onward, where the holddown
       time was only the 30 minutes.  I'll reword and though I was
       trying to avoid the much more complex math in the example,
-      you're correct that it's 1/2 the queryInterval which bhas more
+      you're correct that it's 1/2 the queryInterval which has more
       terms to calculate it exactly.
 
 *** NOTHINGTODO Section 6 - the formulas are wrong.  I also  don't understand
@@ -244,12 +247,13 @@
       think the text is pretty clear that a replay attack is already
       necessary in the attack model.
 
-*** TODO The value in 6 regardless of what it is is the wrong value for
+*** FIXED The value in 6 regardless of what it is is the wrong value for
     revocation.   revocationPublicationWaitTime is basically
     EarliestDateAttackFails + queryInterval + slop.   Revocations take
     place immediately. You can delay them only as long as you have old
     valid signed RRSets.
 
-    + 
+    + Result: wording changed to addWaitTime and remWaitTime, and math
+      adjusted to drop the 30 day part of the timer.  Thanks.
 
 #+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r) NOTHINGTODO(n)
