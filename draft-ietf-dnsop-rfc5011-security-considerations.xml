@@ -547,20 +547,19 @@
       Publisher. However, this companion document has yet to be
       published. The authors of this document hope that it will at
       some point in the future, as RFC5011 timing can be tricky as we
-      have shown and we do not suggest "good operational practice"
-      that might be associated with a BCP on the subject. This
-      document is intended only to fill a single operational void that
-      results in security ramifications (specifically a denial of
-      service attack against an RFC5011 Validator). This document does
-      not attempt to document any other missing operational guidance
-      for zone publishers.</t>
+      have shown, and a BCP is clearly warranted.  This document is
+      intended only to fill a single operational void that results in
+      security ramifications. This document does not attempt to
+      document any other missing operational guidance for zone
+      publishers.</t>
     </section>
 
     <section anchor="security" title="Security Considerations">
       <t>This document, is solely about the security considerations with
-      respect to the Trust Anchor Publisher of RFC5011 trust anchors / keys.
+      respect to the Trust Anchor Publisher of RFC5011 trust anchors / DNSKEYs.
       Thus the entire document is a discussion of Security
-      Considerations when rolling DNSKEYs using the RFC5011 process.</t>
+      Considerations when adding or removing DNSKEYs from trust anchor
+      storage using the RFC5011 process.</t>
     </section>
 
     <section title="Acknowledgements">
@@ -602,14 +601,6 @@
       <t>Thus, sticking this information into the equation in Section <xref
       target="minimum"/> yields (in days): <figure>
           <artwork><![CDATA[
-  waitTime = addHoldDownTime
-             + (DNSKEY RRSIG Signature Validity)
-             + MAX(MIN((DNSKEY's SigExpirationTime) / 2,
-                       MAX(original TTL of K_old DNSKEY RRSet) / 2,
-                       15 days),
-                   1 hour)
-             + 2 * MAX(TTL of all records)
-
   waitTime = 30
              + (21)
              + MAX(MIN((21) / 2,
@@ -626,12 +617,12 @@
                 ]]></artwork>
         </figure></t>
 
-      <t>Thus, ICANN should wait 66.5 days before switching to the newly
-      published KSK and before removing the old revoked key once it is
-      published as revoked.
-      ICANN's current plans are to wait 70 days before using the new KEY and
-      69 days before removing the old, revoked key. Thus, their current
-      rollover plans are sufficiently secure from the attack discussed in this
+      <t>Thus, ICANN should wait 56 days before switching to the newly
+      published KSK (and 26 days before removing the old revoked key
+      once it is published as revoked).  ICANN's current plans are to
+      wait 70 days before using the new KEY and 69 days before
+      removing the old, revoked key. Thus, their current rollover
+      plans are sufficiently secure from the attack discussed in this
       memo.</t>
     </section>
     <section title="Changes / Author Notes.">
@@ -686,19 +677,10 @@
           <t>Many clarifications based on comments from MSJ.</t>
       </list></t>
 
-     
+      <t>From -06 to -07:<list>
+      <t>Final Review from Wes</t>
+      </list></t>
 
-      <t>Pre-DNSOP document: From hardaker-04 to ietf-00:<list>
-          <t>Just rebranding.</t>
-        </list></t>
-
-        <t>From ietf-00 to ietf-01:
-        <list>
-	        <t>Added discussion surrounding revocation everywhere</t>
-	        <t>Fixed the text about the formula
-	        </t>
-	        <t>Another complete re-read for word-smithing</t> 
-        </list></t>
     </section>
   </back>
 </rfc>
