@@ -87,8 +87,7 @@
   <middle>
     <section title="Introduction">
       <t><xref target="RFC5011"/> defines a mechanism by which DNSSEC
-      validators
- can update their list of trust anchors when they've
+      validators can update their list of trust anchors when they've
       seen a new key published in a zone. However, RFC5011
       [intentionally] provides no guidance to the publishers of
       DNSKEYs about how long they must wait before switching to
@@ -197,7 +196,9 @@
       <section title="Timing Associated with Publication">
         <t>RFC5011's process of safely publishing a new key and then making
         use of that key falls into a number of high-level steps to be
-        performed by the Trust Anchor Publisher:</t>
+        performed by the Trust Anchor Publisher.  This document
+        discusses the following scenario, which is one of many
+        possible combinations of operations defined in Section 6 of RFC5011:</t>
 
         <t><list style="numbers">
             <t>Publish a new DNSKEY in the zone, but continue to sign
@@ -211,11 +212,10 @@
 
         <t>This document discusses step 2 of the above process. Some
         interpretations of RFC5011 have erroneously determined that the wait
-        time is equal to RFC5011's "hold down time".</t>
-
-        <t><xref target="attack" /> describes an attack based on this
-        (common) erroneous belief, which results in a denial of
-        service attack against the zone if that value is used.</t>
+        time is equal to RFC5011's "hold down time".
+        <xref target="attack" /> describes an attack based on this
+        (common) erroneous belief, which can result in a denial of
+        service attack against the zone.</t>
       </section>
 
       <section title="Timing Associated with Revocation">
@@ -235,23 +235,23 @@
 
         <t>This document discusses step 3 of the above process. Some
         interpretations of RFC5011 have erroneously determined that the wait
-        time is equal to RFC5011's "hold down time".</t>
-
-        <t>This document describes an attack based on this (common) erroneous
-        belief, which results in a revoked DNSKEY potentially staying in a
+        time is equal to RFC5011's "hold down time".
+        This document describes an attack based on this (common) erroneous
+        belief, which results in a revoked DNSKEY potentially
+        remaining as a trust anchor in a
         RFC5011 validating resolver long past its expected usage.</t>
       </section>
     </section>
 
     <section anchor="attack" title="Denial of Service Attack Considerations">
       <t>If an attacker is able to provide a RFC5011 Validating Resolver with
-      past responses, such as when it is in-path or able to otherwise perform
+      past responses, such as when it is in-path or able to perform
       any number of cache poisoning attacks, the attacker may be able to leave
       compliant RFC5011-Validating Resolvers without an appropriate DNSKEY trust
       anchor. This scenario will remain until an administrator manually fixes
       the situation.</t>
 
-      <t>The following timeline illustrates this situation.</t>
+      <t>The time-line below illustrates this situation.</t>
 
       <section anchor="examplenumbers" title="Enumerated Attack Example">
         <t>The following example settings are used in the example scenario
@@ -276,61 +276,65 @@
         key, and T+15 is the 15th day after the key was introduced
         into the fictitious zone being discussed.</t>
 
-        <t>In this dialog, we consider two keys being published: <list
+        <t>In this dialog, we consider two keys within the example zone: <list
             style="hanging">
             <t hangText="K_old">An older KSK and Trust Anchor being replaced.</t>
 
             <t hangText="K_new">A new KSK being transitioned into active
-            use and becoming a Trust Anchor via the RFC5011 process.</t>
+            use and expected to become a Trust Anchor via the RFC5011 process.</t>
           </list></t>
 
         <section title="Attack Timing Breakdown" anchor="timing">
-          <t>The following series of steps depicts the timeline in
-          which an attack occurs that foils the adoption of a new
-          DNSKEY by a Trust Anchor Publisher that starts signing and
+          <t>The steps shows an attack that foils the adoption of a new
+          DNSKEY by a 5011 Validating Resolver when the
+          Trust Anchor Publisher that starts signing and
           publishing with the new DNSKEY too quickly. <list
               style="hanging">
-              <t hangText="T-1">The last RRSIGs are published by the
-              Zone Signer that signs only the K_old key using the
-              K_old key itself.  [It may also be signing ZSKs as well,
-              but they are not relevant to this event so we will not
-              talk further about them; we are only considering the
-              RRSIGs that cover the DNSKEYs in this document.]  The
-              Attacker queries for, retrieves and caches this DNSKEY
-              set and corresponding RRSIG signatures.</t>
+              <t hangText="T-1">The K_old based RRSIGs are being
+              published by the Zone Signer.  [It may also be signing
+              ZSKs as well, but they are not relevant to this event so
+              we will not talk further about them; we are only
+              considering the RRSIGs that cover the DNSKEYs in this
+              document.]  The Attacker queries for, retrieves and
+              caches this DNSKEY set and corresponding RRSIG
+              signatures.</t>
 
-              <t hangText="T-0">The Zone Signer adds K_new to their
+              <t hangText="T+0">The Zone Signer adds K_new to their
               zone and signs the zone's key set with K_old. The
               RFC5011 Validator (later to be under attack) retrieves
               this new key set and corresponding RRSIGs and notices
               the publication of K_new. The RFC5011 Validator starts
-              the (30-day) hold-down timer for K_new.</t>
+              the (30-day) hold-down timer for K_new.  [Note that in a
+              more real-world scenario there will likely be a further
+              delay between the point where the Zone Signer publishes
+              a new RRSIG and the RFC5011 Validator notices its
+              publication; though not shown in this example, this
+              delay is accounted for in the final solution below]</t>
 
               <t hangText="T+5">The RFC5011 Validator queries for the
               zone's keyset per the RFC5011 Active Refresh schedule,
               discussed in Section 2.3 of RFC5011. Instead of
               receiving the intended published keyset, the Attacker
               successfully replays the keyset and associated
-              signatures that they recorded at T-1. Because the
-              signature lifetime is 10 days (in this example), the
-              replayed signature and keyset is accepted as valid
-              (being only 6 days old) and the RFC5011 Validator
-              cancels the hold-down timer for K_new, per the RFC5011
-              algorithm.</t>
+              signatures recorded at T-1. Because the signature
+              lifetime is 10 days (in this example), the replayed
+              signature and keyset is accepted as valid (being only 6
+              days old, which is less than SigExpirationTime) and the
+              RFC5011 Validator cancels the hold-down timer for K_new,
+              per the RFC5011 algorithm.</t>
 
               <t hangText="T+10">The RFC5011 Validator queries for the
-              zone's keyset and discovers the new kset which includes
-              K_new (again), signed by K_old.  Note: the attacker is
-              unable to replay the records cached at T-1, because they
-              have now expired. The RFC5011 Validator starts (anew)
-              the hold-timer for K_new.</t>
+              zone's keyset and discovers a signed keyset that
+              includes K_new (again), and is signed by K_old.  Note:
+              the attacker is unable to replay the records cached at
+              T-1, because they have now expired. Thus at T+10, the
+              RFC5011 Validator starts (anew) the hold-timer for
+              K_new.</t>
 
-              <t hangText="T+15,T+20, and T+25">The RFC5011 Validator
+              <t hangText="T+11 through T-29">The RFC5011 Validator
               continues checking the zone's key set at the prescribed
-              regular intervals.  The RFC5011 Validator's hold-down
-              timer keep running without being reset assuming all of
-              the validations succeed (again: the attacker can no
-              longer replay traffic to their benefit).</t>
+              regular intervals.  During this period, the attacker can
+              no longer replay traffic to their benefit.</t>
 
               <t hangText="T+30">The Zone Signer knows that this is the first
               time at which some validators might accept K_new as a new trust
@@ -342,31 +346,26 @@
               <t hangText="T+35">The Zone Signer (mistakenly) believes that
               all validators following the Active Refresh schedule (Section
               2.3 of RFC5011) should have accepted K_new as a the new trust
-              anchor (since the hold down time (30 days) + the querity
+              anchor (since the hold down time (30 days) + the query
               interval [which is just 1/2 the signature validity
               period in this example] would have passed). However, the
               hold-down timer of our attacked RFC5011 Validator is
-              only at 25 days; The replay attack at T+5 means its new
-              hold-time timer actually started at T+10, and thus at
-              this time it's real hold-down timer is at T+35
-              - T+10 = 25 days, which is less than the RFC5011 required 30
-              days and the RFC5011 won't consider it a valid
-              trust anchor addition yet.</t>
+              only at 25 days (T+35 minus T+10); thus the RFC5011
+              won't consider it a valid trust anchor addition yet.</t>
 
               <t hangText="T+36">The Zone Signer, believing K_new is
               safe to use, switches their active signing KSK to K_new
-              and publishes a new RRSIG, signed with K_new, and
-              covering the DNSKEY set. Non-attacked RFC5011
-              validators, with a hold-down timer of at least 30 days,
-              would have accepted K_new into their set of trusted
-              keys. But, because our attacked RFC5011 Validator has a
-              hold-down timer for K_new at only 26 days, it will fail
-              to accept K_new as a trust anchor.  Since K_old is no
-              longer being used, all the DNSKEY records from the zone
-              signed by K_new will be treated as invalid.
-              Subsequently, all keys in the key set are now unusable,
-              invalidating all of the records in the zone of any type
-              and name.</t>
+              and publishes a new RRSIG, signed with K_new, covering
+              the DNSKEY set. Non-attacked RFC5011 validators, with a
+              hold-down timer of at least 30 days, would have accepted
+              K_new into their set of trusted keys. But, because our
+              attacked RFC5011 Validator now has a hold-down timer for
+              K_new of only 26 days, it failed to accept K_new as a
+              trust anchor.  Since K_old is no longer being used to
+              sign the zone's DNSKEYs, all the DNSKEY records from
+              the zone will be treated as invalid.  Subsequently, all
+              of the records in the DNS tree below the zone's apex
+              will be deemed invalid by DNSSEC.</t>
             </list></t>
         </section>
       </section>
@@ -377,22 +376,21 @@
       <section title="Timing Requirements For Adding a New KSK">
       <t>Given the attack description in <xref target="attack"/>, the
       correct minimum length of time required for the Zone Signer to
-      wait after publishing K_new but before exclusively using it or
+      wait after publishing K_new but before exclusively using it and
       newer keys is:</t>
+
       <t> <figure>
           <artwork><![CDATA[
-  addWaitTime = addHoldDownTime
-                + SigExpirationTime
-                + MAX(MIN((SigExpirationTime) / 2,
-                          MAX(original TTL of K_old DNSKEY RRSet) / 2,
-                          15 days),
-                      1 hour)
-                + 2 * MAX(TTL of all records)
-                                
+   addWaitTime = addHoldDownTime
+                 + SigExpirationTime
+                 + activeRefresh
+                 + 2 * MAX(TTL of all records)
               ]]></artwork>
       </figure></t>
 
-      <t>The RFC5011 "Active Refresh" requirements state that:</t>
+      <t>
+	Where activeRefresh time is defined by RFC5011 by:
+      </t>
       <t><figure>
           <artwork><![CDATA[
   A resolver that has been configured for an automatic update
@@ -405,14 +403,48 @@
               ]]></artwork>
         </figure></t>
 
+      <t> This translates to the following equation:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+ activeRefresh = MAX(1 hour,
+                     MIN(SigExpirationTime / 2,
+                         MAX(TTL of K_old DNSKEY RRSet) / 2,
+                         15 days)
+                     )
+              ]]></artwork>
+      </figure></t>
+
+      <t>
+	      Which thus makes the full expanded equation to be:
+      </t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+   addWaitTime = addHoldDownTime
+                 + SigExpirationTime
+                 + MAX(1 hour,
+                       MIN(SigExpirationTime / 2,
+                           MAX(TTL of K_old DNSKEY RRSet) / 2,
+                           15 days)
+                       )
+                 + 2 * MAX(TTL of all records)
+                                
+              ]]></artwork>
+      </figure></t>
+
       <t>The important timing constraint introduced by this memo
       relates to the last point at which a validating resolver may
-      have received a replayed the original DNSKEY set (K_old) without
-      the new key. It's the next query of the RFC5011 validator that
-      the assured K_new will be seen without a potential replay
-      afterward. Thus, the latest time a RFC5011 validator may begin
-      their hold down timer is an "Active Refresh" period after the
-      last point that an attacker can replay the K_old DNSKEY set.</t>
+      have received a replayed original DNSKEY set, containing K_old
+      and not K_new.  The next query of the RFC5011 validator that
+      K_new will be seen without a potential replay afterward will
+      occur after the publication time plus SigExpirationTime. Thus,
+      the latest time that a RFC5011 Validator may begin their hold
+      down timer is an "Active Refresh" period after the last point
+      that an attacker can replay the K_old DNSKEY set.  The worst
+      case scenario of this attack is when the attacker can replay
+      K_old seconds before the (DNSKEY RRSIG Signature Validity) field
+      of the last K_old only RRSIG. </t>
 
       <t>The "Active Refresh" interval used by a RFC5011 validator is
       determined by the larger of (DNSKEY RRSIG Signature Validity)
@@ -420,15 +452,20 @@
       assumes that (DNSKEY RRSIG Signature Validity) is larger of the
       two, which is operationally more common today.</t>
 
-      <t>Thus, the worst case scenario of this attack is when the
-      attacker can replay K_old just before (DNSKEY RRSIG Signature
-      Validity). If a RFC5011 validator picks up K_old at this this
-      point, it will not have a hold down timer started as it will
-      have been reset by previous replays. It's not until the next
-      "Active Refresh" time that they'll pick up K_new with assurance,
-      and thus start their (final) hold down timer. Thus, this is not at
-      (DNSKEY RRSIG Signature Validity) time past publication but
-      may be significantly longer based on the zone's DNSSEC parameters.</t>
+<!-- this is duplication and badly worded ; first sentence moved above
+     too -->
+<!--
+      <t>The worst case scenario of this attack is when the attacker
+      can replay K_old seconds before the (DNSKEY RRSIG Signature
+      Validity) field of the last K_old only RRSIG. If a RFC5011
+      validator picks up K_old at this this point, it will not have a
+      hold down timer started as it will have been reset by previous
+      replays. It's not until the next "Active Refresh" time that
+      they'll pick up K_new with assurance, and thus start their
+      (final) hold down timer. Thus, this is not at (DNSKEY RRSIG
+      Signature Validity) time past publication but may be
+      significantly longer based on the zone's DNSSEC parameters.</t>
+-->
 
       <t>The extra 2 * MAX(TTL of all records) is the standard added safety
       margin when dealing with DNSSEC due to caching that can take place.
@@ -441,36 +478,36 @@
           <artwork><![CDATA[
   waitTime = 30
              + 10
-             + 10 / 2 
+             + 1 / 2 
              + 2 * (1)        (days)
 
-  waitTime = 47               (days)
+  waitTime = 42.5             (days)
                                 ]]></artwork>
         </figure></t>
 
-      <t>This hold-down time of 47 days is 12 days longer than the
-      (frequently perceived) 35 days in the example at T+35 above.</t>
+      <t>This waitTime of 42.5 days is 12.5 days longer than just
+      the hold down timer.</t>
 
       </section>
       <section title="Timing Requirements For Revoking an Old KSK">
-      <t>It is important to note that this value affects not just the
+      <t>It is important to note that this issue affects not just the
       publication of new DNSKEYs intended to be used as trust anchors,
-      but also the length of time required to publish a DNSKEY with
-      the revoke bit set.  Both of these publication timing
-      requirements are affected by the attacks described in this
-      document, but with revocation the key is revoked immediately and
-      the addHoldDown timer does not apply.  Thus the minimum amount
-      of time that a Trust Anchor Publisher must wait before removing
-      a revoked key from publication is: </t>
+      but also the length of time required to continuously publish a
+      DNSKEY with the revoke bit set.  Both of these publication
+      timing requirements are affected by the attacks described in
+      this document, but with revocation the key is revoked
+      immediately and the addHoldDown timer does not apply.  Thus the
+      minimum amount of time that a Trust Anchor Publisher must wait
+      before removing a revoked key from publication is: </t>
       <t> <figure>
           <artwork><![CDATA[
   remWaitTime = SigExpirationTime
-                + MAX(MIN((SigExpirationTime) / 2,
-                          MAX(original TTL of K_old DNSKEY RRSet) / 2,
+                + MAX(1 hour,
+                      MIN((SigExpirationTime) / 2,
+                          MAX(TTL of K_old DNSKEY RRSet) / 2,
                           15 days),
                       1 hour)
                 + 2 * MAX(TTL of all records)
-                                
               ]]></artwork>
         </figure></t>
 
@@ -478,10 +515,10 @@
       example: <figure>
           <artwork><![CDATA[
   waitTime = 10
-             + 10 / 2 
+             + 1 / 2 
              + 2 * (1)        (days)
 
-  waitTime = 17               (days)
+  waitTime = 12.5             (days)
                                 ]]></artwork>
         </figure></t>
 
@@ -490,6 +527,12 @@
       step 3.  Other values of SigExpirationTime and the original TTL
       of the K_old DNSKEY RRSet, however, can produce values longer
       than 30 days.</t>
+
+      <t>Note that because revocation happens immediately, an attacker
+      has a much harder job tricking a RFC5011 Validator into leaving
+      a trust anchor in place, as the attacker must successfully
+      replay the old data for every query a RFC5011 Validator sends,
+      not just one.</t>
       </section>
     </section>
 
