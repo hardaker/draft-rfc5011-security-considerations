@@ -548,10 +548,10 @@
       published. The authors of this document hope that it will at
       some point in the future, as RFC5011 timing can be tricky as we
       have shown, and a BCP is clearly warranted.  This document is
-      intended only to fill a single operational void that results in
-      security ramifications. This document does not attempt to
-      document any other missing operational guidance for zone
-      publishers.</t>
+      intended only to fill a single operational void which, when left
+      misunderstood, can result in serious security
+      ramifications. This document does not attempt to document any
+      other missing operational guidance for zone publishers.</t>
     </section>
 
     <section anchor="security" title="Security Considerations">
@@ -617,7 +617,7 @@
                 ]]></artwork>
         </figure></t>
 
-      <t>Thus, ICANN should wait 56 days before switching to the newly
+      <t>Thus, ICANN should wait a minimum of 56 days before switching to the newly
       published KSK (and 26 days before removing the old revoked key
       once it is published as revoked).  ICANN's current plans are to
       wait 70 days before using the new KEY and 69 days before
