@@ -351,7 +351,8 @@
               period in this example] would have passed). However, the
               hold-down timer of our attacked RFC5011 Validator is
               only at 25 days (T+35 minus T+10); thus the RFC5011
-              won't consider it a valid trust anchor addition yet.</t>
+              won't consider it a valid trust anchor addition yet, as
+              the required 30 days have not yet elapsed.</t>
 
               <t hangText="T+36">The Zone Signer, believing K_new is
               safe to use, switches their active signing KSK to K_new
@@ -436,15 +437,15 @@
       <t>The important timing constraint introduced by this memo
       relates to the last point at which a validating resolver may
       have received a replayed original DNSKEY set, containing K_old
-      and not K_new.  The next query of the RFC5011 validator that
-      K_new will be seen without a potential replay afterward will
-      occur after the publication time plus SigExpirationTime. Thus,
-      the latest time that a RFC5011 Validator may begin their hold
-      down timer is an "Active Refresh" period after the last point
-      that an attacker can replay the K_old DNSKEY set.  The worst
-      case scenario of this attack is when the attacker can replay
-      K_old seconds before the (DNSKEY RRSIG Signature Validity) field
-      of the last K_old only RRSIG. </t>
+      and not K_new.  The next query of the RFC5011 validator at which
+      K_new will be seen without the potential for a replay attack
+      will occur after the publication time plus
+      SigExpirationTime. Thus, the latest time that a RFC5011
+      Validator may begin their hold down timer is an "Active Refresh"
+      period after the last point that an attacker can replay the
+      K_old DNSKEY set.  The worst case scenario of this attack is if
+      the attacker can replay K_old seconds before the (DNSKEY RRSIG
+      Signature Validity) field of the last K_old only RRSIG. </t>
 
       <t>The "Active Refresh" interval used by a RFC5011 validator is
       determined by the larger of (DNSKEY RRSIG Signature Validity)
