@@ -3,6 +3,7 @@
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 <!ENTITY rfc5011 PUBLIC "" ".//reference.RFC.5011.xml">
 <!ENTITY rfc7719 PUBLIC "" ".//reference.RFC.7719.xml">
+<!ENTITY rfc7583 PUBLIC "" ".//reference.RFC.7583.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
 <rfc category="std"
@@ -475,6 +476,14 @@
       validity, the authors aren't yet convinced it is needed in this
       particular case, but it is prudent to include it for added assurance.</t>
 
+      <t>Note: our notion of waitTime is
+      called "Itrp" in Section 3.3.4.1 of <xref target="RFC7583"/>.
+      The equation for Itrp in RFC7583 is insecure as it does not
+      include the SigExpirationTime listed above.  The Itrp equation
+      in RFC7583 also does not include the 2*TTL safety margin, though
+      that is an operational consideration and not necessarily as
+      critical.</t>
+
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
           <artwork><![CDATA[
@@ -512,6 +521,15 @@
                 + 2 * MAX(TTL of all records)
               ]]></artwork>
         </figure></t>
+
+      <t>Note: our notion of remWaitTime is
+      called "Irev" in Section 3.3.4.2 of <xref target="RFC7583"/>.
+      The equation for Irev in RFC7583 is insecure as it does not
+      include the SigExpirationTime listed above.    The Irev equation
+      in RFC7583 also does not include the 2*TTL safety margin, though
+      that is an operational consideration and not necessarily as
+      critical.</t>
+
 
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
@@ -578,6 +596,7 @@
       <?rfc include='reference.RFC.2119'?>
       <?rfc include='reference.RFC.4033'?>
       <?rfc include='reference.RFC.5011'?>
+      <?rfc include='reference.RFC.7583?>
       <?rfc include='reference.RFC.7719'?>
 
     </references>
