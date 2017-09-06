@@ -478,26 +478,26 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    validity, the authors aren't yet convinced it is needed in this
    particular case, but it is prudent to include it for added assurance.
 
-   Note: our notion of waitTime is called "Itrp" in Section 3.3.4.1 of
-   [RFC7583].  The equation for Itrp in RFC7583 is insecure as it does
-   not include the SigExpirationTime listed above.  The Itrp equation in
-   RFC7583 also does not include the 2*TTL safety margin, though that is
-   an operational consideration and not necessarily as critical.
+   Note: our notion of addWaitTime is called "Itrp" in Section 3.3.4.1
+   of [RFC7583].  The equation for Itrp in RFC7583 is insecure as it
+   does not include the SigExpirationTime listed above.  The Itrp
+   equation in RFC7583 also does not include the 2*TTL safety margin,
+   though that is an operational consideration and not necessarily as
+   critical.
 
 6.1.1.  Example Results
 
    For the parameters listed in Section 5.1, our example:
 
-     waitTime = 30
-                + 10
-                + 1 / 2
-                + 2 * (1)        (days)
+     addWaitTime = 30
+                   + 10
+                   + 1 / 2
+                   + 2 * (1)        (days)
 
-     waitTime = 42.5             (days)
+     addWaitTime = 42.5             (days)
 
-   This waitTime of 42.5 days is 12.5 days longer than just the hold
+   This addWaitTime of 42.5 days is 12.5 days longer than just the hold
    down timer.
-
 
 
 
@@ -536,17 +536,17 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    critical.
 
    Note also that adding retryTime intervals to the remWaitTime may be
-   wise, just as it was for waitTime in Section 6.
+   wise, just as it was for addWaitTime in Section 6.
 
 6.2.1.  Example Results
 
    For the parameters listed in Section 5.1, our example:
 
-     waitTime = 10
-                + 1 / 2
-                + 2 * (1)        (days)
+     remwaitTime = 10
+                   + 1 / 2
+                   + 2 * (1)        (days)
 
-     waitTime = 12.5             (days)
+     remwaitTime = 12.5             (days)
 
    Note that for the values in this example produce a length shorter
    than the recommended 30 days in RFC5011's section 6.6, step 3.  Other
@@ -647,19 +647,19 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
    Thus, sticking this information into the equation in
    Section Section 6 yields (in days):
 
-     waitTime = 30
-                + (21)
-                + MAX(MIN((21) / 2,
-                          MAX(2 / 2,
-                          15 days)),
-                      1 hour)
-                + 2 * MAX(2)
+     addWaitTime = 30
+                   + (21)
+                   + MAX(MIN((21) / 2,
+                             MAX(2 / 2,
+                             15 days)),
+                         1 hour)
+                   + 2 * MAX(2)
 
-     waitTime = 30 + 21 + MAX(MIN(11.5, 1, 15)), 1 hour) + 4
+     addWaitTime = 30 + 21 + MAX(MIN(11.5, 1, 15)), 1 hour) + 4
 
-     waitTime = 30 + 21 + 1 + 4
+     addWaitTime = 30 + 21 + 1 + 4
 
-     waitTime = 56 days
+     addWaitTime = 56 days
 
    Thus, ICANN should wait a minimum of 56 days before switching to the
    newly published KSK (and 26 days before removing the old revoked key

@@ -491,7 +491,7 @@
       validity, the authors aren't yet convinced it is needed in this
       particular case, but it is prudent to include it for added assurance.</t>
 
-      <t>Note: our notion of waitTime is
+      <t>Note: our notion of addWaitTime is
       called "Itrp" in Section 3.3.4.1 of <xref target="RFC7583"/>.
       The equation for Itrp in RFC7583 is insecure as it does not
       include the SigExpirationTime listed above.  The Itrp equation
@@ -503,16 +503,16 @@
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
           <artwork><![CDATA[
-  waitTime = 30
-             + 10
-             + 1 / 2 
-             + 2 * (1)        (days)
+  addWaitTime = 30
+                + 10
+                + 1 / 2 
+                + 2 * (1)        (days)
 
-  waitTime = 42.5             (days)
+  addWaitTime = 42.5             (days)
                                 ]]></artwork>
         </figure></t>
 
-      <t>This waitTime of 42.5 days is 12.5 days longer than just
+      <t>This addWaitTime of 42.5 days is 12.5 days longer than just
       the hold down timer.</t>
       </section>
 
@@ -548,18 +548,18 @@
       critical.</t>
 
       <t>Note also that adding retryTime intervals to the remWaitTime
-      may be wise, just as it was for waitTime in <xref
+      may be wise, just as it was for addWaitTime in <xref
       target="minimum" />.</t>
 
       <section title="Example Results">
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
           <artwork><![CDATA[
-  waitTime = 10
-             + 1 / 2 
-             + 2 * (1)        (days)
-
-  waitTime = 12.5             (days)
+  remwaitTime = 10
+                + 1 / 2 
+                + 2 * (1)        (days)
+     
+  remwaitTime = 12.5             (days)
                                 ]]></artwork>
         </figure></t>
 
@@ -644,19 +644,19 @@
       <t>Thus, sticking this information into the equation in Section <xref
       target="minimum"/> yields (in days): <figure>
           <artwork><![CDATA[
-  waitTime = 30
-             + (21)
-             + MAX(MIN((21) / 2,
-                       MAX(2 / 2,
-                       15 days)),
-                   1 hour)
-             + 2 * MAX(2)
+  addWaitTime = 30
+                + (21)
+                + MAX(MIN((21) / 2,
+                          MAX(2 / 2,
+                          15 days)),
+                      1 hour)
+                + 2 * MAX(2)
 
-  waitTime = 30 + 21 + MAX(MIN(11.5, 1, 15)), 1 hour) + 4
+  addWaitTime = 30 + 21 + MAX(MIN(11.5, 1, 15)), 1 hour) + 4
 
-  waitTime = 30 + 21 + 1 + 4
+  addWaitTime = 30 + 21 + 1 + 4
 
-  waitTime = 56 days 
+  addWaitTime = 56 days 
                 ]]></artwork>
         </figure></t>
 
