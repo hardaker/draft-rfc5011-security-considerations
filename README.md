@@ -6,9 +6,9 @@
 
 dnsop                                                        W. Hardaker
 Internet-Draft                                                   USC/ISI
-Intended status: Standards Track                               W. Kumari
-Expires: December 29, 2017                                        Google
-                                                           June 27, 2017
+Updates: 7583 (if approved)                                    W. Kumari
+Intended status: Standards Track                                  Google
+Expires: December 29, 2017                                 June 27, 2017
 
 
              Security Considerations for RFC5011 Publishers
@@ -85,10 +85,10 @@ Table of Contents
      6.2.  Timing Requirements For Revoking an Old KSK . . . . . . .   9
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    8.  Operational Considerations  . . . . . . . . . . . . . . . . .  10
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
    10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  11
    11. Normative References  . . . . . . . . . . . . . . . . . . . .  11
-   Appendix A.  Real World Example: The 2017 Root KSK Key Roll . . .  11
+   Appendix A.  Real World Example: The 2017 Root KSK Key Roll . . .  12
    Appendix B.  Changes / Author Notes.  . . . . . . . . . . . . . .  12
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
 
@@ -474,6 +474,12 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    validity, the authors aren't yet convinced it is needed in this
    particular case, but it is prudent to include it for added assurance.
 
+   Note: our notion of waitTime is called "Itrp" in Section 3.3.4.1 of
+   [RFC7583].  The equation for Itrp in RFC7583 is insecure as it does
+   not include the SigExpirationTime listed above.  The Itrp equation in
+   RFC7583 also does not include the 2*TTL safety margin, though that is
+   an operational consideration and not necessarily as critical.
+
    For the parameters listed in Section 5.1, our example:
 
      waitTime = 30
@@ -494,12 +500,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    with the revoke bit set.  Both of these publication timing
    requirements are affected by the attacks described in this document,
    but with revocation the key is revoked immediately and the
-   addHoldDown timer does not apply.  Thus the minimum amount of time
-   that a Trust Anchor Publisher must wait before removing a revoked key
-   from publication is:
-
-
-
 
 
 
@@ -508,6 +508,10 @@ Hardaker & Kumari       Expires December 29, 2017               [Page 9]
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
+   addHoldDown timer does not apply.  Thus the minimum amount of time
+   that a Trust Anchor Publisher must wait before removing a revoked key
+   from publication is:
+
      remWaitTime = SigExpirationTime
                    + MAX(1 hour,
                          MIN((SigExpirationTime) / 2,
@@ -515,6 +519,13 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
                              15 days),
                          1 hour)
                    + 2 * MAX(TTL of all records)
+
+   Note: our notion of remWaitTime is called "Irev" in Section 3.3.4.2
+   of [RFC7583].  The equation for Irev in RFC7583 is insecure as it
+   does not include the SigExpirationTime listed above.  The Irev
+   equation in RFC7583 also does not include the 2*TTL safety margin,
+   though that is an operational consideration and not necessarily as
+   critical.
 
    For the parameters listed in Section 5.1, our example:
 
@@ -545,6 +556,14 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    perspective of a zone publisher and Trust Anchor Publisher.  However,
    this companion document has yet to be published.  The authors of this
    document hope that it will at some point in the future, as RFC5011
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 10]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
+
    timing can be tricky as we have shown, and a BCP is clearly
    warranted.  This document is intended only to fill a single
    operational void which, when left misunderstood, can result in
@@ -556,14 +575,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    This document, is solely about the security considerations with
    respect to the Trust Anchor Publisher of RFC5011 trust anchors /
    DNSKEYs.  Thus the entire document is a discussion of Security
-
-
-
-Hardaker & Kumari       Expires December 29, 2017              [Page 10]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
-
    Considerations when adding or removing DNSKEYs from trust anchor
    storage using the RFC5011 process.
 
@@ -578,20 +589,36 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 11.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119, March 1997.
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
+              editor.org/info/rfc2119>.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
-              <http://www.rfc-editor.org/info/rfc4033>.
+              <https://www.rfc-editor.org/info/rfc4033>.
 
    [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
               Trust Anchors", STD 74, RFC 5011, DOI 10.17487/RFC5011,
-              September 2007, <http://www.rfc-editor.org/info/rfc5011>.
+              September 2007, <https://www.rfc-editor.org/info/rfc5011>.
+
+   [RFC7583]  Morris, S., Ihren, J., Dickinson, J., and W. Mekking,
+              "DNSSEC Key Rollover Timing Considerations", RFC 7583,
+              DOI 10.17487/RFC7583, October 2015, <https://www.rfc-
+              editor.org/info/rfc7583>.
 
    [RFC7719]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", RFC 7719, DOI 10.17487/RFC7719, December
-              2015, <http://www.rfc-editor.org/info/rfc7719>.
+              2015, <https://www.rfc-editor.org/info/rfc7719>.
+
+
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 11]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
 
 Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
@@ -606,19 +633,6 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
    Thus, sticking this information into the equation in
    Section Section 6 yields (in days):
-
-
-
-
-
-
-
-
-
-Hardaker & Kumari       Expires December 29, 2017              [Page 11]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
 
      waitTime = 30
                 + (21)
@@ -654,6 +668,14 @@ Appendix B.  Changes / Author Notes.
 
    o  Added real world example.
 
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 12]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
+
    o  Fixed some typoes and missing references.
 
    From Ind-00 to -02:
@@ -667,14 +689,6 @@ Appendix B.  Changes / Author Notes.
 
       Clarified that this is maths ( and math is hard, let's go
       shopping!)
-
-
-
-
-Hardaker & Kumari       Expires December 29, 2017              [Page 12]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
 
       Changed to " <?rfc include='reference....'?> " style references.
 
@@ -707,6 +721,17 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 Authors' Addresses
 
+
+
+
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 13]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
+
    Wes Hardaker
    USC/ISI
    P.O. Box 382
@@ -727,5 +752,36 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari       Expires December 29, 2017              [Page 13]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 14]
 ```
