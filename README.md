@@ -84,6 +84,7 @@ Table of Contents
      6.1.  Timing Requirements For Adding a New KSK  . . . . . . . .   8
        6.1.1.  Example Results . . . . . . . . . . . . . . . . . . .   9
      6.2.  Timing Requirements For Revoking an Old KSK . . . . . . .  10
+       6.2.1.  Example Results . . . . . . . . . . . . . . . . . . .  10
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
    8.  Operational Considerations  . . . . . . . . . . . . . . . . .  11
    9.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
@@ -106,8 +107,7 @@ Table of Contents
    advertising, rolling and revocation process.  This document describes
    the minimum security requirements from a publisher's point of view
    and is intended to compliment the guidance offered in RFC5011 (which
-   is written to provide timing guidance solely to a Validating
-   Resolver's point of view).
+
 
 
 
@@ -115,6 +115,9 @@ Hardaker & Kumari       Expires December 29, 2017               [Page 2]
 
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
+
+   is written to provide timing guidance solely to a Validating
+   Resolver's point of view).
 
 1.1.  Document History and Motivation
 
@@ -160,9 +163,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    associated with this draft will result in potential denial-of-service
    attack opportunities against validating resolvers.  Failure of a
    DNSKEY publisher to publish a revoked key for a long enough period of
-   time may result in RFC5011 Validating Resolvers leaving that key in
-   their trust anchor storage beyond the key's expected lifetime.
-
 
 
 
@@ -171,6 +171,9 @@ Hardaker & Kumari       Expires December 29, 2017               [Page 3]
 
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
+
+   time may result in RFC5011 Validating Resolvers leaving that key in
+   their trust anchor storage beyond the key's expected lifetime.
 
 3.  Terminology
 
@@ -217,9 +220,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    1.  Publish a new DNSKEY in the zone, but continue to sign the zone
        with the old one.
 
-   2.  Wait a period of time.
-
-
 
 
 
@@ -227,6 +227,8 @@ Hardaker & Kumari       Expires December 29, 2017               [Page 4]
 
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
+
+   2.  Wait a period of time.
 
    3.  Begin to exclusively use recently published DNSKEYs to sign the
        appropriate resource records.
@@ -274,8 +276,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    The following example settings are used in the example scenario
    within this section:
 
-   TTL (all records)  1 day
-
 
 
 
@@ -283,6 +283,8 @@ Hardaker & Kumari       Expires December 29, 2017               [Page 5]
 
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
+
+   TTL (all records)  1 day
 
    SigExpirationTime  10 days
 
@@ -330,8 +332,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
       RFC5011 Validator notices its publication; though not shown in
       this example, this delay is accounted for in the final solution
       below]
-
-
 
 
 
@@ -535,6 +535,11 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    though that is an operational consideration and not necessarily as
    critical.
 
+   Note also that adding retryTime intervals to the remWaitTime may be
+   wise, just as it was for waitTime in Section 6.
+
+6.2.1.  Example Results
+
    For the parameters listed in Section 5.1, our example:
 
      waitTime = 10
@@ -550,11 +555,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
    Note that because revocation happens immediately, an attacker has a
    much harder job tricking a RFC5011 Validator into leaving a trust
-   anchor in place, as the attacker must successfully replay the old
-   data for every query a RFC5011 Validator sends, not just one.
-
-
-
 
 
 
@@ -563,6 +563,9 @@ Hardaker & Kumari       Expires December 29, 2017              [Page 10]
 
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
+
+   anchor in place, as the attacker must successfully replay the old
+   data for every query a RFC5011 Validator sends, not just one.
 
 7.  IANA Considerations
 
@@ -609,9 +612,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
               <https://www.rfc-editor.org/info/rfc4033>.
 
-   [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
-              Trust Anchors", STD 74, RFC 5011, DOI 10.17487/RFC5011,
-              September 2007, <https://www.rfc-editor.org/info/rfc5011>.
 
 
 
@@ -619,6 +619,10 @@ Hardaker & Kumari       Expires December 29, 2017              [Page 11]
 
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
+
+   [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
+              Trust Anchors", STD 74, RFC 5011, DOI 10.17487/RFC5011,
+              September 2007, <https://www.rfc-editor.org/info/rfc5011>.
 
    [RFC7583]  Morris, S., Ihren, J., Dickinson, J., and W. Mekking,
               "DNSSEC Key Rollover Timing Considerations", RFC 7583,
@@ -663,10 +667,6 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
    70 days before using the new KEY and 69 days before removing the old,
    revoked key.  Thus, their current rollover plans are sufficiently
    secure from the attack discussed in this memo.
-
-
-
-
 
 
 

@@ -547,7 +547,11 @@
       that is an operational consideration and not necessarily as
       critical.</t>
 
+      <t>Note also that adding retryTime intervals to the remWaitTime
+      may be wise, just as it was for waitTime in <xref
+      target="minimum" />.</t>
 
+      <section title="Example Results">
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
           <artwork><![CDATA[
@@ -570,6 +574,7 @@
       a trust anchor in place, as the attacker must successfully
       replay the old data for every query a RFC5011 Validator sends,
       not just one.</t>
+      </section>
       </section>
     </section>
 
