@@ -449,15 +449,30 @@
       the attacker can replay K_old seconds before the (DNSKEY RRSIG
       Signature Validity) field of the last K_old only RRSIG. </t>
 
+      <t>RFC5011 also discusses a retryTime value for failed queries.
+      Our equation cannot take into account undeterministic failure
+      situations, so it might be wise to extend the addWaitTime by
+      some factor of retryTime, which is defined in RFC5011 as:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+  retryTime = MAX (1 hour, 
+                   MIN (1 day,
+                        .1 * TTL of K_old DNSKEY RRset,
+                        .1 * SigExpirationTime))
+              ]]></artwork>
+      </figure></t>
+
+
+<!-- this is duplication and badly worded ; first sentence moved above
+     too -->
+<!--
       <t>The "Active Refresh" interval used by a RFC5011 validator is
       determined by the larger of (DNSKEY RRSIG Signature Validity)
       and (original TTL for the DNSKEY RRSet). The Following text
       assumes that (DNSKEY RRSIG Signature Validity) is larger of the
       two, which is operationally more common today.</t>
 
-<!-- this is duplication and badly worded ; first sentence moved above
-     too -->
-<!--
       <t>The worst case scenario of this attack is when the attacker
       can replay K_old seconds before the (DNSKEY RRSIG Signature
       Validity) field of the last K_old only RRSIG. If a RFC5011
@@ -484,6 +499,7 @@
       that is an operational consideration and not necessarily as
       critical.</t>
 
+      <section title="Example Results">
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
           <artwork><![CDATA[
@@ -498,6 +514,7 @@
 
       <t>This waitTime of 42.5 days is 12.5 days longer than just
       the hold down timer.</t>
+      </section>
 
       </section>
       <section title="Timing Requirements For Revoking an Old KSK">
