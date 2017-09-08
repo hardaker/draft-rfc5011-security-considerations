@@ -3,10 +3,12 @@
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 <!ENTITY rfc5011 PUBLIC "" ".//reference.RFC.5011.xml">
 <!ENTITY rfc7719 PUBLIC "" ".//reference.RFC.7719.xml">
+<!ENTITY rfc7583 PUBLIC "" ".//reference.RFC.7583.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
 <rfc category="std"
      docName="draft-ietf-dnsop-rfc5011-security-considerations-02"
+     updates="7583"
      ipr="trust200902">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
@@ -459,15 +461,30 @@
       the attacker can replay K_old seconds before the (DNSKEY RRSIG
       Signature Validity) field of the last K_old only RRSIG. </t>
 
+      <t>RFC5011 also discusses a retryTime value for failed queries.
+      Our equation cannot take into account undeterministic failure
+      situations, so it might be wise to extend the addWaitTime by
+      some factor of retryTime, which is defined in RFC5011 as:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+  retryTime = MAX (1 hour, 
+                   MIN (1 day,
+                        .1 * TTL of K_old DNSKEY RRset,
+                        .1 * SigExpirationTime))
+              ]]></artwork>
+      </figure></t>
+
+
+<!-- this is duplication and badly worded ; first sentence moved above
+     too -->
+<!--
       <t>The "Active Refresh" interval used by a RFC5011 validator is
       determined by the larger of (DNSKEY RRSIG Signature Validity)
       and (original TTL for the DNSKEY RRSet). The Following text
       assumes that (DNSKEY RRSIG Signature Validity) is larger of the
       two, which is operationally more common today.</t>
 
-<!-- this is duplication and badly worded ; first sentence moved above
-     too -->
-<!--
       <t>The worst case scenario of this attack is when the attacker
       can replay K_old seconds before the (DNSKEY RRSIG Signature
       Validity) field of the last K_old only RRSIG. If a RFC5011
@@ -486,20 +503,30 @@
       validity, the authors aren't yet convinced it is needed in this
       particular case, but it is prudent to include it for added assurance.</t>
 
+      <t>Note: our notion of addWaitTime is
+      called "Itrp" in Section 3.3.4.1 of <xref target="RFC7583"/>.
+      The equation for Itrp in RFC7583 is insecure as it does not
+      include the SigExpirationTime listed above.  The Itrp equation
+      in RFC7583 also does not include the 2*TTL safety margin, though
+      that is an operational consideration and not necessarily as
+      critical.</t>
+
+      <section title="Example Results">
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
           <artwork><![CDATA[
-  waitTime = 30
-             + 10
-             + 1 / 2 
-             + 2 * (1)        (days)
+  addWaitTime = 30
+                + 10
+                + 1 / 2 
+                + 2 * (1)        (days)
 
-  waitTime = 42.5             (days)
+  addWaitTime = 42.5             (days)
                                 ]]></artwork>
         </figure></t>
 
-      <t>This waitTime of 42.5 days is 12.5 days longer than just
+      <t>This addWaitTime of 42.5 days is 12.5 days longer than just
       the hold down timer.</t>
+      </section>
 
       </section>
       <section title="Timing Requirements For Revoking an Old KSK">
@@ -524,14 +551,27 @@
               ]]></artwork>
         </figure></t>
 
+      <t>Note: our notion of remWaitTime is
+      called "Irev" in Section 3.3.4.2 of <xref target="RFC7583"/>.
+      The equation for Irev in RFC7583 is insecure as it does not
+      include the SigExpirationTime listed above.    The Irev equation
+      in RFC7583 also does not include the 2*TTL safety margin, though
+      that is an operational consideration and not necessarily as
+      critical.</t>
+
+      <t>Note also that adding retryTime intervals to the remWaitTime
+      may be wise, just as it was for addWaitTime in <xref
+      target="minimum" />.</t>
+
+      <section title="Example Results">
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
           <artwork><![CDATA[
-  waitTime = 10
-             + 1 / 2 
-             + 2 * (1)        (days)
-
-  waitTime = 12.5             (days)
+  remwaitTime = 10
+                + 1 / 2 
+                + 2 * (1)        (days)
+     
+  remwaitTime = 12.5             (days)
                                 ]]></artwork>
         </figure></t>
 
@@ -546,6 +586,7 @@
       a trust anchor in place, as the attacker must successfully
       replay the old data for every query a RFC5011 Validator sends,
       not just one.</t>
+      </section>
       </section>
     </section>
 
@@ -589,6 +630,7 @@
       <?rfc include='reference.RFC.2119'?>
       <?rfc include='reference.RFC.4033'?>
       <?rfc include='reference.RFC.5011'?>
+      <?rfc include='reference.RFC.7583'?>
       <?rfc include='reference.RFC.7719'?>
 
     </references>
@@ -614,19 +656,19 @@
       <t>Thus, sticking this information into the equation in Section <xref
       target="minimum"/> yields (in days): <figure>
           <artwork><![CDATA[
-  waitTime = 30
-             + (21)
-             + MAX(MIN((21) / 2,
-                       MAX(2 / 2,
-                       15 days)),
-                   1 hour)
-             + 2 * MAX(2)
+  addWaitTime = 30
+                + (21)
+                + MAX(MIN((21) / 2,
+                          MAX(2 / 2,
+                          15 days)),
+                      1 hour)
+                + 2 * MAX(2)
 
-  waitTime = 30 + 21 + MAX(MIN(11.5, 1, 15)), 1 hour) + 4
+  addWaitTime = 30 + 21 + MAX(MIN(11.5, 1, 15)), 1 hour) + 4
 
-  waitTime = 30 + 21 + 1 + 4
+  addWaitTime = 30 + 21 + 1 + 4
 
-  waitTime = 56 days 
+  addWaitTime = 56 days 
                 ]]></artwork>
         </figure></t>
 
