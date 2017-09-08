@@ -385,6 +385,7 @@
    addWaitTime = addHoldDownTime
                  + SigExpirationTime
                  + activeRefresh
+                 + activeRefreshOffset
                  + 2 * MAX(TTL of all records)
               ]]></artwork>
       </figure></t>
@@ -416,19 +417,30 @@
               ]]></artwork>
       </figure></t>
 
+      <t>The activeRefreshOffset term must be added for situations
+      where the activeRefresh value is not a factor of "30 days".
+      Specifically, activeRefreshOffset will be "(30 days) %
+      activeRefresh", where % is the mathematical mod operator (which
+      calculates the remainder in a division problem).  This will
+      frequently be zero, but could be nearly as large as
+      activeRefresh itself.  For simplicity, setting the
+      activeRefreshOffset to the activeRefresh value itself is safe.
+      </t>
+
       <t>
-	      Which thus makes the full expanded equation to be:
+	       The full expanded equation, with activeRefreshOffset
+	       set to activeRefresh for simplicity, is:
       </t>
 
       <t> <figure>
           <artwork><![CDATA[
    addWaitTime = addHoldDownTime
                  + SigExpirationTime
-                 + MAX(1 hour,
-                       MIN(SigExpirationTime / 2,
-                           MAX(TTL of K_old DNSKEY RRSet) / 2,
-                           15 days)
-                       )
+                 + 2 * MAX(1 hour,
+                           MIN(SigExpirationTime / 2,
+                               MAX(TTL of K_old DNSKEY RRSet) / 2,
+                               15 days)
+                           )
                  + 2 * MAX(TTL of all records)
                                 
               ]]></artwork>
