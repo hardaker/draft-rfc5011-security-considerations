@@ -82,14 +82,14 @@ Table of Contents
        5.1.1.  Attack Timing Breakdown . . . . . . . . . . . . . . .   6
    6.  Minimum RFC5011 Timing Requirements . . . . . . . . . . . . .   8
      6.1.  Timing Requirements For Adding a New KSK  . . . . . . . .   8
-       6.1.1.  Example Results . . . . . . . . . . . . . . . . . . .   9
+       6.1.1.  Example Results . . . . . . . . . . . . . . . . . . .  10
      6.2.  Timing Requirements For Revoking an Old KSK . . . . . . .  10
-       6.2.1.  Example Results . . . . . . . . . . . . . . . . . . .  10
+       6.2.1.  Example Results . . . . . . . . . . . . . . . . . . .  11
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
    8.  Operational Considerations  . . . . . . . . . . . . . . . . .  11
    9.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
-   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  11
-   11. Normative References  . . . . . . . . . . . . . . . . . . . .  11
+   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
+   11. Normative References  . . . . . . . . . . . . . . . . . . . .  12
    Appendix A.  Real World Example: The 2017 Root KSK Key Roll . . .  12
    Appendix B.  Changes / Author Notes.  . . . . . . . . . . . . . .  13
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
@@ -410,6 +410,7 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
       addWaitTime = addHoldDownTime
                     + SigExpirationTime
                     + activeRefresh
+                    + activeRefreshOffset
                     + 2 * MAX(TTL of all records)
 
    Where activeRefresh time is defined by RFC5011 by:
@@ -430,20 +431,19 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
                             15 days)
                         )
 
-   Which thus makes the full expanded equation to be:
+   The activeRefreshOffset term must be added for situations where the
+   activeRefresh value is not a factor of "30 days".  Specifically,
+   activeRefreshOffset will be "(30 days) % activeRefresh", where % is
+   the mathematical mod operator (which calculates the remainder in a
+   division problem).  This will frequently be zero, but could be nearly
+   as large as activeRefresh itself.  For simplicity, setting the
+   activeRefreshOffset to the activeRefresh value itself is safe.
 
-      addWaitTime = addHoldDownTime
-                    + SigExpirationTime
-                    + MAX(1 hour,
-                          MIN(SigExpirationTime / 2,
-                              MAX(TTL of K_old DNSKEY RRSet) / 2,
-                              15 days)
-                          )
-                    + 2 * MAX(TTL of all records)
+   The full expanded equation, with activeRefreshOffset set to
+   activeRefresh for simplicity, is:
 
 
-   The important timing constraint introduced by this memo relates to
-   the last point at which a validating resolver may have received a
+
 
 
 
@@ -452,6 +452,18 @@ Hardaker & Kumari       Expires December 29, 2017               [Page 8]
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
+      addWaitTime = addHoldDownTime
+                    + SigExpirationTime
+                    + 2 * MAX(1 hour,
+                              MIN(SigExpirationTime / 2,
+                                  MAX(TTL of K_old DNSKEY RRSet) / 2,
+                                  15 days)
+                              )
+                    + 2 * MAX(TTL of all records)
+
+
+   The important timing constraint introduced by this memo relates to
+   the last point at which a validating resolver may have received a
    replayed original DNSKEY set, containing K_old and not K_new.  The
    next query of the RFC5011 validator at which K_new will be seen
    without the potential for a replay attack will occur after the
@@ -485,9 +497,22 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    though that is an operational consideration and not necessarily as
    critical.
 
+
+
+
+
+
+
+Hardaker & Kumari       Expires December 29, 2017               [Page 9]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
+
 6.1.1.  Example Results
 
-   For the parameters listed in Section 5.1, our example:
+   For the parameters listed in Section 5.1, the activeRefreshOffset is
+   0 since 30 days is evenly divisible by activeRefresh (1/2 day), and
+   our resulting addWaitTime is:
 
      addWaitTime = 30
                    + 10
@@ -498,15 +523,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
    This addWaitTime of 42.5 days is 12.5 days longer than just the hold
    down timer.
-
-
-
-
-
-Hardaker & Kumari       Expires December 29, 2017               [Page 9]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
 
 6.2.  Timing Requirements For Revoking an Old KSK
 
@@ -528,15 +544,25 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
                          1 hour)
                    + 2 * MAX(TTL of all records)
 
-   Note: our notion of remWaitTime is called "Irev" in Section 3.3.4.2
-   of [RFC7583].  The equation for Irev in RFC7583 is insecure as it
-   does not include the SigExpirationTime listed above.  The Irev
-   equation in RFC7583 also does not include the 2*TTL safety margin,
-   though that is an operational consideration and not necessarily as
-   critical.
+   Note that the activeRefreshOffset time does not apply to this
+   equation.
+
+   Note that our notion of remWaitTime is called "Irev" in
+   Section 3.3.4.2 of [RFC7583].  The equation for Irev in RFC7583 is
+   insecure as it does not include the SigExpirationTime listed above.
+   The Irev equation in RFC7583 also does not include the 2*TTL safety
+   margin, though that is an operational consideration and not
+   necessarily as critical.
 
    Note also that adding retryTime intervals to the remWaitTime may be
    wise, just as it was for addWaitTime in Section 6.
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 10]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
 
 6.2.1.  Example Results
 
@@ -555,15 +581,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
    Note that because revocation happens immediately, an attacker has a
    much harder job tricking a RFC5011 Validator into leaving a trust
-
-
-
-
-Hardaker & Kumari       Expires December 29, 2017              [Page 10]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
-
    anchor in place, as the attacker must successfully replay the old
    data for every query a RFC5011 Validator sends, not just one.
 
@@ -592,6 +609,17 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    Considerations when adding or removing DNSKEYs from trust anchor
    storage using the RFC5011 process.
 
+
+
+
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 11]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
+
 10.  Acknowledgements
 
    The authors would like to especially thank to Michael StJohns for his
@@ -603,26 +631,16 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 11.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
-              editor.org/info/rfc2119>.
+              Requirement Levels", BCP 14, RFC 2119, March 1997.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
-              <https://www.rfc-editor.org/info/rfc4033>.
-
-
-
-
-Hardaker & Kumari       Expires December 29, 2017              [Page 11]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
+              <http://www.rfc-editor.org/info/rfc4033>.
 
    [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
               Trust Anchors", STD 74, RFC 5011, DOI 10.17487/RFC5011,
-              September 2007, <https://www.rfc-editor.org/info/rfc5011>.
+              September 2007, <http://www.rfc-editor.org/info/rfc5011>.
 
    [RFC7583]  Morris, S., Ihren, J., Dickinson, J., and W. Mekking,
               "DNSSEC Key Rollover Timing Considerations", RFC 7583,
@@ -631,7 +649,7 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
    [RFC7719]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", RFC 7719, DOI 10.17487/RFC7719, December
-              2015, <https://www.rfc-editor.org/info/rfc7719>.
+              2015, <http://www.rfc-editor.org/info/rfc7719>.
 
 Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
@@ -647,6 +665,17 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
    Thus, sticking this information into the equation in
    Section Section 6 yields (in days):
 
+
+
+
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 12]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
+
      addWaitTime = 30
                    + (21)
                    + MAX(MIN((21) / 2,
@@ -661,20 +690,15 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
      addWaitTime = 56 days
 
+   Note that we use a activeRefreshOffset of 0, since 30 days is evenly
+   divisible by activeRefresh (1 day).
+
    Thus, ICANN should wait a minimum of 56 days before switching to the
    newly published KSK (and 26 days before removing the old revoked key
    once it is published as revoked).  ICANN's current plans are to wait
    70 days before using the new KEY and 69 days before removing the old,
    revoked key.  Thus, their current rollover plans are sufficiently
    secure from the attack discussed in this memo.
-
-
-
-
-Hardaker & Kumari       Expires December 29, 2017              [Page 12]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
 
 Appendix B.  Changes / Author Notes.
 
@@ -700,6 +724,14 @@ Appendix B.  Changes / Author Notes.
 
       Some language cleanup.
 
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 13]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
+
+
       Clarified that this is maths ( and math is hard, let's go
       shopping!)
 
@@ -724,14 +756,6 @@ Appendix B.  Changes / Author Notes.
 
       Clarifications about signing using only new keys, vs old ones too
 
-
-
-
-Hardaker & Kumari       Expires December 29, 2017              [Page 13]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
-
    From -05 to -06:
 
       Many clarifications based on comments from MSJ.
@@ -749,6 +773,19 @@ Authors' Addresses
    US
 
    Email: ietf@hardakers.net
+
+
+
+
+
+
+
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 14]
+
+Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
    Warren Kumari
@@ -783,5 +820,24 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari       Expires December 29, 2017              [Page 14]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hardaker & Kumari       Expires December 29, 2017              [Page 15]
 ```
