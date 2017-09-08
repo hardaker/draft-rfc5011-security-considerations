@@ -512,8 +512,10 @@
       critical.</t>
 
       <section title="Example Results">
-      <t>For the parameters listed in <xref target="examplenumbers"/>, our
-      example: <figure>
+      <t>For the parameters listed in <xref target="examplenumbers"/>,
+      the activeRefreshOffset is 0 since 30 days is evenly divisible
+      by activeRefresh (1/2 day), and our resulting addWaitTime is:
+      <figure>
           <artwork><![CDATA[
   addWaitTime = 30
                 + 10
@@ -551,7 +553,10 @@
               ]]></artwork>
         </figure></t>
 
-      <t>Note: our notion of remWaitTime is
+      <t>Note that the activeRefreshOffset time does not apply to this
+      equation.</t>
+
+      <t>Note that our notion of remWaitTime is
       called "Irev" in Section 3.3.4.2 of <xref target="RFC7583"/>.
       The equation for Irev in RFC7583 is insecure as it does not
       include the SigExpirationTime listed above.    The Irev equation
@@ -671,6 +676,9 @@
   addWaitTime = 56 days 
                 ]]></artwork>
         </figure></t>
+
+      <t>Note that we use a activeRefreshOffset of 0, since 30 days is
+      evenly divisible by activeRefresh (1 day).</t>
 
       <t>Thus, ICANN should wait a minimum of 56 days before switching to the newly
       published KSK (and 26 days before removing the old revoked key
