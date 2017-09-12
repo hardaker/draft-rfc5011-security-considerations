@@ -175,11 +175,11 @@
           RFC5011 Validator from removing an old DNSKEY from its list
           of trust anchors.</t>
 
-          <t hangText="SigExpirationTime">The amount of time
-          remaining before a RRSIG's Signature Expiration time is
-          reached.  This will fundamentally be the RRSIG's Signature
-          Expiration time minus the RRSIG's Signature Inception time
-          when the signature is created.</t> 
+          <t hangText="SigExpirationTime">The amount of time remaining
+          before a RRSIG's Signature Expiration time is reached.  This
+          will fundamentally be the RRSIG's Signature Expiration time
+          minus the RRSIG's Signature Inception time when the
+          signature is created.</t>
 
       </list></t>
 
@@ -531,7 +531,7 @@
       </section>
 
       </section>
-      <section title="Timing Requirements For Revoking an Old KSK">
+      <section title="Timing Requirements For Revoking an Old KSK" anchor="revoking">
       <t>It is important to note that this issue affects not just the
       publication of new DNSKEYs intended to be used as trust anchors,
       but also the length of time required to continuously publish a
@@ -619,6 +619,16 @@
       Thus the entire document is a discussion of Security
       Considerations when adding or removing DNSKEYs from trust anchor
       storage using the RFC5011 process.</t>
+
+      <t>For simplicity, this document assumes
+      that the Trust Anchor Publisher will use a consistent RRSIG
+      validity period.  Trust Anchor Publishers that vary the
+      length of RRSIG validity periods will need to adjust the
+      SigExpirationTime value accordingly so that the equations in
+      <xref target="minimum" />  and <xref target="revoking" />
+      use a value that coincides with the last time a replay of older
+      RRSIGs will no longer succeed.</t>
+
     </section>
 
     <section title="Acknowledgements">
