@@ -100,7 +100,7 @@
       the RFC5011 DNSKEY advertising, rolling and revocation
       process. This document describes the minimum security
       requirements from a publisher's point of view and is intended to
-      compliment the guidance offered in RFC5011 (which is written to
+      complement the guidance offered in RFC5011 (which is written to
       provide timing guidance solely to a Validating Resolver's point
       of view).</t>
 
@@ -513,7 +513,7 @@
 
       <section title="Example Results">
       <t>For the parameters listed in <xref target="examplenumbers"/>,
-      the activeRefreshOffset is 0 since 30 days is evenly divisible
+      the activeRefreshOffset is 0, since 30 days is evenly divisible
       by activeRefresh (1/2 day), and our resulting addWaitTime is:
       <figure>
           <artwork><![CDATA[
