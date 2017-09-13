@@ -105,7 +105,7 @@ Table of Contents
    incorrect assumptions about safe usage of the RFC5011 DNSKEY
    advertising, rolling and revocation process.  This document describes
    the minimum security requirements from a publisher's point of view
-   and is intended to compliment the guidance offered in RFC5011 (which
+   and is intended to complement the guidance offered in RFC5011 (which
    is written to provide timing guidance solely to a Validating
    Resolver's point of view).
 
@@ -511,7 +511,7 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 6.1.1.  Example Results
 
    For the parameters listed in Section 5.1, the activeRefreshOffset is
-   0 since 30 days is evenly divisible by activeRefresh (1/2 day), and
+   0, since 30 days is evenly divisible by activeRefresh (1/2 day), and
    our resulting addWaitTime is:
 
      addWaitTime = 30
@@ -609,9 +609,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    Considerations when adding or removing DNSKEYs from trust anchor
    storage using the RFC5011 process.
 
-
-
-
+   For simplicity, this document assumes that the Trust Anchor Publisher
+   will use a consistent RRSIG validity period.  Trust Anchor Publishers
+   that vary the length of RRSIG validity periods will need to adjust
 
 
 
@@ -619,6 +619,10 @@ Hardaker & Kumari       Expires December 29, 2017              [Page 11]
 
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
+
+   the SigExpirationTime value accordingly so that the equations in
+   Section 6 and Section 6.2 use a value that coincides with the last
+   time a replay of older RRSIGs will no longer succeed.
 
 10.  Acknowledgements
 
@@ -631,16 +635,18 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 11.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119, March 1997.
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
+              editor.org/info/rfc2119>.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
-              <http://www.rfc-editor.org/info/rfc4033>.
+              <https://www.rfc-editor.org/info/rfc4033>.
 
    [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
               Trust Anchors", STD 74, RFC 5011, DOI 10.17487/RFC5011,
-              September 2007, <http://www.rfc-editor.org/info/rfc5011>.
+              September 2007, <https://www.rfc-editor.org/info/rfc5011>.
 
    [RFC7583]  Morris, S., Ihren, J., Dickinson, J., and W. Mekking,
               "DNSSEC Key Rollover Timing Considerations", RFC 7583,
@@ -649,7 +655,7 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
    [RFC7719]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", RFC 7719, DOI 10.17487/RFC7719, December
-              2015, <http://www.rfc-editor.org/info/rfc7719>.
+              2015, <https://www.rfc-editor.org/info/rfc7719>.
 
 Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
@@ -662,12 +668,6 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
          Old DNSKEY SigExpirationTime:         21 days
          Old DNSKEY TTL:                        2 days
 
-   Thus, sticking this information into the equation in
-   Section Section 6 yields (in days):
-
-
-
-
 
 
 
@@ -675,6 +675,9 @@ Hardaker & Kumari       Expires December 29, 2017              [Page 12]
 
 Internet-Draft       RFC5011 Security Considerations           June 2017
 
+
+   Thus, sticking this information into the equation in
+   Section Section 6 yields (in days):
 
      addWaitTime = 30
                    + (21)
@@ -718,9 +721,6 @@ Authors' Addresses
    US
 
    Email: warren@kumari.net
-
-
-
 
 
 
