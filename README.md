@@ -78,20 +78,27 @@ Table of Contents
      4.1.  Timing Associated with Publication  . . . . . . . . . . .   4
      4.2.  Timing Associated with Revocation . . . . . . . . . . . .   5
    5.  Denial of Service Attack Considerations . . . . . . . . . . .   5
-     5.1.  Enumerated Attack Example . . . . . . . . . . . . . . . .   5
+     5.1.  Enumerated Attack Example . . . . . . . . . . . . . . . .   6
        5.1.1.  Attack Timing Breakdown . . . . . . . . . . . . . . .   6
    6.  Minimum RFC5011 Timing Requirements . . . . . . . . . . . . .   8
      6.1.  Timing Requirements For Adding a New KSK  . . . . . . . .   8
-       6.1.1.  Example Results . . . . . . . . . . . . . . . . . . .  10
+       6.1.1.  addHoldDownTime . . . . . . . . . . . . . . . . . . .   8
+       6.1.2.  sigExpirationTime . . . . . . . . . . . . . . . . . .   8
+       6.1.3.  activeRefresh . . . . . . . . . . . . . . . . . . . .   8
+       6.1.4.  activeRefreshOffset . . . . . . . . . . . . . . . . .   9
+       6.1.5.  safetyMargin  . . . . . . . . . . . . . . . . . . . .   9
+       6.1.6.  Fully expanded equation . . . . . . . . . . . . . . .   9
+       6.1.7.  Timing Constraint Summary . . . . . . . . . . . . . .  10
+       6.1.8.  Additional Considerations . . . . . . . . . . . . . .  10
      6.2.  Timing Requirements For Revoking an Old KSK . . . . . . .  10
        6.2.1.  Example Results . . . . . . . . . . . . . . . . . . .  11
-   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
-   8.  Operational Considerations  . . . . . . . . . . . . . . . . .  11
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+   8.  Operational Considerations  . . . . . . . . . . . . . . . . .  12
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  12
    10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
    11. Normative References  . . . . . . . . . . . . . . . . . . . .  12
-   Appendix A.  Real World Example: The 2017 Root KSK Key Roll . . .  12
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
+   Appendix A.  Real World Example: The 2017 Root KSK Key Roll . . .  13
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
 
 1.  Introduction
 
@@ -101,13 +108,6 @@ Table of Contents
    publishers of DNSKEYs about how long they must wait before switching
    to exclusively using recently published keys for signing records, or
    how long they must wait before ceasing publication of a revoked key.
-   Because of this lack of guidance, zone publishers may derive
-   incorrect assumptions about safe usage of the RFC5011 DNSKEY
-   advertising, rolling and revocation process.  This document describes
-   the minimum security requirements from a publisher's point of view
-   and is intended to complement the guidance offered in RFC5011 (which
-   is written to provide timing guidance solely to a Validating
-   Resolver's point of view).
 
 
 
@@ -115,6 +115,14 @@ Hardaker & Kumari        Expires March 16, 2018                 [Page 2]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
+
+   Because of this lack of guidance, zone publishers may derive
+   incorrect assumptions about safe usage of the RFC5011 DNSKEY
+   advertising, rolling and revocation process.  This document describes
+   the minimum security requirements from a publisher's point of view
+   and is intended to complement the guidance offered in RFC5011 (which
+   is written to provide timing guidance solely to a Validating
+   Resolver's point of view).
 
 1.1.  Document History and Motivation
 
@@ -156,14 +164,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    exclusively using recently added keys or removing a revoked keys too
    soon.
 
-   Failure of a DNSKEY publisher to follow the minimum recommendations
-   associated with this draft will result in potential denial-of-service
-   attack opportunities against validating resolvers.  Failure of a
-   DNSKEY publisher to publish a revoked key for a long enough period of
-   time may result in RFC5011 Validating Resolvers leaving that key in
-   their trust anchor storage beyond the key's expected lifetime.
-
-
 
 
 
@@ -171,6 +171,13 @@ Hardaker & Kumari        Expires March 16, 2018                 [Page 3]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
+
+   Failure of a DNSKEY publisher to follow the minimum recommendations
+   associated with this draft will result in potential denial-of-service
+   attack opportunities against validating resolvers.  Failure of a
+   DNSKEY publisher to publish a revoked key for a long enough period of
+   time may result in RFC5011 Validating Resolvers leaving that key in
+   their trust anchor storage beyond the key's expected lifetime.
 
 3.  Terminology
 
@@ -190,7 +197,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
       anchor or to prevent the RFC5011 Validator from removing an old
       DNSKEY from its list of trust anchors.
 
-   SigExpirationTime  The amount of time remaining before a RRSIG's
+   sigExpirationTime  The amount of time remaining before a RRSIG's
       Signature Expiration time is reached.  This will fundamentally be
       the RRSIG's Signature Expiration time minus the RRSIG's Signature
       Inception time when the signature is created.
@@ -214,19 +221,17 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    scenario, which is one of many possible combinations of operations
    defined in Section 6 of RFC5011:
 
-   1.  Publish a new DNSKEY in the zone, but continue to sign the zone
-       with the old one.
-
-   2.  Wait a period of time.
-
-
-
 
 
 Hardaker & Kumari        Expires March 16, 2018                 [Page 4]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
+
+   1.  Publish a new DNSKEY in the zone, but continue to sign the zone
+       with the old one.
+
+   2.  Wait a period of time.
 
    3.  Begin to exclusively use recently published DNSKEYs to sign the
        appropriate resource records.
@@ -269,12 +274,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
    The time-line below illustrates this situation.
 
-5.1.  Enumerated Attack Example
 
-   The following example settings are used in the example scenario
-   within this section:
-
-   TTL (all records)  1 day
 
 
 
@@ -284,7 +284,14 @@ Hardaker & Kumari        Expires March 16, 2018                 [Page 5]
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
-   SigExpirationTime  10 days
+5.1.  Enumerated Attack Example
+
+   The following example settings are used in the example scenario
+   within this section:
+
+   TTL (all records)  1 day
+
+   sigExpirationTime  10 days
 
    Zone resigned every  1 day
 
@@ -325,13 +332,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
       attack) retrieves this new key set and corresponding RRSIGs and
       notices the publication of K_new.  The RFC5011 Validator starts
       the (30-day) hold-down timer for K_new.  [Note that in a more
-      real-world scenario there will likely be a further delay between
-      the point where the Zone Signer publishes a new RRSIG and the
-      RFC5011 Validator notices its publication; though not shown in
-      this example, this delay is accounted for in the final solution
-      below]
-
-
 
 
 
@@ -340,6 +340,12 @@ Hardaker & Kumari        Expires March 16, 2018                 [Page 6]
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
+      real-world scenario there will likely be a further delay between
+      the point where the Zone Signer publishes a new RRSIG and the
+      RFC5011 Validator notices its publication; though not shown in
+      this example, this delay is accounted for in the final solution
+      below]
+
    T+5  The RFC5011 Validator queries for the zone's keyset per the
       RFC5011 Active Refresh schedule, discussed in Section 2.3 of
       RFC5011.  Instead of receiving the intended published keyset, the
@@ -347,7 +353,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
       recorded at T-1.  Because the signature lifetime is 10 days (in
       this example), the replayed signature and keyset is accepted as
       valid (being only 6 days old, which is less than
-      SigExpirationTime) and the RFC5011 Validator cancels the hold-down
+      sigExpirationTime) and the RFC5011 Validator cancels the hold-down
       timer for K_new, per the RFC5011 algorithm.
 
    T+10  The RFC5011 Validator queries for the zone's keyset and
@@ -382,12 +388,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    T+36  The Zone Signer, believing K_new is safe to use, switches their
       active signing KSK to K_new and publishes a new RRSIG, signed with
       K_new, covering the DNSKEY set.  Non-attacked RFC5011 validators,
-      with a hold-down timer of at least 30 days, would have accepted
-      K_new into their set of trusted keys.  But, because our attacked
-      RFC5011 Validator now has a hold-down timer for K_new of only 26
-      days, it failed to accept K_new as a trust anchor.  Since K_old is
-      no longer being used to sign the zone's DNSKEYs, all the DNSKEY
-      records from the zone will be treated as invalid.  Subsequently,
 
 
 
@@ -396,6 +396,12 @@ Hardaker & Kumari        Expires March 16, 2018                 [Page 7]
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
+      with a hold-down timer of at least 30 days, would have accepted
+      K_new into their set of trusted keys.  But, because our attacked
+      RFC5011 Validator now has a hold-down timer for K_new of only 26
+      days, it failed to accept K_new as a trust anchor.  Since K_old is
+      no longer being used to sign the zone's DNSKEYs, all the DNSKEY
+      records from the zone will be treated as invalid.  Subsequently,
       all of the records in the DNS tree below the zone's apex will be
       deemed invalid by DNSSEC.
 
@@ -408,12 +414,28 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    but before exclusively using it and newer keys is:
 
       addWaitTime = addHoldDownTime
-                    + SigExpirationTime
+                    + sigExpirationTime
                     + activeRefresh
                     + activeRefreshOffset
                     + safetyMargin
 
-   Where activeRefresh time is defined by RFC5011 by
+6.1.1.  addHoldDownTime
+
+   The addHoldDownTime is defined in Section 2.4.1 of [RFC5011] as:
+
+       The add hold-down time is 30 days or the expiration time of the
+       original TTL of the first trust point DNSKEY RRSet that contained
+       the new key, whichever is greater.  This ensures that at least
+       two validated DNSKEY RRSets that contain the new key MUST be seen
+       by the resolver prior to the key's acceptance.
+
+6.1.2.  sigExpirationTime
+
+   sigExpirationTime is defined in Section 3.
+
+6.1.3.  activeRefresh
+
+   activeRefresh time is defined by RFC5011 by
 
      A resolver that has been configured for an automatic update
      of keys from a particular trust point MUST query that trust
@@ -423,17 +445,22 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
      expiration interval and no more often than once per hour.
 
 
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 8]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    This translates to:
 
     activeRefresh = MAX(1 hour,
-                        MIN(SigExpirationTime / 2,
+                        MIN(sigExpirationTime / 2,
                             MAX(TTL of K_old DNSKEY RRSet) / 2,
                             15 days)
                         )
 
-   And where the safetyMargin is an extra period of time to account for
-   caching, network delays, etc.  A suggested operational value for this
-   is 2 * MAX(TTL of all records)
+6.1.4.  activeRefreshOffset
 
    The activeRefreshOffset term must be added for situations where the
    activeRefresh value is not a factor of "30 days".  Specifically,
@@ -443,62 +470,35 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    as large as activeRefresh itself.  For simplicity, setting the
    activeRefreshOffset to the activeRefresh value itself is safe.
 
+6.1.5.  safetyMargin
 
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 8]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
-
-   The full expanded equation, with activeRefreshOffset set to
-   activeRefresh for simplicity, is:
-
-      addWaitTime = addHoldDownTime
-                    + SigExpirationTime
-                    + 2 * MAX(1 hour,
-                              MIN(SigExpirationTime / 2,
-                                  MAX(TTL of K_old DNSKEY RRSet) / 2,
-                                  15 days)
-                              )
-                    + 2 * MAX(TTL of all records)
-
-   The important timing constraint introduced by this memo relates to
-   the last point at which a validating resolver may have received a
-   replayed original DNSKEY set, containing K_old and not K_new.  The
-   next query of the RFC5011 validator at which K_new will be seen
-   without the potential for a replay attack will occur after the
-   publication time plus SigExpirationTime.  Thus, the latest time that
-   a RFC5011 Validator may begin their hold down timer is an "Active
-   Refresh" period after the last point that an attacker can replay the
-   K_old DNSKEY set.  The worst case scenario of this attack is if the
-   attacker can replay K_old seconds before the (DNSKEY RRSIG Signature
-   Validity) field of the last K_old only RRSIG.
+   The safetyMargin is an extra period of time to account for caching,
+   network delays, etc.  A suggested operational value for this is 2 *
+   MAX(TTL of all records)
 
    RFC5011 also discusses a retryTime value for failed queries.  Our
    equation cannot take into account undeterministic failure situations,
-   so it might be wise to extend the addWaitTime by some factor of
+   so it might be wise to extend the safetyMargin by some factor of
    retryTime, which is defined in RFC5011 as:
 
      retryTime = MAX (1 hour,
                       MIN (1 day,
                            .1 * TTL of K_old DNSKEY RRset,
-                           .1 * SigExpirationTime))
+                           .1 * sigExpirationTime))
 
-   The extra 2 * MAX(TTL of all records) is the standard added safety
-   margin when dealing with DNSSEC due to caching that can take place.
-   Because the 5011 steps require direct validation using the signature
-   validity, the authors aren't yet convinced it is needed in this
-   particular case, but it is prudent to include it for added assurance.
+6.1.6.  Fully expanded equation
 
-   Note: our notion of addWaitTime is called "Itrp" in Section 3.3.4.1
-   of [RFC7583].  The equation for Itrp in RFC7583 is insecure as it
-   does not include the SigExpirationTime listed above.  The Itrp
-   equation in RFC7583 also does not include the 2*TTL safety margin,
-   though that is an operational consideration and not necessarily as
-   critical.
+   The full expanded equation, with activeRefreshOffset set to
+   activeRefresh for simplicity, is:
 
+      addWaitTime = addHoldDownTime
+                    + sigExpirationTime
+                    + 2 * MAX(1 hour,
+                              MIN(sigExpirationTime / 2,
+                                  MAX(TTL of K_old DNSKEY RRSet) / 2,
+                                  15 days)
+                              )
+                    + 2 * MAX(TTL of all records)
 
 
 
@@ -508,7 +508,30 @@ Hardaker & Kumari        Expires March 16, 2018                 [Page 9]
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
-6.1.1.  Example Results
+6.1.7.  Timing Constraint Summary
+
+   The important timing constraint introduced by this memo relates to
+   the last point at which a validating resolver may have received a
+   replayed original DNSKEY set, containing K_old and not K_new.  The
+   next query of the RFC5011 validator at which K_new will be seen
+   without the potential for a replay attack will occur after the
+   publication time plus sigExpirationTime.  Thus, the latest time that
+   a RFC5011 Validator may begin their hold down timer is an "Active
+   Refresh" period after the last point that an attacker can replay the
+   K_old DNSKEY set.  The worst case scenario of this attack is if the
+   attacker can replay K_old seconds before the (DNSKEY RRSIG Signature
+   Validity) field of the last K_old only RRSIG.
+
+6.1.8.  Additional Considerations
+
+   Note: our notion of addWaitTime is called "Itrp" in Section 3.3.4.1
+   of [RFC7583].  The equation for Itrp in RFC7583 is insecure as it
+   does not include the sigExpirationTime listed above.  The Itrp
+   equation in RFC7583 also does not include the 2*TTL safety margin,
+   though that is an operational consideration and not necessarily as
+   critical.
+
+6.1.8.1.  Example Results
 
    For the parameters listed in Section 5.1, the activeRefreshOffset is
    0, since 30 days is evenly divisible by activeRefresh (1/2 day), and
@@ -533,12 +556,20 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    requirements are affected by the attacks described in this document,
    but with revocation the key is revoked immediately and the
    addHoldDown timer does not apply.  Thus the minimum amount of time
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 10]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    that a Trust Anchor Publisher must wait before removing a revoked key
    from publication is:
 
-     remWaitTime = SigExpirationTime
+     remWaitTime = sigExpirationTime
                    + MAX(1 hour,
-                         MIN((SigExpirationTime) / 2,
+                         MIN((sigExpirationTime) / 2,
                              MAX(TTL of K_old DNSKEY RRSet) / 2,
                              15 days),
                          1 hour)
@@ -549,20 +580,13 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
    Note that our notion of remWaitTime is called "Irev" in
    Section 3.3.4.2 of [RFC7583].  The equation for Irev in RFC7583 is
-   insecure as it does not include the SigExpirationTime listed above.
+   insecure as it does not include the sigExpirationTime listed above.
    The Irev equation in RFC7583 also does not include the 2*TTL safety
    margin, though that is an operational consideration and not
    necessarily as critical.
 
    Note also that adding retryTime intervals to the remWaitTime may be
    wise, just as it was for addWaitTime in Section 6.
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                [Page 10]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
 6.2.1.  Example Results
 
@@ -576,13 +600,25 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
    Note that for the values in this example produce a length shorter
    than the recommended 30 days in RFC5011's section 6.6, step 3.  Other
-   values of SigExpirationTime and the original TTL of the K_old DNSKEY
+   values of sigExpirationTime and the original TTL of the K_old DNSKEY
    RRSet, however, can produce values longer than 30 days.
 
    Note that because revocation happens immediately, an attacker has a
    much harder job tricking a RFC5011 Validator into leaving a trust
    anchor in place, as the attacker must successfully replay the old
    data for every query a RFC5011 Validator sends, not just one.
+
+
+
+
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 11]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
 
 7.  IANA Considerations
 
@@ -612,15 +648,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    For simplicity, this document assumes that the Trust Anchor Publisher
    will use a consistent RRSIG validity period.  Trust Anchor Publishers
    that vary the length of RRSIG validity periods will need to adjust
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                [Page 11]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
-
-   the SigExpirationTime value accordingly so that the equations in
+   the sigExpirationTime value accordingly so that the equations in
    Section 6 and Section 6.2 use a value that coincides with the last
    time a replay of older RRSIGs will no longer succeed.
 
@@ -636,6 +664,17 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
+
+
+
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 12]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -663,18 +702,11 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
    is as follows:
 
          addHoldDownTime:                      30 days
-         Old DNSKEY SigExpirationTime:         21 days
+         Old DNSKEY sigExpirationTime:         21 days
          Old DNSKEY TTL:                        2 days
 
    Thus, sticking this information into the equation in
    Section Section 6 yields (in days):
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                [Page 12]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
      addWaitTime = 30
                    + (21)
@@ -692,6 +724,13 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
    Note that we use a activeRefreshOffset of 0, since 30 days is evenly
    divisible by activeRefresh (1 day).
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 13]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
 
    Thus, ICANN should wait a minimum of 56 days before switching to the
    newly published KSK (and 26 days before removing the old revoked key
@@ -727,5 +766,22 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari        Expires March 16, 2018                [Page 13]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 14]
 ```
