@@ -175,7 +175,7 @@
           RFC5011 Validator from removing an old DNSKEY from its list
           of trust anchors.</t>
 
-          <t hangText="SigExpirationTime">The amount of time remaining
+          <t hangText="sigExpirationTime">The amount of time remaining
           before a RRSIG's Signature Expiration time is reached.  This
           will fundamentally be the RRSIG's Signature Expiration time
           minus the RRSIG's Signature Inception time when the
@@ -260,7 +260,7 @@
         within this section: <list style="hanging">
             <t hangText="TTL (all records)">1 day</t>
 
-            <t hangText="SigExpirationTime">10 days</t>
+            <t hangText="sigExpirationTime">10 days</t>
 
             <t hangText="Zone resigned every">1 day</t>
           </list></t>
@@ -321,7 +321,7 @@
               signatures recorded at T-1. Because the signature
               lifetime is 10 days (in this example), the replayed
               signature and keyset is accepted as valid (being only 6
-              days old, which is less than SigExpirationTime) and the
+              days old, which is less than sigExpirationTime) and the
               RFC5011 Validator cancels the hold-down timer for K_new,
               per the RFC5011 algorithm.</t>
 
@@ -385,7 +385,7 @@
       <t> <figure>
           <artwork><![CDATA[
    addWaitTime = addHoldDownTime
-                 + SigExpirationTime
+                 + sigExpirationTime
                  + activeRefresh
                  + activeRefreshOffset
                  + safetyMargin
@@ -406,8 +406,8 @@
               ]]></artwork></figure></t>
       </section>
 
-      <section title="SigExpirationTime">
-	      <t>SigExpirationTime is defined in <xref
+      <section title="sigExpirationTime">
+	      <t>sigExpirationTime is defined in <xref
 	      target="terminology" />.</t>
       </section>
 
@@ -431,7 +431,7 @@
       <t> <figure>
           <artwork><![CDATA[
  activeRefresh = MAX(1 hour,
-                     MIN(SigExpirationTime / 2,
+                     MIN(sigExpirationTime / 2,
                          MAX(TTL of K_old DNSKEY RRSet) / 2,
                          15 days)
                      )
@@ -466,7 +466,7 @@
   retryTime = MAX (1 hour, 
                    MIN (1 day,
                         .1 * TTL of K_old DNSKEY RRset,
-                        .1 * SigExpirationTime))
+                        .1 * sigExpirationTime))
               ]]></artwork>
       </figure></t>
       </section>
@@ -480,9 +480,9 @@
       <t> <figure>
           <artwork><![CDATA[
    addWaitTime = addHoldDownTime
-                 + SigExpirationTime
+                 + sigExpirationTime
                  + 2 * MAX(1 hour,
-                           MIN(SigExpirationTime / 2,
+                           MIN(sigExpirationTime / 2,
                                MAX(TTL of K_old DNSKEY RRSet) / 2,
                                15 days)
                            )
@@ -498,7 +498,7 @@
       and not K_new.  The next query of the RFC5011 validator at which
       K_new will be seen without the potential for a replay attack
       will occur after the publication time plus
-      SigExpirationTime. Thus, the latest time that a RFC5011
+      sigExpirationTime. Thus, the latest time that a RFC5011
       Validator may begin their hold down timer is an "Active Refresh"
       period after the last point that an attacker can replay the
       K_old DNSKEY set.  The worst case scenario of this attack is if
@@ -530,7 +530,7 @@
       <t>Note: our notion of addWaitTime is
       called "Itrp" in Section 3.3.4.1 of <xref target="RFC7583"/>.
       The equation for Itrp in RFC7583 is insecure as it does not
-      include the SigExpirationTime listed above.  The Itrp equation
+      include the sigExpirationTime listed above.  The Itrp equation
       in RFC7583 also does not include the 2*TTL safety margin, though
       that is an operational consideration and not necessarily as
       critical.</t>
@@ -569,9 +569,9 @@
       before removing a revoked key from publication is: </t>
       <t> <figure>
           <artwork><![CDATA[
-  remWaitTime = SigExpirationTime
+  remWaitTime = sigExpirationTime
                 + MAX(1 hour,
-                      MIN((SigExpirationTime) / 2,
+                      MIN((sigExpirationTime) / 2,
                           MAX(TTL of K_old DNSKEY RRSet) / 2,
                           15 days),
                       1 hour)
@@ -585,7 +585,7 @@
       <t>Note that our notion of remWaitTime is
       called "Irev" in Section 3.3.4.2 of <xref target="RFC7583"/>.
       The equation for Irev in RFC7583 is insecure as it does not
-      include the SigExpirationTime listed above.    The Irev equation
+      include the sigExpirationTime listed above.    The Irev equation
       in RFC7583 also does not include the 2*TTL safety margin, though
       that is an operational consideration and not necessarily as
       critical.</t>
@@ -608,7 +608,7 @@
 
       <t>Note that for the values in this example produce a length
       shorter than the recommended 30 days in RFC5011's section 6.6,
-      step 3.  Other values of SigExpirationTime and the original TTL
+      step 3.  Other values of sigExpirationTime and the original TTL
       of the K_old DNSKEY RRSet, however, can produce values longer
       than 30 days.</t>
 
@@ -650,7 +650,7 @@
       that the Trust Anchor Publisher will use a consistent RRSIG
       validity period.  Trust Anchor Publishers that vary the
       length of RRSIG validity periods will need to adjust the
-      SigExpirationTime value accordingly so that the equations in
+      sigExpirationTime value accordingly so that the equations in
       <xref target="minimum" />  and <xref target="revoking" />
       use a value that coincides with the last time a replay of older
       RRSIGs will no longer succeed.</t>
@@ -690,7 +690,7 @@
       <figure>
           <artwork><![CDATA[
       addHoldDownTime:                      30 days
-      Old DNSKEY SigExpirationTime:         21 days
+      Old DNSKEY sigExpirationTime:         21 days
       Old DNSKEY TTL:                        2 days
                 ]]></artwork>
         </figure></t>
