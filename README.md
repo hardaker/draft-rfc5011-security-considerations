@@ -8,7 +8,7 @@ dnsop                                                        W. Hardaker
 Internet-Draft                                                   USC/ISI
 Updates: 7583 (if approved)                                    W. Kumari
 Intended status: Standards Track                                  Google
-Expires: December 29, 2017                                 June 27, 2017
+Expires: March 16, 2018                               September 12, 2017
 
 
              Security Considerations for RFC5011 Publishers
@@ -41,7 +41,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 29, 2017.
+   This Internet-Draft will expire on March 16, 2018.
 
 Copyright Notice
 
@@ -55,9 +55,9 @@ Copyright Notice
 
 
 
-Hardaker & Kumari       Expires December 29, 2017               [Page 1]
+Hardaker & Kumari        Expires March 16, 2018                 [Page 1]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
    carefully, as they describe your rights and restrictions with respect
@@ -111,9 +111,9 @@ Table of Contents
 
 
 
-Hardaker & Kumari       Expires December 29, 2017               [Page 2]
+Hardaker & Kumari        Expires March 16, 2018                 [Page 2]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 1.1.  Document History and Motivation
@@ -167,9 +167,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
 
-Hardaker & Kumari       Expires December 29, 2017               [Page 3]
+Hardaker & Kumari        Expires March 16, 2018                 [Page 3]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 3.  Terminology
@@ -223,9 +223,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
 
-Hardaker & Kumari       Expires December 29, 2017               [Page 4]
+Hardaker & Kumari        Expires March 16, 2018                 [Page 4]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
    3.  Begin to exclusively use recently published DNSKEYs to sign the
@@ -279,9 +279,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
 
-Hardaker & Kumari       Expires December 29, 2017               [Page 5]
+Hardaker & Kumari        Expires March 16, 2018                 [Page 5]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
    SigExpirationTime  10 days
@@ -335,9 +335,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
 
-Hardaker & Kumari       Expires December 29, 2017               [Page 6]
+Hardaker & Kumari        Expires March 16, 2018                 [Page 6]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
    T+5  The RFC5011 Validator queries for the zone's keyset per the
@@ -357,7 +357,7 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
       T+10, the RFC5011 Validator starts (anew) the hold-timer for
       K_new.
 
-   T+11 through T-29  The RFC5011 Validator continues checking the
+   T+11 through T+29  The RFC5011 Validator continues checking the
       zone's key set at the prescribed regular intervals.  During this
       period, the attacker can no longer replay traffic to their
       benefit.
@@ -391,9 +391,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
 
-Hardaker & Kumari       Expires December 29, 2017               [Page 7]
+Hardaker & Kumari        Expires March 16, 2018                 [Page 7]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
       all of the records in the DNS tree below the zone's apex will be
@@ -411,9 +411,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
                     + SigExpirationTime
                     + activeRefresh
                     + activeRefreshOffset
-                    + 2 * MAX(TTL of all records)
+                    + safetyMargin
 
-   Where activeRefresh time is defined by RFC5011 by:
+   Where activeRefresh time is defined by RFC5011 by
 
      A resolver that has been configured for an automatic update
      of keys from a particular trust point MUST query that trust
@@ -423,13 +423,17 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
      expiration interval and no more often than once per hour.
 
 
-   This translates to the following equation:
+   This translates to:
 
     activeRefresh = MAX(1 hour,
                         MIN(SigExpirationTime / 2,
                             MAX(TTL of K_old DNSKEY RRSet) / 2,
                             15 days)
                         )
+
+   And where the safetyMargin is an extra period of time to account for
+   caching, network delays, etc.  A suggested operational value for this
+   is 2 * MAX(TTL of all records)
 
    The activeRefreshOffset term must be added for situations where the
    activeRefresh value is not a factor of "30 days".  Specifically,
@@ -439,18 +443,17 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    as large as activeRefresh itself.  For simplicity, setting the
    activeRefreshOffset to the activeRefresh value itself is safe.
 
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 8]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    The full expanded equation, with activeRefreshOffset set to
    activeRefresh for simplicity, is:
-
-
-
-
-
-
-Hardaker & Kumari       Expires December 29, 2017               [Page 8]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
 
       addWaitTime = addHoldDownTime
                     + SigExpirationTime
@@ -460,7 +463,6 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
                                   15 days)
                               )
                     + 2 * MAX(TTL of all records)
-
 
    The important timing constraint introduced by this memo relates to
    the last point at which a validating resolver may have received a
@@ -501,11 +503,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
 
-
-
-Hardaker & Kumari       Expires December 29, 2017               [Page 9]
+Hardaker & Kumari        Expires March 16, 2018                 [Page 9]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 6.1.1.  Example Results
@@ -559,9 +559,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
 
-Hardaker & Kumari       Expires December 29, 2017              [Page 10]
+Hardaker & Kumari        Expires March 16, 2018                [Page 10]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 6.2.1.  Example Results
@@ -615,9 +615,9 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
 
 
-Hardaker & Kumari       Expires December 29, 2017              [Page 11]
+Hardaker & Kumari        Expires March 16, 2018                [Page 11]
 
-Internet-Draft       RFC5011 Security Considerations           June 2017
+Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
    the SigExpirationTime value accordingly so that the equations in
@@ -629,24 +629,22 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
    The authors would like to especially thank to Michael StJohns for his
    help and advice and the care and thought he put into RFC5011 itself.
    We would also like to thank Bob Harold, Shane Kerr, Matthijs Mekking,
-   Duane Wessels, Petr Petr Spacek, and the dnsop working group who have
-   assisted with this document.
+   Duane Wessels, Petr Petr Spacek, Ed Lewis, and the dnsop working
+   group who have assisted with this document.
 
 11.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
-              editor.org/info/rfc2119>.
+              Requirement Levels", BCP 14, RFC 2119, March 1997.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
-              <https://www.rfc-editor.org/info/rfc4033>.
+              <http://www.rfc-editor.org/info/rfc4033>.
 
    [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
               Trust Anchors", STD 74, RFC 5011, DOI 10.17487/RFC5011,
-              September 2007, <https://www.rfc-editor.org/info/rfc5011>.
+              September 2007, <http://www.rfc-editor.org/info/rfc5011>.
 
    [RFC7583]  Morris, S., Ihren, J., Dickinson, J., and W. Mekking,
               "DNSSEC Key Rollover Timing Considerations", RFC 7583,
@@ -655,7 +653,7 @@ Internet-Draft       RFC5011 Security Considerations           June 2017
 
    [RFC7719]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", RFC 7719, DOI 10.17487/RFC7719, December
-              2015, <https://www.rfc-editor.org/info/rfc7719>.
+              2015, <http://www.rfc-editor.org/info/rfc7719>.
 
 Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
@@ -668,16 +666,15 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
          Old DNSKEY SigExpirationTime:         21 days
          Old DNSKEY TTL:                        2 days
 
-
-
-
-Hardaker & Kumari       Expires December 29, 2017              [Page 12]
-
-Internet-Draft       RFC5011 Security Considerations           June 2017
-
-
    Thus, sticking this information into the equation in
    Section Section 6 yields (in days):
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 12]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
 
      addWaitTime = 30
                    + (21)
@@ -727,5 +724,8 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari       Expires December 29, 2017              [Page 13]
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 13]
 ```
