@@ -20,11 +20,17 @@ Abstract
    advice that must be followed in order to maintain security.
    Specifically, this document describes the math behind the minimum
    time-length that a DNS zone publisher must wait before signing
-   exclusively with recently added DNSKEYs.  This document also
-   describes the minimum time-length that a DNS zone publisher must wait
-   after publishing a revoked DNSKEY before assuming that all active
-   RFC5011 resolvers should have seen the revocation-marked key and
-   removed it from their list of trust anchors.
+   exclusively with recently added DNSKEYs.  It contains much math and
+   complicated equations, but the summary is that the key rollover /
+   revocation time is much longer than intuition would suggest.  If you
+   are not both publishing a DNSSEC trust anchor, and using RFC5011 to
+   update that trust anchor, you probably don't need to read this
+   document.
+
+   This document also describes the minimum time-length that a DNS zone
+   publisher must wait after publishing a revoked DNSKEY before assuming
+   that all active RFC5011 resolvers should have seen the revocation-
+   marked key and removed it from their list of trust anchors.
 
 Status of This Memo
 
@@ -43,6 +49,17 @@ Status of This Memo
 
    This Internet-Draft will expire on March 16, 2018.
 
+
+
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 1]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
 Copyright Notice
 
    Copyright (c) 2017 IETF Trust and the persons identified as the
@@ -52,14 +69,6 @@ Copyright Notice
    Provisions Relating to IETF Documents
    (http://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 1]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
-
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
@@ -75,10 +84,10 @@ Table of Contents
    2.  Background  . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   4
    4.  Timing Associated with RFC5011 Processing . . . . . . . . . .   4
-     4.1.  Timing Associated with Publication  . . . . . . . . . . .   4
+     4.1.  Timing Associated with Publication  . . . . . . . . . . .   5
      4.2.  Timing Associated with Revocation . . . . . . . . . . . .   5
    5.  Denial of Service Attack Considerations . . . . . . . . . . .   5
-     5.1.  Enumerated Attack Example . . . . . . . . . . . . . . . .   5
+     5.1.  Enumerated Attack Example . . . . . . . . . . . . . . . .   6
        5.1.1.  Attack Timing Breakdown . . . . . . . . . . . . . . .   6
    6.  Minimum RFC5011 Timing Requirements . . . . . . . . . . . . .   8
      6.1.  Timing Requirements For Adding a New KSK  . . . . . . . .   8
@@ -87,10 +96,10 @@ Table of Contents
        6.2.1.  Example Results . . . . . . . . . . . . . . . . . . .  11
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
    8.  Operational Considerations  . . . . . . . . . . . . . . . . .  11
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  12
    10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
    11. Normative References  . . . . . . . . . . . . . . . . . . . .  12
-   Appendix A.  Real World Example: The 2017 Root KSK Key Roll . . .  12
+   Appendix A.  Real World Example: The 2017 Root KSK Key Roll . . .  13
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
 
 1.  Introduction
@@ -99,6 +108,14 @@ Table of Contents
    their list of trust anchors when they've seen a new key published in
    a zone.  However, RFC5011 [intentionally] provides no guidance to the
    publishers of DNSKEYs about how long they must wait before switching
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 2]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    to exclusively using recently published keys for signing records, or
    how long they must wait before ceasing publication of a revoked key.
    Because of this lack of guidance, zone publishers may derive
@@ -108,13 +125,6 @@ Table of Contents
    and is intended to complement the guidance offered in RFC5011 (which
    is written to provide timing guidance solely to a Validating
    Resolver's point of view).
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 2]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
 1.1.  Document History and Motivation
 
@@ -153,6 +163,15 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    document does not define any other operational guidance or
    recommendations about the RFC5011 process and restricts itself to
    solely the security and operational ramifications of switching to
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 3]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    exclusively using recently added keys or removing a revoked keys too
    soon.
 
@@ -162,15 +181,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    DNSKEY publisher to publish a revoked key for a long enough period of
    time may result in RFC5011 Validating Resolvers leaving that key in
    their trust anchor storage beyond the key's expected lifetime.
-
-
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 3]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
 3.  Terminology
 
@@ -206,6 +216,18 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    this document.  Readers need to fully understand [RFC5011] as well to
    fully comprehend the importance of this document.
 
+
+
+
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 4]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
 4.1.  Timing Associated with Publication
 
    RFC5011's process of safely publishing a new key and then making use
@@ -218,15 +240,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
        with the old one.
 
    2.  Wait a period of time.
-
-
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 4]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
    3.  Begin to exclusively use recently published DNSKEYs to sign the
        appropriate resource records.
@@ -263,6 +276,14 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    If an attacker is able to provide a RFC5011 Validating Resolver with
    past responses, such as when it is in-path or able to perform any
    number of cache poisoning attacks, the attacker may be able to leave
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 5]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    compliant RFC5011-Validating Resolvers without an appropriate DNSKEY
    trust anchor.  This scenario will remain until an administrator
    manually fixes the situation.
@@ -275,14 +296,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    within this section:
 
    TTL (all records)  1 day
-
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 5]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
    SigExpirationTime  10 days
 
@@ -320,6 +333,13 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
       The Attacker queries for, retrieves and caches this DNSKEY set and
       corresponding RRSIG signatures.
 
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 6]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    T+0  The Zone Signer adds K_new to their zone and signs the zone's
       key set with K_old.  The RFC5011 Validator (later to be under
       attack) retrieves this new key set and corresponding RRSIGs and
@@ -330,15 +350,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
       RFC5011 Validator notices its publication; though not shown in
       this example, this delay is accounted for in the final solution
       below]
-
-
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 6]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
    T+5  The RFC5011 Validator queries for the zone's keyset per the
       RFC5011 Active Refresh schedule, discussed in Section 2.3 of
@@ -376,6 +387,15 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
       the signature validity period in this example] would have passed).
       However, the hold-down timer of our attacked RFC5011 Validator is
       only at 25 days (T+35 minus T+10); thus the RFC5011 won't consider
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 7]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
       it a valid trust anchor addition yet, as the required 30 days have
       not yet elapsed.
 
@@ -388,14 +408,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
       days, it failed to accept K_new as a trust anchor.  Since K_old is
       no longer being used to sign the zone's DNSKEYs, all the DNSKEY
       records from the zone will be treated as invalid.  Subsequently,
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 7]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
-
       all of the records in the DNS tree below the zone's apex will be
       deemed invalid by DNSSEC.
 
@@ -431,6 +443,15 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
                             15 days)
                         )
 
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 8]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    And where the safetyMargin is an extra period of time to account for
    caching, network delays, etc.  A suggested operational value for this
    is 2 * MAX(TTL of all records)
@@ -442,15 +463,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    division problem).  This will frequently be zero, but could be nearly
    as large as activeRefresh itself.  For simplicity, setting the
    activeRefreshOffset to the activeRefresh value itself is safe.
-
-
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 8]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
    The full expanded equation, with activeRefreshOffset set to
    activeRefresh for simplicity, is:
@@ -488,6 +500,14 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
    The extra 2 * MAX(TTL of all records) is the standard added safety
    margin when dealing with DNSSEC due to caching that can take place.
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                 [Page 9]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    Because the 5011 steps require direct validation using the signature
    validity, the authors aren't yet convinced it is needed in this
    particular case, but it is prudent to include it for added assurance.
@@ -498,15 +518,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    equation in RFC7583 also does not include the 2*TTL safety margin,
    though that is an operational consideration and not necessarily as
    critical.
-
-
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                 [Page 9]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
 6.1.1.  Example Results
 
@@ -544,6 +555,15 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
                          1 hour)
                    + 2 * MAX(TTL of all records)
 
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 10]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    Note that the activeRefreshOffset time does not apply to this
    equation.
 
@@ -556,13 +576,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
    Note also that adding retryTime intervals to the remWaitTime may be
    wise, just as it was for addWaitTime in Section 6.
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                [Page 10]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
 6.2.1.  Example Results
 
@@ -598,6 +611,15 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    timing can be tricky as we have shown, and a BCP is clearly
    warranted.  This document is intended only to fill a single
    operational void which, when left misunderstood, can result in
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 11]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    serious security ramifications.  This document does not attempt to
    document any other missing operational guidance for zone publishers.
 
@@ -612,14 +634,6 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
    For simplicity, this document assumes that the Trust Anchor Publisher
    will use a consistent RRSIG validity period.  Trust Anchor Publishers
    that vary the length of RRSIG validity periods will need to adjust
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                [Page 11]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
-
    the SigExpirationTime value accordingly so that the equations in
    Section 6 and Section 6.2 use a value that coincides with the last
    time a replay of older RRSIGs will no longer succeed.
@@ -635,25 +649,36 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 11.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119, March 1997.
+              Requirement Levels", BCP 14, RFC 2119, DOI 10.17487/
+              RFC2119, March 1997, <https://www.rfc-editor.org/info/
+              rfc2119>.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
-              Rose, "DNS Security Introduction and Requirements",
-              RFC 4033, DOI 10.17487/RFC4033, March 2005,
-              <http://www.rfc-editor.org/info/rfc4033>.
+              Rose, "DNS Security Introduction and Requirements", RFC
+              4033, DOI 10.17487/RFC4033, March 2005, <https://www.rfc-
+              editor.org/info/rfc4033>.
 
    [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
               Trust Anchors", STD 74, RFC 5011, DOI 10.17487/RFC5011,
-              September 2007, <http://www.rfc-editor.org/info/rfc5011>.
+              September 2007, <https://www.rfc-editor.org/info/rfc5011>.
 
    [RFC7583]  Morris, S., Ihren, J., Dickinson, J., and W. Mekking,
-              "DNSSEC Key Rollover Timing Considerations", RFC 7583,
-              DOI 10.17487/RFC7583, October 2015, <https://www.rfc-
+              "DNSSEC Key Rollover Timing Considerations", RFC 7583, DOI
+              10.17487/RFC7583, October 2015, <https://www.rfc-
               editor.org/info/rfc7583>.
+
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 12]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
 
    [RFC7719]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", RFC 7719, DOI 10.17487/RFC7719, December
-              2015, <http://www.rfc-editor.org/info/rfc7719>.
+              2015, <https://www.rfc-editor.org/info/rfc7719>.
 
 Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
@@ -668,13 +693,6 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
    Thus, sticking this information into the equation in
    Section Section 6 yields (in days):
-
-
-
-Hardaker & Kumari        Expires March 16, 2018                [Page 12]
-
-Internet-Draft       RFC5011 Security Considerations      September 2017
-
 
      addWaitTime = 30
                    + (21)
@@ -702,6 +720,18 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 Authors' Addresses
 
+
+
+
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 13]
+
+Internet-Draft       RFC5011 Security Considerations      September 2017
+
+
    Wes Hardaker
    USC/ISI
    P.O. Box 382
@@ -727,5 +757,31 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari        Expires March 16, 2018                [Page 13]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hardaker & Kumari        Expires March 16, 2018                [Page 14]
 ```
