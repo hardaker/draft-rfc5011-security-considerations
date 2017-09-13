@@ -388,12 +388,12 @@
                  + SigExpirationTime
                  + activeRefresh
                  + activeRefreshOffset
-                 + 2 * MAX(TTL of all records)
+                 + safetyMargin
               ]]></artwork>
       </figure></t>
 
       <t>
-	Where activeRefresh time is defined by RFC5011 by:
+	Where activeRefresh time is defined by RFC5011 by
       </t>
       <t><figure>
           <artwork><![CDATA[
@@ -407,8 +407,7 @@
               ]]></artwork>
         </figure></t>
 
-      <t> This translates to the following equation:</t>
-
+      <t> This translates to:</t>
       <t> <figure>
           <artwork><![CDATA[
  activeRefresh = MAX(1 hour,
@@ -418,6 +417,10 @@
                      )
               ]]></artwork>
       </figure></t>
+
+      <t> And where the safetyMargin is an extra period of time to
+      account for caching, network delays, etc.  A suggested
+      operational value for this is 2 * MAX(TTL of all records)</t> 
 
       <t>The activeRefreshOffset term must be added for situations
       where the activeRefresh value is not a factor of "30 days".
@@ -444,7 +447,6 @@
                                15 days)
                            )
                  + 2 * MAX(TTL of all records)
-                                
               ]]></artwork>
       </figure></t>
 
@@ -625,8 +627,9 @@
       <t>The authors would like to especially thank to Michael StJohns
       for his help and advice and the care and thought he put into
       RFC5011 itself. We would also like to thank Bob Harold, Shane
-      Kerr, Matthijs Mekking, Duane Wessels, Petr Petr Spacek, and the
-      dnsop working group who have assisted with this document.</t>
+      Kerr, Matthijs Mekking, Duane Wessels, Petr Petr Spacek, Ed
+      Lewis, and the dnsop working group who have assisted with this
+      document.</t>
     </section>
   </middle>
 
