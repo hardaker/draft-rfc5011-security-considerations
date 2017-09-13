@@ -448,13 +448,14 @@
       
       <section title="activeRefreshOffset">
       <t>The activeRefreshOffset term must be added for situations
-      where the activeRefresh value is not a factor of "30 days".
-      Specifically, activeRefreshOffset will be "(30 days) %
-      activeRefresh", where % is the mathematical mod operator (which
-      calculates the remainder in a division problem).  This will
-      frequently be zero, but could be nearly as large as
+      where the activeRefresh value is not a factor of the
+      addHoldDownTime.  Specifically, activeRefreshOffset will be
+      "addHoldDownTime % activeRefresh", where % is the mathematical
+      mod operator (calculating the remainder in a division problem).
+      This will frequently be zero, but could be nearly as large as
       activeRefresh itself.  For simplicity, setting the
-      activeRefreshOffset to the activeRefresh value itself is safe.
+      activeRefreshOffset to the activeRefresh value itself is always
+      safe.
       </t>
       </section>
       
