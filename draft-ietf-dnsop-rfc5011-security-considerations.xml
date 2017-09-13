@@ -155,7 +155,7 @@
       storage beyond the key's expected lifetime.</t>
     </section>
 
-    <section title="Terminology">
+    <section title="Terminology" anchor="terminology">
       <t><list style="hanging">
           <t hangText="Trust Anchor Publisher">The entity responsible for
           publishing a DNSKEY that can be used as a trust anchor.</t>
@@ -392,8 +392,28 @@
               ]]></artwork>
       </figure></t>
 
+      <section title="addHoldDownTime">
+	      <t>The addHoldDownTime is defined in Section 2.4.1 of
+	      <xref target="RFC5011" /> as:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+     The add hold-down time is 30 days or the expiration time of the
+     original TTL of the first trust point DNSKEY RRSet that contained
+     the new key, whichever is greater.  This ensures that at least
+     two validated DNSKEY RRSets that contain the new key MUST be seen
+     by the resolver prior to the key's acceptance.
+              ]]></artwork></figure></t>
+      </section>
+
+      <section title="SigExpirationTime">
+	      <t>SigExpirationTime is defined in <xref
+	      target="terminology" />.</t>
+      </section>
+
+      <section title="activeRefresh">
       <t>
-	Where activeRefresh time is defined by RFC5011 by
+	activeRefresh time is defined by RFC5011 by
       </t>
       <t><figure>
           <artwork><![CDATA[
@@ -417,11 +437,9 @@
                      )
               ]]></artwork>
       </figure></t>
-
-      <t> And where the safetyMargin is an extra period of time to
-      account for caching, network delays, etc.  A suggested
-      operational value for this is 2 * MAX(TTL of all records)</t> 
-
+      </section>
+      
+      <section title="activeRefreshOffset">
       <t>The activeRefreshOffset term must be added for situations
       where the activeRefresh value is not a factor of "30 days".
       Specifically, activeRefreshOffset will be "(30 days) %
@@ -431,7 +449,29 @@
       activeRefresh itself.  For simplicity, setting the
       activeRefreshOffset to the activeRefresh value itself is safe.
       </t>
+      </section>
+      
+      <section title="safetyMargin">
+      <t>The safetyMargin is an extra period of time to
+      account for caching, network delays, etc.  A suggested
+      operational value for this is 2 * MAX(TTL of all records)</t> 
 
+      <t>RFC5011 also discusses a retryTime value for failed queries.
+      Our equation cannot take into account undeterministic failure
+      situations, so it might be wise to extend the safetyMargin by
+      some factor of retryTime, which is defined in RFC5011 as:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+  retryTime = MAX (1 hour, 
+                   MIN (1 day,
+                        .1 * TTL of K_old DNSKEY RRset,
+                        .1 * SigExpirationTime))
+              ]]></artwork>
+      </figure></t>
+      </section>
+
+      <section title="Fully expanded equation">
       <t>
 	       The full expanded equation, with activeRefreshOffset
 	       set to activeRefresh for simplicity, is:
@@ -449,7 +489,9 @@
                  + 2 * MAX(TTL of all records)
               ]]></artwork>
       </figure></t>
+      </section>
 
+      <section title="Timing Constraint Summary">
       <t>The important timing constraint introduced by this memo
       relates to the last point at which a validating resolver may
       have received a replayed original DNSKEY set, containing K_old
@@ -462,22 +504,7 @@
       K_old DNSKEY set.  The worst case scenario of this attack is if
       the attacker can replay K_old seconds before the (DNSKEY RRSIG
       Signature Validity) field of the last K_old only RRSIG. </t>
-
-      <t>RFC5011 also discusses a retryTime value for failed queries.
-      Our equation cannot take into account undeterministic failure
-      situations, so it might be wise to extend the addWaitTime by
-      some factor of retryTime, which is defined in RFC5011 as:</t>
-
-      <t> <figure>
-          <artwork><![CDATA[
-  retryTime = MAX (1 hour, 
-                   MIN (1 day,
-                        .1 * TTL of K_old DNSKEY RRset,
-                        .1 * SigExpirationTime))
-              ]]></artwork>
-      </figure></t>
-
-
+      </section>
 <!-- this is duplication and badly worded ; first sentence moved above
      too -->
 <!--
@@ -499,12 +526,7 @@
       significantly longer based on the zone's DNSSEC parameters.</t>
 -->
 
-      <t>The extra 2 * MAX(TTL of all records) is the standard added safety
-      margin when dealing with DNSSEC due to caching that can take place.
-      Because the 5011 steps require direct validation using the signature
-      validity, the authors aren't yet convinced it is needed in this
-      particular case, but it is prudent to include it for added assurance.</t>
-
+      <section title="Additional Considerations">
       <t>Note: our notion of addWaitTime is
       called "Itrp" in Section 3.3.4.1 of <xref target="RFC7583"/>.
       The equation for Itrp in RFC7583 is insecure as it does not
@@ -533,6 +555,8 @@
       </section>
 
       </section>
+      </section>
+
       <section title="Timing Requirements For Revoking an Old KSK" anchor="revoking">
       <t>It is important to note that this issue affects not just the
       publication of new DNSKEYs intended to be used as trust anchors,
