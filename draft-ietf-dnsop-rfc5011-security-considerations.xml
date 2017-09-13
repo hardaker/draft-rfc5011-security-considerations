@@ -77,7 +77,14 @@
       timing advice that must be followed in order to maintain
       security.  Specifically, this document describes the math behind
       the minimum time-length that a DNS zone publisher must wait
-      before signing exclusively with recently added DNSKEYs.  This document
+      before signing exclusively with recently added DNSKEYs.  It contains
+      much math and complicated equations, but the summary is that the key 
+      rollover / revocation time is much longer than intuition would suggest.  
+      If you are not both publishing a DNSSEC trust anchor, and using 
+      RFC5011 to update that trust anchor, you probably don't need to 
+      read this document.</t>
+
+      <t>This document
       also describes the minimum time-length that a DNS zone publisher
       must wait after publishing a revoked DNSKEY before assuming that
       all active RFC5011 resolvers should have seen the
