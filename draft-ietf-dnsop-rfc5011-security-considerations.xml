@@ -333,7 +333,7 @@
               RFC5011 Validator starts (anew) the hold-timer for
               K_new.</t>
 
-              <t hangText="T+11 through T-29">The RFC5011 Validator
+              <t hangText="T+11 through T+29">The RFC5011 Validator
               continues checking the zone's key set at the prescribed
               regular intervals.  During this period, the attacker can
               no longer replay traffic to their benefit.</t>
