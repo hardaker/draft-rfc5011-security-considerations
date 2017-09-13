@@ -12,7 +12,7 @@ Expires: March 16, 2018                               September 12, 2017
 
 
              Security Considerations for RFC5011 Publishers
-          draft-ietf-dnsop-rfc5011-security-considerations-03
+          draft-ietf-dnsop-rfc5011-security-considerations-04
 
 Abstract
 
