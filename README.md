@@ -8,7 +8,7 @@ dnsop                                                        W. Hardaker
 Internet-Draft                                                   USC/ISI
 Updates: 7583 (if approved)                                    W. Kumari
 Intended status: Standards Track                                  Google
-Expires: March 18, 2018                               September 14, 2017
+Expires: March 23, 2018                               September 19, 2017
 
 
              Security Considerations for RFC5011 Publishers
@@ -47,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 18, 2018.
+   This Internet-Draft will expire on March 23, 2018.
 
 
 
@@ -55,7 +55,7 @@ Status of This Memo
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 1]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 1]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -111,7 +111,7 @@ Table of Contents
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 2]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 2]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -167,7 +167,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 3]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 3]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -223,7 +223,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 4]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 4]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -279,7 +279,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 5]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 5]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -335,7 +335,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 6]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 6]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -391,7 +391,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 7]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 7]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -447,7 +447,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 8]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 8]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -503,7 +503,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                 [Page 9]
+Hardaker & Kumari        Expires March 23, 2018                 [Page 9]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -559,7 +559,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                [Page 10]
+Hardaker & Kumari        Expires March 23, 2018                [Page 10]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -615,7 +615,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                [Page 11]
+Hardaker & Kumari        Expires March 23, 2018                [Page 11]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -671,7 +671,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                [Page 12]
+Hardaker & Kumari        Expires March 23, 2018                [Page 12]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -679,16 +679,18 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 11.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119, March 1997.
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
+              editor.org/info/rfc2119>.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
-              <http://www.rfc-editor.org/info/rfc4033>.
+              <https://www.rfc-editor.org/info/rfc4033>.
 
    [RFC5011]  StJohns, M., "Automated Updates of DNS Security (DNSSEC)
               Trust Anchors", STD 74, RFC 5011, DOI 10.17487/RFC5011,
-              September 2007, <http://www.rfc-editor.org/info/rfc5011>.
+              September 2007, <https://www.rfc-editor.org/info/rfc5011>.
 
    [RFC7583]  Morris, S., Ihren, J., Dickinson, J., and W. Mekking,
               "DNSSEC Key Rollover Timing Considerations", RFC 7583,
@@ -697,7 +699,7 @@ Internet-Draft       RFC5011 Security Considerations      September 2017
 
    [RFC7719]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", RFC 7719, DOI 10.17487/RFC7719, December
-              2015, <http://www.rfc-editor.org/info/rfc7719>.
+              2015, <https://www.rfc-editor.org/info/rfc7719>.
 
 Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
@@ -725,9 +727,7 @@ Appendix A.  Real World Example: The 2017 Root KSK Key Roll
 
 
 
-
-
-Hardaker & Kumari        Expires March 18, 2018                [Page 13]
+Hardaker & Kumari        Expires March 23, 2018                [Page 13]
 
 Internet-Draft       RFC5011 Security Considerations      September 2017
 
@@ -783,5 +783,5 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari        Expires March 18, 2018                [Page 14]
+Hardaker & Kumari        Expires March 23, 2018                [Page 14]
 ```
