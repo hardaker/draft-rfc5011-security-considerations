@@ -183,10 +183,14 @@
           of trust anchors.</t>
 
           <t hangText="sigExpirationTime">The amount of time remaining
-          before a RRSIG's Signature Expiration time is reached.  This
-          will fundamentally be the RRSIG's Signature Expiration time
-          minus the RRSIG's Signature Inception time when the
-          signature is created.</t>
+          before any existing RRSIG's Signature Expiration time is
+          reached.  Note that for organizations pre-creating
+          signatures this time may be fairly lengthy unless they can
+          be significantly assured their signatures can not be
+          replayed at a later date.  sigExpirationTime will
+          fundamentally be the RRSIG's Signature Expiration time minus
+          the RRSIG's Signature Inception time when the signature is
+          created.</t>
 
       </list></t>
 
@@ -203,11 +207,12 @@
 	    target="RFC5011" /> as well to fully comprehend the
 	    importance of this document.</t>
       <section title="Timing Associated with Publication">
-        <t>RFC5011's process of safely publishing a new key and then making
-        use of that key falls into a number of high-level steps to be
-        performed by the Trust Anchor Publisher.  This document
-        discusses the following scenario, which is one of many
-        possible combinations of operations defined in Section 6 of RFC5011:</t>
+        <t>RFC5011's process of safely publishing a new key and then
+        making use of that key falls into a number of high-level steps
+        to be performed by the Trust Anchor Publisher.  This document
+        discusses the following scenario, which the principle way
+        RFC5011 is currently being used (even though Section 6 of
+        RFC5011 suggests having a stand-by key available):</t>
 
         <t><list style="numbers">
             <t>Publish a new DNSKEY in the zone, but continue to sign
@@ -306,7 +311,10 @@
               considering the RRSIGs that cover the DNSKEYs in this
               document.]  The Attacker queries for, retrieves and
               caches this DNSKEY set and corresponding RRSIG
-              signatures.</t>
+              signatures.  Note that for simplicity we assume the
+              signer is not pre-signing and creating "valid in the
+              future" signature sets that may be stolen and replayed
+              even later.</t>
 
               <t hangText="T+0">The Zone Signer adds K_new to their
               zone and signs the zone's key set with K_old. The

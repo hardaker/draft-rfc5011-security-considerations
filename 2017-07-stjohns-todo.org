@@ -62,7 +62,7 @@
     
     + Result:
 
-*** TODO Section 4.1:  This doesn't actually describe what's in 5011 -
+*** FIXED2 Section 4.1:  This doesn't actually describe what's in 5011 -
     specifically bullet 3 was modified to clarify your concerns, but isn't
     what was in 5011.  You need to have both here.
     
@@ -84,6 +84,11 @@
       guidance of the first paragraph of section 6 which recommends at least
       two keys per trust point at all times."
 
+    + changed the sentence in question to:
+
+      This document discusses the following scenario, which the
+      principle way RFC5011 is currently being used (even though
+      Section 6 of RFC5011 suggests having a stand-by key available)
 
 *** ACCEPTED Section 4.1, bullet 3:  Same problem with "only".  Instead "Begin
     to exclusively use recently published DNSKEYs..."
@@ -124,7 +129,9 @@
 
       *sheesh*
 
-*** TODO Section 6 - general comment.   You're doing interval calculations
+    + Result: I don't read that as a disagreement
+
+*** NOTHINGTODO Section 6 - general comment.   You're doing interval calculations
     and you want to do date/time wall clock calculations instead.   While
     the 5011 values are based on intervals from the RRs get to the
     validator, the publisher has to be looking at absolute times first
@@ -165,7 +172,11 @@
       Under which circumstances would it not be true?  Could your document
       be interpreted in a way to make 1.2 not true?
 
-*** FIXED Section 5.1.1 - You're missing a *very* important point here -
+    + Result: Still nothing to do unless we want to change, which the WG
+      didn't believe is necessary.  Do see changes to the next
+      question too though.
+
+*** FIXED2 Section 5.1.1 - You're missing a *very* important point here -
     that DNSKEY RRSets may be signed ahead of their use.  You need to
     assume that once signed, they are available to be published - even by
     an attacker.  So wherever you have "signature lifetime" you want
@@ -205,6 +216,25 @@
       publisher doesn't think to modify its signing schedule in advance of a
       5011 action, then your interval calculations are less then useless.
       
+    + Fair point, thanks for clarifying.  I've added the following
+      text to 5.1.1:
+
+          Note that for simplicity we assume the signer is not
+          pre-signing and creating "valid in the future" signature
+          sets that may be stolen and replayed even later.
+
+      I've also changed the terminology of sigExpirationTime:
+
+          sigExpirationTime:  The amount of time remaining
+          before any existing RRSIG's Signature Expiration time is
+          reached.  Note that for organizations pre-creating
+          signatures this time may be fairly lengthy unless they can
+          be significantly assured their signatures can not be
+          replayed at a later date.  sigExpirationTime will
+          fundamentally be the RRSIG's Signature Expiration time minus
+          the RRSIG's Signature Inception time when the signature is
+          created.
+
 
 *** TODO Section 5.1.1 doesn't actually apply if you use the 5011 rollover
     approach (section 6.3).   E.g. K_old (and any RRSets it signed) will
@@ -348,4 +378,4 @@
     + Result: wording changed to addWaitTime and remWaitTime, and math
       adjusted to drop the 30 day part of the timer.  Thanks.
 
-#+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r) NOTHINGTODO(n)
+#+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r) NOTHINGTODO(n) FIXED2(2)
