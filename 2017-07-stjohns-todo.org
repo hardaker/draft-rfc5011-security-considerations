@@ -236,7 +236,7 @@
           created.
 
 
-*** TODO Section 5.1.1 doesn't actually apply if you use the 5011 rollover
+*** NOTHINGTODO2 Section 5.1.1 doesn't actually apply if you use the 5011 rollover
     approach (section 6.3).   E.g. K_old (and any RRSets it signed) will
     be revoked the first time K_new is seen and K_standby is the signing
     key.  At this point this reduces to a normal denial of service attack
@@ -268,6 +268,11 @@
       do is note that at the beginning of 5.1.1 and point to section 6.2 as
       the mitigation math.
 
+    + Result: 5.1.1 does not now say that it applies to revocation and
+      specifically discusses "The timing schedule listed below is
+      based on a Trust Anchor Publisher publishing a new Key Signing
+      Key (KSK), with the intent that it will later become a trust
+      anchor."
 
 *** FIXED Section 5.1.1, T+35:  "since the hold down time of 30 days + 1/2
     the signature validity... " - Two items:  Wordsmithing:  The hold down
@@ -286,7 +291,7 @@
 
     + MSJ responds: The new language works.
 
-*** TODO Section 6 - the formulas are wrong.  I also  don't understand
+*** FIXED2 Section 6 - the formulas are wrong.  I also  don't understand
     where you got MAX(originalTTL/2,15 days) - there's no support for this
     in the text.
 
@@ -315,6 +320,13 @@
     Note that in 6.1 you have 5 terms, but in the fully expanded equation
     in 6.1.6 you have 4.  You're missing the safetyMargin which you didn't
     actually define completely in section 6.1.5.
+
+    + I think you mean activeRefreshOffset, as safetyMargin was
+      defined (though we had to change it again due to the possibility
+      of extremely short TTLs).  But I have added the expansion of
+      activeRefreshOffset to the equation; thanks for catching that.
+      I haven't changed the definition since I don't see any missing
+      pieces to it (or to the safetyMargin definition).
 
 *** NOTHINGTODO The final formula should be:
     
@@ -378,4 +390,4 @@
     + Result: wording changed to addWaitTime and remWaitTime, and math
       adjusted to drop the 30 day part of the timer.  Thanks.
 
-#+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r) NOTHINGTODO(n) FIXED2(2)
+#+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r) NOTHINGTODO(n) FIXED2(2) NOTHINGTODO2(N)

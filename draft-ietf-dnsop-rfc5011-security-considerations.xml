@@ -413,11 +413,11 @@
 
       <t> <figure>
           <artwork><![CDATA[
-     The add hold-down time is 30 days or the expiration time of the
-     original TTL of the first trust point DNSKEY RRSet that contained
-     the new key, whichever is greater.  This ensures that at least
-     two validated DNSKEY RRSets that contain the new key MUST be seen
-     by the resolver prior to the key's acceptance.
+    The add hold-down time is 30 days or the expiration time of the
+    original TTL of the first trust point DNSKEY RRSet that contained
+    the new key, whichever is greater.  This ensures that at least
+    two validated DNSKEY RRSets that contain the new key MUST be seen
+    by the resolver prior to the key's acceptance.
               ]]></artwork></figure></t>
       </section>
 
@@ -426,7 +426,7 @@
 	      target="terminology" />.</t>
       </section>
 
-      <section title="activeRefresh">
+      <section title="activeRefresh" anchor="activeRefresh">
       <t>
 	activeRefresh time is defined by RFC5011 by
       </t>
@@ -470,7 +470,17 @@
       <section title="safetyMargin">
       <t>The safetyMargin is an extra period of time to
       account for caching, network delays, etc.  A suggested
-      operational value for this is 2 * MAX(TTL of all records)</t> 
+      operational value for this is 2 * MAX(TTL of all records) unless
+      the TTLs are shorter than an hour, at which point they start
+      affecting the calculations in the MIN() clause in the
+      activeRefresh timer in <xref target="activeRefresh" />.  Thus,
+      we suggest a safetyMargin of at least:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+  safetyMargin = MAX (1.5 hours, 2 * MAX(TTL of all records))
+              ]]></artwork>
+      </figure></t>
 
       <t>RFC5011 also discusses a retryTime value for failed queries.
       Our equation cannot take into account undeterministic failure
@@ -502,7 +512,8 @@
                                MAX(TTL of K_old DNSKEY RRSet) / 2,
                                15 days)
                            )
-                 + 2 * MAX(TTL of all records)
+                 + (addHoldDownTime % activeRefresh)
+                 + MAX(1.5 hours, 2 * MAX(TTL of all records))
               ]]></artwork>
       </figure></t>
       </section>
