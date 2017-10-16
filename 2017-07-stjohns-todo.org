@@ -69,7 +69,7 @@
     + Result: Intro paragraph added to note we're paraphrasing 5011 at
       a very high level only.
 
-    + MSJ disagrees:
+    + MSJ responds:
 
       Nope - not fixed.  You have "This document discusses the following
       scenario, which is one of many possible combinations of operations
@@ -84,7 +84,7 @@
       guidance of the first paragraph of section 6 which recommends at least
       two keys per trust point at all times."
 
-    + changed the sentence in question to:
+    + Result: changed the sentence in question to:
 
       This document discusses the following scenario, which the
       principle way RFC5011 is currently being used (even though
@@ -204,7 +204,7 @@
          needing to calculate via wall-clock (since everything should
          be based on sigexpiration).
 
-    XXX: With this goal in mind, I've cleaned up the text a bit to make it
+    With this goal in mind, I've cleaned up the text a bit to make it
     a bit more clear.
 
     + MSJ Responds about point 3:
@@ -321,7 +321,7 @@
     in 6.1.6 you have 4.  You're missing the safetyMargin which you didn't
     actually define completely in section 6.1.5.
 
-    + I think you mean activeRefreshOffset, as safetyMargin was
+    + Result: I think you mean activeRefreshOffset, as safetyMargin was
       defined (though we had to change it again due to the possibility
       of extremely short TTLs).  But I have added the expansion of
       activeRefreshOffset to the equation; thanks for catching that.
