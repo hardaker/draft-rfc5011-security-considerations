@@ -391,3 +391,76 @@
       adjusted to drop the 30 day part of the timer.  Thanks.
 
 #+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r) NOTHINGTODO(n) FIXED2(2) NOTHINGTODO2(N)
+* New notes from MSJ on <2017-10-18 Wed>
+*** REJECTED You said in 4.1:
+
+     which the principle
+         way RFC5011 is currently being used (even though Section 6 of
+         RFC5011 suggests having a stand-by key available)
+
+     And then in  T-1 you say:
+
+        Note that for simplicity we assume the signer is not pre-signing and
+         creating "valid in the future" signature sets that may be stolen and
+         replayed even later.
+
+     But - "the way RFC5011 is currently being used" is with "pre-signing"
+     and "valid in the future" signature sets.   So you want to have your
+     cake and eat it too.     You're now both not dealing with the way 5011
+     said you should do things nor are you dealing with the way that the
+     root actually does things.
+
+     All of this can be fixed by going to a wall clock model which is the
+     way the publisher works vs the interval model which is only
+     appropriate for the client.
+
+     + I understand that's how you'd structure the document.  For me,
+       I believe it's easier for people to understand the problem as
+       structured.  The example walk-through is designed to be simple
+       for learning about the issue, which is already complex enough.
+       This topic was brought up on the list before and in Chicago and
+       the consent was to leave it as is, though there wasn't a huge
+       number of voiced opinions.  We designed the document to come at
+       the topic for human understanding, and I believe most people
+       think about the problem as a delta from the time they sign and
+       publish the zone.  I believe that coders will implement it
+       according to how they need to given their software.
+ 
+       If you feel strongly about this, please encourage others to
+       chime with requests for change too in order to shift consensus.
+       At this time we don't plan to change the document to reflect
+       your preferred style.
+
+*** TODO You continue to have a problem with "sigExpirationTime".
+    > The amount of time remaining before any existing
+    > RRSIG's Signature Expiration time is reached.  Note that for
+    > organizations pre-creating signatures this time may be fairly
+    > lengthy unless they can be significantly assured their signatures
+    > can not be replayed at a later date.
+
+    the problem is:  Amount of time measured from when?     (and it should
+    be "latest RRSIG's Signature Expiration time is reached" at least.
+
+    > sigExpirationTime will
+    >        fundamentally be the RRSIG's Signature Expiration time minus the
+    >        RRSIG's Signature Inception time when the signature is created.
+    This is no longer fundamentally the difference between one RRSig
+    inception and expiration time.  You can't even describe it as the
+    difference between the earliest inception and latest expiration
+    because that changes as the earlier RRSigs expire.   The only fixed
+    value (and easiest value) is "latest expiration date". You could say
+    "latest expiration date - now" which then gets added to "now" to get
+    back to lastest expiration date.....
+
+    Please, please please just move to a wall clock value based on the
+    latest expiration date plus appropriate intervals.  All the minor
+    twiddles you've done to try to avoid doing this have made the document
+    less clear.
+
+    + I've changed the wording to your "latest...".  Thank you for the
+      concrete suggestion.  As to "when" it amounts to the current
+      value time(), which is indicated by the "The amount of time
+      remaining...".  Again, this is written from the point of view of
+      a human wanting to calculate how long the need to continue waiting. 
+
+

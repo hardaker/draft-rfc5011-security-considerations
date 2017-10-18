@@ -8,11 +8,11 @@ dnsop                                                        W. Hardaker
 Internet-Draft                                                   USC/ISI
 Updates: 7583 (if approved)                                    W. Kumari
 Intended status: Standards Track                                  Google
-Expires: April 19, 2018                                 October 16, 2017
+Expires: April 21, 2018                                 October 18, 2017
 
 
              Security Considerations for RFC5011 Publishers
-          draft-ietf-dnsop-rfc5011-security-considerations-06
+          draft-ietf-dnsop-rfc5011-security-considerations-07
 
 Abstract
 
@@ -47,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 19, 2018.
+   This Internet-Draft will expire on April 21, 2018.
 
 
 
@@ -55,7 +55,7 @@ Status of This Memo
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 1]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 1]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -111,7 +111,7 @@ Table of Contents
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 2]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 2]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -167,7 +167,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 3]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 3]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -205,7 +205,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
       anchor or to prevent the RFC5011 Validator from removing an old
       DNSKEY from its list of trust anchors.
 
-   sigExpirationTime  The amount of time remaining before any existing
+   sigExpirationTime  The amount of time remaining before the latest
       RRSIG's Signature Expiration time is reached.  Note that for
       organizations pre-creating signatures this time may be fairly
       lengthy unless they can be significantly assured their signatures
@@ -223,7 +223,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 4]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 4]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -279,7 +279,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 5]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 5]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -335,7 +335,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 6]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 6]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -391,7 +391,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 7]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 7]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -447,7 +447,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 8]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 8]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -503,7 +503,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                 [Page 9]
+Hardaker & Kumari        Expires April 21, 2018                 [Page 9]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -559,7 +559,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                [Page 10]
+Hardaker & Kumari        Expires April 21, 2018                [Page 10]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -615,7 +615,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                [Page 11]
+Hardaker & Kumari        Expires April 21, 2018                [Page 11]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -671,7 +671,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                [Page 12]
+Hardaker & Kumari        Expires April 21, 2018                [Page 12]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -727,7 +727,7 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                [Page 13]
+Hardaker & Kumari        Expires April 21, 2018                [Page 13]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -783,7 +783,7 @@ Authors' Addresses
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                [Page 14]
+Hardaker & Kumari        Expires April 21, 2018                [Page 14]
 
 Internet-Draft       RFC5011 Security Considerations        October 2017
 
@@ -839,5 +839,5 @@ Internet-Draft       RFC5011 Security Considerations        October 2017
 
 
 
-Hardaker & Kumari        Expires April 19, 2018                [Page 15]
+Hardaker & Kumari        Expires April 21, 2018                [Page 15]
 ```
