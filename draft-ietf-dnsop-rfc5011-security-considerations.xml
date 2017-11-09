@@ -77,12 +77,13 @@
       timing advice that must be followed in order to maintain
       security.  Specifically, this document describes the math behind
       the minimum time-length that a DNS zone publisher must wait
-      before signing exclusively with recently added DNSKEYs.  It contains
-      much math and complicated equations, but the summary is that the key 
-      rollover / revocation time is much longer than intuition would suggest.  
-      If you are not both publishing a DNSSEC trust anchor, and using 
-      RFC5011 to update that trust anchor, you probably don't need to 
-      read this document.</t>
+      before signing exclusively with recently added DNSKEYs.  It
+      contains much math and complicated equations, but the summary is
+      that the key rollover / revocation time is much longer than
+      intuition would suggest.  If you are not both publishing a
+      DNSSEC DNSKEY, and using RFC5011 to advertise this DNSKEY as a
+      new secure entry point key for use as a trust anchor, you
+      probably don't need to read this document.</t>
 
       <t>This document
       also describes the minimum time-length that a DNS zone publisher
@@ -164,11 +165,12 @@
 
     <section title="Terminology" anchor="terminology">
       <t><list style="hanging">
-          <t hangText="Trust Anchor Publisher">The entity responsible for
-          publishing a DNSKEY that can be used as a trust anchor.</t>
+          <t hangText="SEP Publisher">The entity responsible for
+          publishing a DNSKEY (with the Secure Entry Point (SEP) bit
+          set) that can be used as a trust anchor.</t>
 
           <t hangText="Zone Signer">The owner of a zone intending to publish
-          a new Key-Signing-Key (KSK) that will become a trust anchor by
+          a new Key-Signing-Key (KSK) that may become a trust anchor for
           validators following the RFC5011 process.</t>
 
           <t hangText="RFC5011 Validating Resolver">A DNSSEC
@@ -216,7 +218,7 @@
       <section title="Timing Associated with Publication">
         <t>RFC5011's process of safely publishing a new key and then
         making use of that key falls into a number of high-level steps
-        to be performed by the Trust Anchor Publisher.  This document
+        to be performed by the SEP Publisher.  This document
         discusses the following scenario, which the principle way
         RFC5011 is currently being used (even though Section 6 of
         RFC5011 suggests having a stand-by key available):</t>
@@ -285,12 +287,12 @@
           </list></t>
 
         <t>Given these settings, the sequence of events in <xref
-        target="timing" /> depicts how a Trust Anchor Publisher that
+        target="timing" /> depicts how a SEP Publisher that
         waits for only the RFC5011 hold time timer length of 30 days
         subjects its users to a potential Denial of Service
-        attack. The timing schedule listed below is based on a Trust
-        Anchor Publisher publishing a new Key Signing Key (KSK), with
-        the intent that it will later become a trust anchor.  We label
+        attack. The timing schedule listed below is based on a SEP
+        Publisher publishing a new Key Signing Key (KSK), with
+        the intent that it will later be used as a trust anchor.  We label
         this publication time as "T+0".  All numbers in this sequence
         refer to days before and after this initial publication
         event. Thus, T-1 is the day before the introduction of the new
@@ -302,13 +304,14 @@
             <t hangText="K_old">An older KSK and Trust Anchor being replaced.</t>
 
             <t hangText="K_new">A new KSK being transitioned into active
-            use and expected to become a Trust Anchor via the RFC5011 process.</t>
+            use and expected to become a Trust Anchor via the RFC5011
+            automated trust anchor update process.</t>
           </list></t>
 
         <section title="Attack Timing Breakdown" anchor="timing">
           <t>The steps shows an attack that foils the adoption of a new
           DNSKEY by a 5011 Validating Resolver when the
-          Trust Anchor Publisher that starts signing and
+          SEP Publisher that starts signing and
           publishing with the new DNSKEY too quickly. <list
               style="hanging">
               <t hangText="T-1">The K_old based RRSIGs are being
@@ -375,8 +378,9 @@
               period in this example] would have passed). However, the
               hold-down timer of our attacked RFC5011 Validator is
               only at 25 days (T+35 minus T+10); thus the RFC5011
-              won't consider it a valid trust anchor addition yet, as
-              the required 30 days have not yet elapsed.</t>
+              Validating Resolver won't consider it a valid trust
+              anchor addition yet, as the required 30 days have not
+              yet elapsed.</t>
 
               <t hangText="T+36">The Zone Signer, believing K_new is
               safe to use, switches their active signing KSK to K_new
@@ -637,7 +641,7 @@
       timing requirements are affected by the attacks described in
       this document, but with revocation the key is revoked
       immediately and the addHoldDown timer does not apply.  Thus the
-      minimum amount of time that a Trust Anchor Publisher must wait
+      minimum amount of time that a SEP Publisher must wait
       before removing a revoked key from publication is: </t>
       <t> <figure>
           <artwork><![CDATA[
@@ -736,7 +740,7 @@
     <section anchor="operational" title="Operational Considerations">
       <t>A companion document to RFC5011 was expected to be published
       that describes the best operational practice considerations from
-      the perspective of a zone publisher and Trust Anchor
+      the perspective of a zone publisher and PEP
       Publisher. However, this companion document has yet to be
       published. The authors of this document hope that it will at
       some point in the future, as RFC5011 timing can be tricky as we
@@ -749,14 +753,15 @@
 
     <section anchor="security" title="Security Considerations">
       <t>This document, is solely about the security considerations with
-      respect to the Trust Anchor Publisher of RFC5011 trust anchors / DNSKEYs.
+      respect to the SEP Publisher's ability to advertise new DNSKEYs
+      via the RFC5011 automated trust anchor update process.
       Thus the entire document is a discussion of Security
       Considerations when adding or removing DNSKEYs from trust anchor
       storage using the RFC5011 process.</t>
 
       <t>For simplicity, this document assumes
-      that the Trust Anchor Publisher will use a consistent RRSIG
-      validity period.  Trust Anchor Publishers that vary the
+      that the SEP Publisher will use a consistent RRSIG
+      validity period.  SEP Publishers that vary the
       length of RRSIG validity periods will need to adjust the
       sigExpirationTime value accordingly so that the equations in
       <xref target="minimum" />  and <xref target="revoking" />
