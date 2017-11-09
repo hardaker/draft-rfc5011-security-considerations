@@ -390,7 +390,6 @@
     + Result: wording changed to addWaitTime and remWaitTime, and math
       adjusted to drop the 30 day part of the timer.  Thanks.
 
-#+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r) NOTHINGTODO(n) FIXED2(2) NOTHINGTODO2(N)
 * New notes from MSJ on <2017-10-18 Wed>
 *** REJECTED You said in 4.1:
 
@@ -464,3 +463,4 @@
       a human wanting to calculate how long the need to continue waiting. 
 
 
+#+TODO: TODO(t) | ACCEPTED(a) FIXED(f) REJECTED(r) NOTHINGTODO(n) FIXED2(2) NOTHINGTODO2(N)
