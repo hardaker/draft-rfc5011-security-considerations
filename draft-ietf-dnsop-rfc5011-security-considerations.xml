@@ -183,7 +183,7 @@
           RFC5011 Resolver from removing an old DNSKEY from its list
           of trust anchors.</t>
 
-          XXX: review this:
+          <!-- XXX: review this: -->
 
           <t hangText="lastSigExpirationTime">The latest value of any
           RRSIG Signature Expiration field (which is a date and time)
@@ -276,7 +276,7 @@
       </section>
     </section>
 
-    <section anchor="attack" title="Denial of Service Attack Considerations">
+    <section anchor="attack" title="Denial of Service Attack Walkthrough">
       <t>This section serves as an illustrative example of the problem
       being discussed in this document.  Note that in order to keep
       the example simple enough to understand, some simplifications
@@ -353,7 +353,7 @@
               a new RRSIG and the RFC5011 Resolver notices its
               publication; though not shown in this example, this
               delay is accounted for in the equation in <xref
-              sec="miniumum" /> below]</t>
+              target="minimum" /> below]</t>
 
               <t hangText="T+5">The RFC5011 Resolver queries for the
               zone's keyset per the RFC5011 Active Refresh schedule,
@@ -419,25 +419,23 @@
 
     <section anchor="minimum" title="Minimum RFC5011 Timing Requirements">
 
-      <section title="Timing Requirements For Adding a New KSK">
-      <t>Given the attack description in <xref target="attack"/>, the
-      correct minimum length of time required for the Zone Signer to
-      wait after publishing K_new but before exclusively using it and
-      newer keys is:</t>
+	    <t>This section defines a method for calculating the
+	    amount of time to wait until it is safe to start signing
+	    exclusively with a new key <xref target="waittime" />
+	    (especially useful for writing code involving sleep based
+	    timers), and an a method for calculating a wall-clock
+	    value after which it is safe to start signing exclusively
+	    with a new key <xref target="wallclock" /> (especially
+	    useful for writing code based on wall-clock event
+	    triggers).  First, we define the term components used in
+	    both equations in <xref target="term" />. </t>
+	    
 
-      <t> <figure>
-          <artwork><![CDATA[
-   addWaitTime = addHoldDownTime
-                 + sigExpirationTimeRemaining
-                 + activeRefresh
-                 + activeRefreshOffset
-                 + safetyMargin
-              ]]></artwork>
-      </figure></t>
-
+		    <section anchor="term" title="Equation Components">
       <section title="addHoldDownTime">
 	      <t>The addHoldDownTime is defined in Section 2.4.1 of
 	      <xref target="RFC5011" /> as:</t>
+
 
       <t> <figure>
           <artwork><![CDATA[
@@ -524,6 +522,26 @@
               ]]></artwork>
       </figure></t>
       </section>
+		          </section>
+		          
+
+      <section title="Timing Requirements For Adding a New KSK">
+
+      <section title="Wait Timer Based Calculation" anchor="waittime">
+      <t>Given the attack description in <xref target="attack"/>, the
+      correct minimum length of time required for the Zone Signer to
+      wait after publishing K_new but before exclusively using it and
+      newer keys is:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+   addWaitTime = addHoldDownTime
+                 + sigExpirationTimeRemaining
+                 + activeRefresh
+                 + activeRefreshOffset
+                 + safetyMargin
+              ]]></artwork>
+      </figure></t>
 
       <section title="Fully expanded equation">
       <t>
@@ -544,8 +562,9 @@
               ]]></artwork>
       </figure></t>
       </section>
+      </section>
 
-      <section title="Wall-Clock Based Calculation">
+      <section title="Wall-Clock Based Calculation" anchor="wallclock">
 	      <t>The above equations are defined based upon how long
 	      to wait from a particular moment in time.  An
 	      alternative, but equivalent, method is to calculate the
@@ -597,6 +616,7 @@
       the attacker can replay K_old just seconds before the (DNSKEY RRSIG
       Signature Validity) field of the last K_old only RRSIG. </t>
       </section>
+
 <!-- this is duplication and badly worded ; first sentence moved above
      too -->
 <!--
@@ -618,7 +638,7 @@
       significantly longer based on the zone's DNSSEC parameters.</t>
 -->
 
-      <section title="Additional Considerations">
+      <section title="Additional Considerations for RFC7583">
       <t>Note: our notion of addWaitTime is
       called "Itrp" in Section 3.3.4.1 of <xref target="RFC7583"/>.
       The equation for Itrp in RFC7583 is insecure as it does not
@@ -626,8 +646,9 @@
       in RFC7583 also does not include the 2*TTL safety margin, though
       that is an operational consideration and not necessarily as
       critical.</t>
+      </section>
 
-      <section title="Example Results">
+      <section title="Example Scenario Calculations">
       <t>For the parameters listed in <xref target="examplenumbers"/>,
       the activeRefreshOffset is 0, since 30 days is evenly divisible
       by activeRefresh (1/2 day), and our resulting addWaitTime is:
@@ -647,9 +668,10 @@
       </section>
 
       </section>
-      </section>
 
       <section title="Timing Requirements For Revoking an Old KSK" anchor="revoking">
+
+      <section title="Wait Timer Based Calculation">
       <t>It is important to note that this issue affects not just the
       publication of new DNSKEYs intended to be used as trust anchors,
       but also the length of time required to continuously publish a
@@ -674,17 +696,10 @@
       <t>Note that the activeRefreshOffset time does not apply to this
       equation.</t>
 
-      <t>Note that our notion of remWaitTime is
-      called "Irev" in Section 3.3.4.2 of <xref target="RFC7583"/>.
-      The equation for Irev in RFC7583 is insecure as it does not
-      include the sigExpirationTime listed above.    The Irev equation
-      in RFC7583 also does not include the 2*TTL safety margin, though
-      that is an operational consideration and not necessarily as
-      critical.</t>
-
       <t>Note also that adding retryTime intervals to the remWaitTime
       may be wise, just as it was for addWaitTime in <xref
       target="minimum" />.</t>
+      </section>
 
       <section title="Wall-Clock Based Calculation">
 	      <t>Like before, the above equations are defined based
@@ -722,7 +737,17 @@
       </t>
       </section>
 
-      <section title="Example Results">
+      <section title="Additional Considerations for RFC7583">
+      <t>Note that our notion of remWaitTime is
+      called "Irev" in Section 3.3.4.2 of <xref target="RFC7583"/>.
+      The equation for Irev in RFC7583 is insecure as it does not
+      include the sigExpirationTime listed above.    The Irev equation
+      in RFC7583 also does not include the 2*TTL safety margin, though
+      that is an operational consideration and not necessarily as
+      critical.</t>
+      </section>
+
+      <section title="Example Scenario Calculations">
       <t>For the parameters listed in <xref target="examplenumbers"/>, our
       example: <figure>
           <artwork><![CDATA[
@@ -746,8 +771,8 @@
       replay the old data for every query a RFC5011 Resolver sends,
       not just one.</t>
       </section>
-      </section>
     </section>
+</section>
 
     <section title="IANA Considerations">
       <t>This document contains no IANA considerations.</t>
