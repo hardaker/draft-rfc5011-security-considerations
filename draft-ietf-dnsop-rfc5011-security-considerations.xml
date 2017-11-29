@@ -113,25 +113,25 @@
       Validating Resolver's point of view).</t>
 
       <section title="Document History and Motivation">
-	<t>To verify this lack of understanding is wide-spread, the
-	authors reached out to 5 DNSSEC experts to ask them how long
-	they thought they must wait before signing a zone exclusively
-	with a new KSK <xref target="RFC4033"/> that was being
-	introduced according to the 5011 process. All 5 experts
-	answered with an insecure value, and we determined that this
-	lack of operational guidance might cause security concerns in
-	deployment and wrote this companion document to RFC5011. We
-	hope that this document will rectify this understanding and
-	provide better guidance to zone publishers that wish to make
-	use of the RFC5011 rollover process.</t>
+        <t>To verify this lack of understanding is wide-spread, the
+        authors reached out to 5 DNSSEC experts to ask them how long
+        they thought they must wait before signing a zone exclusively
+        with a new KSK <xref target="RFC4033"/> that was being
+        introduced according to the 5011 process. All 5 experts
+        answered with an insecure value, and we determined that this
+        lack of operational guidance might cause security concerns in
+        deployment and wrote this companion document to RFC5011. We
+        hope that this document will rectify this understanding and
+        provide better guidance to zone publishers that wish to make
+        use of the RFC5011 rollover process.</t>
       </section>
-	
+        
       <section title="Safely Rolling the Root Zone's KSK in 2017/2018"> 
-	<t>One important note about ICANN's (currently in process)
-	2017/2018 KSK rollover plan for the root zone: the timing
-	values chosen for rolling the KSK in the root zone appear
-	completely safe, and are not affected by the timing concerns
-	introduced by this draft</t>
+        <t>One important note about ICANN's (currently in process)
+        2017/2018 KSK rollover plan for the root zone: the timing
+        values chosen for rolling the KSK in the root zone appear
+        completely safe, and are not affected by the timing concerns
+        introduced by this draft</t>
       </section>
       <section title="Requirements notation">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -209,13 +209,13 @@
     </section>
 
     <section title="Timing Associated with RFC5011 Processing">
-	    <t>These sections define a high-level overview of <xref
-	    target="RFC5011" /> processing.  These steps are not
-	    sufficient for proper RFC5011 implementation, but provide
-	    enough background for the reader to follow the discussion
-	    in this document.  Readers need to fully understand <xref
-	    target="RFC5011" /> as well to fully comprehend the
-	    content and importance of this document.</t>
+            <t>These sections define a high-level overview of <xref
+            target="RFC5011" /> processing.  These steps are not
+            sufficient for proper RFC5011 implementation, but provide
+            enough background for the reader to follow the discussion
+            in this document.  Readers need to fully understand <xref
+            target="RFC5011" /> as well to fully comprehend the
+            content and importance of this document.</t>
 
       <section title="Timing Associated with Publication">
         <t>RFC5011's process of safely publishing a new DNSKEY and then
@@ -412,37 +412,37 @@
     </section>
 
     <section anchor="minimum" title="Minimum RFC5011 Timing Requirements">
-	<t> This section defines the minimum timing requirements for
-	making exclusive use of newly added DNSKEYs and timing
-	requirements for ceasing the publication of DNSKEYs to be
-	revoked.  First, we define the term components used in both
-	equations in <xref target="term" />. </t>
+        <t> This section defines the minimum timing requirements for
+        making exclusive use of newly added DNSKEYs and timing
+        requirements for ceasing the publication of DNSKEYs to be
+        revoked.  First, we define the term components used in both
+        equations in <xref target="term" />. </t>
 
 
-	<section anchor="term" title="Equation Components">
-	        <section title="addHoldDownTime">
-	  <t>The addHoldDownTime is defined in Section 2.4.1 of
-	  <xref target="RFC5011" /> as:</t>
+        <section anchor="term" title="Equation Components">
+                <section title="addHoldDownTime">
+          <t>The addHoldDownTime is defined in Section 2.4.1 of
+          <xref target="RFC5011" /> as:</t>
 
 
-	  <t> <figure>
-		  <artwork><![CDATA[
+          <t> <figure>
+                  <artwork><![CDATA[
     The add hold-down time is 30 days or the expiration time of the
     original TTL of the first trust point DNSKEY RRSet that contained
     the new key, whichever is greater.  This ensures that at least
     two validated DNSKEY RRSets that contain the new key MUST be seen
     by the resolver prior to the key's acceptance.
                   ]]></artwork></figure></t>
-	        </section>
+                </section>
 
       <section title="sigExpirationTimeRemaining">
-	      <t>sigExpirationTimeRemaining is defined in <xref
-	      target="terminology" />.</t>
+              <t>sigExpirationTimeRemaining is defined in <xref
+              target="terminology" />.</t>
       </section>
 
       <section title="activeRefresh" anchor="activeRefresh">
       <t>
-	activeRefresh time is defined by RFC5011 by
+        activeRefresh time is defined by RFC5011 by
       </t>
       <t><figure>
           <artwork><![CDATA[
@@ -482,50 +482,105 @@
       </section>
       
       <section title="safetyMargin">
-      <t>The safetyMargin is an extra period of time to
-      account for caching, network delays, etc.  A suggested
-      operational value for this is 2 * MAX(TTL of all records) unless
-      the TTLs are shorter than an hour, at which point they start
-      affecting the calculations in the MIN() clause in the
-      activeRefresh timer in <xref target="activeRefresh" />.  Thus,
-      we suggest a safetyMargin of at least:</t>
+              <t>The safetyMargin is an extra period of time to account for
+              caching, network delays, dropped packets, and other operational
+              concerns otherwise beyond the scope of this document.  The value
+              operators should chose is highly dependent on the deployment
+              siptuation associated with their zone.  Note that no value of a
+              safetyMargin can protect against resolvers that are "down".
+              None the less, we do offer the following as one method
+              considering reasonable values to select from.</t>
+              
+              <t>
+                      The following list of variables need to be considered
+                      when selecting an appropriate safetyMargin value:
+              </t>
+              
+              <t>
+                      <list style="hanging">
+                              <t hangText="successRate:"> A likely success rate for client queries and retries</t>
+                              <t hangText="numResolvers:"> The number of client RFC5011 Resolvers</t>
+                      </list>
+              </t>
 
+              <t>Note that RFC5011 defines retryTime as:</t>
       <t> <figure>
           <artwork><![CDATA[
-  safetyMargin = MAX (1.5 hours, 2 * MAX(TTL of all records))
+      If the query fails, the resolver MUST repeat the query until
+      satisfied no more often than once an hour and no less often
+      than the lesser of 1 day, 10% of the original TTL, or 10% of
+      the original expiration interval.  That is,
+      retryTime = MAX (1 hour, MIN (1 day, .1 * origTTL,
+                                    .1 * expireInterval)).
               ]]></artwork>
       </figure></t>
 
-      <t>RFC5011 also discusses a retryTime value for failed queries.
-      Our equation cannot take into account undeterministic failure
-      situations, so it might be wise to extend the safetyMargin by
-      some factor of retryTime, which is defined in RFC5011 as:</t>
+              <t>With these values selected and the definition of
+              retryTime from RFC5011, one method for determining how
+              many retryTime intervals to wait in order to reduce the
+              set of uncompleted servers to 0 assuming normal
+              probability is thus:
+              </t>
+              
+              <t> <figure>
+                      <artwork><![CDATA[
+                      x = (1/(1 - successRate))
+
+         retryCountWait = Log_base_x(numResolvers)
+                      ]]></artwork>
+              </figure></t>
+
+              <t>To reduce the need for readers to pull out a
+              scientific calculator, we offer the following lookup
+              table based on successRate and numResolvers:</t>
 
       <t> <figure>
           <artwork><![CDATA[
-  retryTime = MAX (1 hour, 
-                   MIN (1 day,
-                        .1 * TTL of K_old DNSKEY RRset,
-                        .1 * sigExpirationTime))
+                       retryCountWait lookup table
+                       ---------------------------
+
+             Number of client RFC5011 Resolvers (numResolvers)
+                       10,000  100,000 1,000,000 10,000,000 100,000,000
+                0.01      917     1146      1375       1604        1833
+Probability     0.05      180      225       270        315         360
+of Success      0.10       88      110       132        153         175
+Per Retry       0.15       57       71        86        100         114
+Interval        0.25       33       41        49         57          65
+(successRate)   0.50       14       17        20         24          27
+                0.90        4        5         6          7           8
+                0.95        4        4         5          6           7
+                0.99        2        3         3          4           4
+                0.999       2        2         2          3           3
               ]]></artwork>
       </figure></t>
-      </section>
 
+      <t>Finally, a suggested value of safetyMargin can then be this
+      retryCountWait number multiplied by the retryTime from RFC5011:
+      </t>
+      
+      <t> <figure>
+          <artwork><![CDATA[
+              safetyMargin = retryCountWait * retryTime
+              ]]></artwork>
+      </figure></t>
+
+              </section>
+        
       </section>
 
       <section title="Timing Requirements For Adding a New KSK">
 
-	<t>This section defines a method for calculating the
-	amount of time to wait until it is safe to start signing
-	exclusively with a new key <xref target="waittime" />
-	(especially useful for writing code involving sleep based
-	timers), and an a method for calculating a wall-clock
-	value after which it is safe to start signing exclusively
-	with a new key <xref target="wallclock" /> (especially
-	useful for writing code based on clock-based event
-	triggers).  
-	</t>
-	
+        <t>This section defines a method for calculating the
+        amount of time to wait until it is safe to start signing
+        exclusively with a new key <xref target="waittime" />
+        (especially useful for writing code involving sleep based
+        timers), and an a method for calculating a wall-clock
+        value after which it is safe to start signing exclusively
+        with a new key <xref target="wallclock" /> (especially
+        useful for writing code based on clock-based event
+        triggers).  
+        </t>
+        
       <section title="Wait Timer Based Calculation" anchor="waittime">
       <t>Given the attack description in <xref target="attack"/>, the
       correct minimum length of time required for the Zone Signer to
@@ -544,7 +599,7 @@
 
       <section title="Fully expanded equation">
       <t>
-	       The full expanded equation is:
+               The full expanded equation is:
       </t>
 
       <t> <figure>
@@ -565,11 +620,11 @@
       </section>
 
       <section title="Wall-Clock Based Calculation" anchor="wallclock">
-	      <t>The above equations are defined based upon how long
-	      to wait from a particular moment in time.  An
-	      alternative, but equivalent, method is to calculate the
-	      date and time before which it is unsafe to use a key for
-	      signing.  This calculation thus becomes:</t>
+              <t>The above equations are defined based upon how long
+              to wait from a particular moment in time.  An
+              alternative, but equivalent, method is to calculate the
+              date and time before which it is unsafe to use a key for
+              signing.  This calculation thus becomes:</t>
 
       <t> <figure>
           <artwork><![CDATA[
@@ -584,7 +639,7 @@
       <t>where lastSigExpirationTime is the latest value of any
       sigExpirationTime for which RRSIGs were created that could
       potentially be replayed.  Fully expanded, this becomes:</t>
-	      
+              
       <t> <figure>
           <artwork><![CDATA[
    addWallClockTime = lastSigExpirationTime
@@ -673,20 +728,20 @@
 
       <section title="Timing Requirements For Revoking an Old KSK" anchor="revoking">
 
-	<t>This issue affects not just the
-	publication of new DNSKEYs intended to be used as trust anchors,
-	but also the length of time required to continuously publish a
-	DNSKEY with the revoke bit set.</t>
+        <t>This issue affects not just the
+        publication of new DNSKEYs intended to be used as trust anchors,
+        but also the length of time required to continuously publish a
+        DNSKEY with the revoke bit set.</t>
 
       <t>This section defines a method for calculating the amount of
-	time operators need to wait until it is safe to cease
-	publishing a DNSKEY <xref target="waittime" /> (especially
-	useful for writing code involving sleep based timers), and an
-	a method for calculating a minimal wall-clock value after
-	which it is safe to cease publishing a DNSKEY <xref
-	target="wallclock" /> (especially useful for writing code
-	based on clock-based event triggers).
-	</t>
+        time operators need to wait until it is safe to cease
+        publishing a DNSKEY <xref target="waittime" /> (especially
+        useful for writing code involving sleep based timers), and an
+        a method for calculating a minimal wall-clock value after
+        which it is safe to cease publishing a DNSKEY <xref
+        target="wallclock" /> (especially useful for writing code
+        based on clock-based event triggers).
+        </t>
 
       <section title="Wait Timer Based Calculation">
       <t>Both of these publication
@@ -716,12 +771,12 @@
       </section>
 
       <section title="Wall-Clock Based Calculation">
-	      <t>Like before, the above equations are defined based
-	      upon how long to wait from a particular moment in time.
-	      An alternative, but equivalent, method is to calculate
-	      the date and time before which it is unsafe to cease
-	      publishing a revoked key.  This calculation thus
-	      becomes:</t>
+              <t>Like before, the above equations are defined based
+              upon how long to wait from a particular moment in time.
+              An alternative, but equivalent, method is to calculate
+              the date and time before which it is unsafe to cease
+              publishing a revoked key.  This calculation thus
+              becomes:</t>
 
       <t> <figure>
           <artwork><![CDATA[
@@ -735,7 +790,7 @@
       <t>where lastSigExpirationTime is the latest value of any
       sigExpirationTime for which RRSIGs were created that could
       potentially be replayed.  Fully expanded, this becomes:</t>
-	      
+              
       <t> <figure>
           <artwork><![CDATA[
    remWallClockTime = lastSigExpirationTime
