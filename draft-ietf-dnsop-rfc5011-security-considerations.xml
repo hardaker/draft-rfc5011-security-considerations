@@ -192,21 +192,15 @@
           DNSKEY RRset of a DNSKEY that is to be revoked.  Note that
           for organizations pre-creating signatures this time may be
           fairly far in the future unless they can be significantly
-          assured their signatures can not be replayed at a later
-          date.</t>
+          assured that none of their pre-generated signatures can
+          be replayed at a later date.</t>
 
           <t hangText="sigExpirationTime">The amount of time between
           the DNSKEY RRSIG's Signature Inception field and the
           Signature Expiration field.</t>
 
-          <t hangText="sigExpirationTimeRemaining">The amount of time remaining
-          before the latest RRSIG's Signature Expiration time is
-          reached (i.e., the time until the lastSigExpirationTime
-          value is reached).</t>
-
-          <t hangText="tbd">XXX: define the period length between
-          inception and expiration for the equations differently than
-          the "when"</t>
+          <t hangText="sigExpirationTimeRemaining">The amount of time
+          remaining before latestSigExpirationTime is reached.</t>
 
       </list></t>
 
@@ -418,34 +412,28 @@
     </section>
 
     <section anchor="minimum" title="Minimum RFC5011 Timing Requirements">
-
-	    <t>This section defines a method for calculating the
-	    amount of time to wait until it is safe to start signing
-	    exclusively with a new key <xref target="waittime" />
-	    (especially useful for writing code involving sleep based
-	    timers), and an a method for calculating a wall-clock
-	    value after which it is safe to start signing exclusively
-	    with a new key <xref target="wallclock" /> (especially
-	    useful for writing code based on wall-clock event
-	    triggers).  First, we define the term components used in
-	    both equations in <xref target="term" />. </t>
-	    
-
-		    <section anchor="term" title="Equation Components">
-      <section title="addHoldDownTime">
-	      <t>The addHoldDownTime is defined in Section 2.4.1 of
-	      <xref target="RFC5011" /> as:</t>
+	<t> This section defines the minimum timing requirements for
+	making exclusive use of newly added DNSKEYs and timing
+	requirements for ceasing the publication of DNSKEYs to be
+	revoked.  First, we define the term components used in both
+	equations in <xref target="term" />. </t>
 
 
-      <t> <figure>
-          <artwork><![CDATA[
+	<section anchor="term" title="Equation Components">
+	        <section title="addHoldDownTime">
+	  <t>The addHoldDownTime is defined in Section 2.4.1 of
+	  <xref target="RFC5011" /> as:</t>
+
+
+	  <t> <figure>
+		  <artwork><![CDATA[
     The add hold-down time is 30 days or the expiration time of the
     original TTL of the first trust point DNSKEY RRSet that contained
     the new key, whichever is greater.  This ensures that at least
     two validated DNSKEY RRSets that contain the new key MUST be seen
     by the resolver prior to the key's acceptance.
-              ]]></artwork></figure></t>
-      </section>
+                  ]]></artwork></figure></t>
+	        </section>
 
       <section title="sigExpirationTimeRemaining">
 	      <t>sigExpirationTimeRemaining is defined in <xref
@@ -493,6 +481,7 @@
       </t>
       </section>
       
+<!--
       <section title="safetyMargin">
       <t>The safetyMargin is an extra period of time to
       account for caching, network delays, etc.  A suggested
@@ -523,10 +512,23 @@
       </figure></t>
       </section>
 		          </section>
-		          
+-->		          
+
+      </section>
 
       <section title="Timing Requirements For Adding a New KSK">
 
+	<t>This section defines a method for calculating the
+	amount of time to wait until it is safe to start signing
+	exclusively with a new key <xref target="waittime" />
+	(especially useful for writing code involving sleep based
+	timers), and an a method for calculating a wall-clock
+	value after which it is safe to start signing exclusively
+	with a new key <xref target="wallclock" /> (especially
+	useful for writing code based on clock-based event
+	triggers).  
+	</t>
+	
       <section title="Wait Timer Based Calculation" anchor="waittime">
       <t>Given the attack description in <xref target="attack"/>, the
       correct minimum length of time required for the Zone Signer to
@@ -602,6 +604,7 @@
 
       </section>
 
+
       <section title="Timing Constraint Summary">
       <t>The important timing constraint introduced by this memo
       relates to the last point at which a RFC5011 Resolver may
@@ -671,11 +674,23 @@
 
       <section title="Timing Requirements For Revoking an Old KSK" anchor="revoking">
 
+	<t>This issue affects not just the
+	publication of new DNSKEYs intended to be used as trust anchors,
+	but also the length of time required to continuously publish a
+	DNSKEY with the revoke bit set.</t>
+
+      <t>This section defines a method for calculating the amount of
+	time operators need to wait until it is safe to cease
+	publishing a DNSKEY <xref target="waittime" /> (especially
+	useful for writing code involving sleep based timers), and an
+	a method for calculating a minimal wall-clock value after
+	which it is safe to cease publishing a DNSKEY <xref
+	target="wallclock" /> (especially useful for writing code
+	based on clock-based event triggers).
+	</t>
+
       <section title="Wait Timer Based Calculation">
-      <t>It is important to note that this issue affects not just the
-      publication of new DNSKEYs intended to be used as trust anchors,
-      but also the length of time required to continuously publish a
-      DNSKEY with the revoke bit set.  Both of these publication
+      <t>Both of these publication
       timing requirements are affected by the attacks described in
       this document, but with revocation the key is revoked
       immediately and the addHoldDown timer does not apply.  Thus the
