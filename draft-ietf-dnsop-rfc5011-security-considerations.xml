@@ -481,7 +481,6 @@
       </t>
       </section>
       
-<!--
       <section title="safetyMargin">
       <t>The safetyMargin is an extra period of time to
       account for caching, network delays, etc.  A suggested
@@ -511,8 +510,6 @@
               ]]></artwork>
       </figure></t>
       </section>
-		          </section>
--->		          
 
       </section>
 
@@ -561,6 +558,7 @@
                            )
                  + (addHoldDownTime % activeRefresh)
                  + MAX(1.5 hours, 2 * MAX(TTL of all records))
+                 + safetyMargin
               ]]></artwork>
       </figure></t>
       </section>
@@ -598,6 +596,7 @@
                                 )
                       + (addHoldDownTime % activeRefresh)
                       + MAX(1.5 hours, 2 * MAX(TTL of all records))
+                 + safetyMargin
               ]]></artwork>
           </figure>
       </t>
