@@ -74,16 +74,16 @@
 
     <abstract>
       <t> This document extends the RFC5011 rollover strategy with
-      timing advice that must be followed in order to maintain
-      security.  Specifically, this document describes the math behind
-      the minimum time-length that a DNS zone publisher must wait
-      before signing exclusively with recently added DNSKEYs.  It
-      contains much math and complicated equations, but the summary is
-      that the key rollover / revocation time is much longer than
-      intuition would suggest.  If you are not both publishing a
-      DNSSEC DNSKEY, and using RFC5011 to advertise this DNSKEY as a
-      new Secure Entry Point key for use as a trust anchor, you
-      probably don't need to read this document.</t>
+      timing advice that must be followed by the publisher in order to
+      maintain security.  Specifically, this document describes the
+      math behind the minimum time-length that a DNS zone publisher
+      must wait before signing exclusively with recently added
+      DNSKEYs.  It contains much math and complicated equations, but
+      the summary is that the key rollover / revocation time is much
+      longer than intuition would suggest.  If you are not both
+      publishing a DNSSEC DNSKEY, and using RFC5011 to advertise this
+      DNSKEY as a new Secure Entry Point key for use as a trust
+      anchor, you probably don't need to read this document.</t>
 
       <t>This document
       also describes the minimum time-length that a DNS zone publisher
@@ -143,15 +143,14 @@
 
     <section title="Background">
       <t>The RFC5011 process describes a process by which a RFC5011
-      Resolver may accept a newly published KSK as a trust
-      anchor for validating future DNSSEC signed records. It also
-      describes the process for publicly revoking a published
-      KSK. This document augments that information with additional
-      constraints, from the DNSKEY publication and
-      revocation's points of view. Note that this document does not define any
-      other operational guidance or recommendations about the RFC5011
-      process and restricts itself to solely the security and
-      operational ramifications of switching to exclusively using 
+      Resolver may accept a newly published KSK as a trust anchor for
+      validating future DNSSEC signed records. It also describes the
+      process for publicly revoking a published KSK. This document
+      augments that information with additional constraints, from the
+      SEP publisher's points of view. Note that this document does not
+      define any other operational guidance or recommendations about
+      the RFC5011 process and restricts itself to solely the security
+      and operational ramifications of switching to exclusively using
       recently added keys or removing a revoked keys too soon.</t>
 
       <t>Failure of a DNSKEY publisher to follow the minimum
@@ -185,22 +184,24 @@
 
           <!-- XXX: review this: -->
 
-          <t hangText="lastSigExpirationTime">The latest value of any
-          RRSIG Signature Expiration field (which is a date and time)
-          that has signed the previous DNSKEY RRset before a new
-          DNSKEY is introduced to a publish DNSKEY RRset, or the
-          DNSKEY RRset of a DNSKEY that is to be revoked.  Note that
-          for organizations pre-creating signatures this time may be
-          fairly far in the future unless they can be significantly
-          assured that none of their pre-generated signatures can
-          be replayed at a later date.</t>
+          <t hangText="lastSigExpirationTime">
+	          The latest value (i.e. the future most date and
+	          time) of any RRSig Signature Expiration field
+	          covering any DNSKEY RRSet containing only the old
+	          trust anchor(s) that are being superseded. Note that
+	          for organizations pre-creating signatures this time
+	          may be fairly far in the future unless they can be
+	          significantly assured that none of their
+	          pre-generated signatures can be replayed at a later
+	          date.
+          </t>
 
           <t hangText="sigExpirationTime">The amount of time between
           the DNSKEY RRSIG's Signature Inception field and the
           Signature Expiration field.</t>
 
           <t hangText="sigExpirationTimeRemaining">The amount of time
-          remaining before latestSigExpirationTime is reached.</t>
+          remaining before lastSigExpirationTime is reached.</t>
 
       </list></t>
 
@@ -365,9 +366,9 @@
               zone's keyset and discovers a signed keyset that
               includes K_new (again), and is signed by K_old.  Note:
               the attacker is unable to replay the records cached at
-              T-1, because they have now expired. Thus at T+10, the
-              RFC5011 Resolver starts (anew) the hold-timer for
-              K_new.</t>
+              T-1, because the signatures have now expired. Thus at
+              T+10, the RFC5011 Resolver starts (anew) the hold-timer
+              for K_new.</t>
 
               <t hangText="T+11 through T+29">The RFC5011 Resolver
               continues checking the zone's key set at the prescribed
@@ -753,12 +754,16 @@ Interval        0.25       33       41        49         57          65
       <t> <figure>
           <artwork><![CDATA[
   remWaitTime = sigExpirationTimeRemaining
+                + activeRefresh
+                + safetyMargin
+
+  remWaitTime = sigExpirationTimeRemaining
                 + MAX(1 hour,
                       MIN((sigExpirationTime) / 2,
                           MAX(TTL of K_old DNSKEY RRSet) / 2,
                           15 days),
                       1 hour)
-                + 2 * MAX(TTL of all records)
+                + safetyMargin
               ]]></artwork>
         </figure></t>
 
@@ -782,7 +787,14 @@ Interval        0.25       33       41        49         57          65
           <artwork><![CDATA[
    remWallClockTime = lastSigExpirationTime
                     + activeRefresh
-                    + activeRefreshOffset
+                    + safetyMargin
+
+   remWallClockTime = lastSigExpirationTime
+                    + MAX(1 hour,
+                          MIN((sigExpirationTime) / 2,
+                              MAX(TTL of K_old DNSKEY RRSet) / 2,
+                              15 days),
+                          1 hour)
                     + safetyMargin
               ]]></artwork>
       </figure></t>
@@ -850,7 +862,7 @@ Interval        0.25       33       41        49         57          65
     <section anchor="operational" title="Operational Considerations">
       <t>A companion document to RFC5011 was expected to be published
       that describes the best operational practice considerations from
-      the perspective of a zone publisher and PEP
+      the perspective of a zone publisher and SEP
       Publisher. However, this companion document has yet to be
       published. The authors of this document hope that it will at
       some point in the future, as RFC5011 timing can be tricky as we
