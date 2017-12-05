@@ -722,7 +722,8 @@ Interval        0.25       33       41        49         57          65
         </figure></t>
 
       <t>This addWaitTime of 42.5 days is 12.5 days longer than just
-      the hold down timer.</t>
+      the hold down timer, even with the needed safetyMargin value
+      being left out.</t>
       </section>
 
       </section>
