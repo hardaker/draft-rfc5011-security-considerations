@@ -607,11 +607,11 @@ Interval        0.25       33       41        49         57          65
           <artwork><![CDATA[
    addWaitTime = addHoldDownTime
                  + sigExpirationTimeRemaining
-                 + 2 * MAX(1 hour,
-                           MIN(sigExpirationTime / 2,
-                               MAX(TTL of K_old DNSKEY RRSet) / 2,
-                               15 days)
-                           )
+                 + MAX(1 hour,
+                       MIN(sigExpirationTime / 2,
+                           MAX(TTL of K_old DNSKEY RRSet) / 2,
+                           15 days)
+                       )
                  + (addHoldDownTime % activeRefresh)
                  + MAX(1.5 hours, 2 * MAX(TTL of all records))
                  + safetyMargin
@@ -931,34 +931,42 @@ Interval        0.25       33       41        49         57          65
         </figure></t>
 
       <t>Thus, sticking this information into the equation in Section <xref
-      target="minimum"/> yields (in days): <figure>
+      target="minimum"/> yields (in days from publication time): <figure>
           <artwork><![CDATA[
   addWaitTime = 30
-                + (21)
-                + MAX(MIN((21) / 2,
-                          MAX(2 / 2,
-                          15 days)),
-                      1 hour)
-                + 2 * MAX(2)
+                + 21
+                + MAX(1 hour,
+                      MIN(21 / 2,     # activeRefresh
+                          MAX(2) / 2,
+                          15 days),
+                      )
+                + 30 % activeRefresh
 
-  addWaitTime = 30 + 21 + MAX(MIN(11.5, 1, 15)), 1 hour) + 4
+  addWaitTime = 30 + 21 
+                + MAX(1 hour, MIN(11.5, 1, 15)))
+                + 30%activeRefresh
 
-  addWaitTime = 30 + 21 + 1 + 4
+  addWaitTime = 30 + 21 + 1 + 30%1
 
-  addWaitTime = 56 days 
+  addWaitTime = 30 + 21 + 1 + 0
+
+  addWaitTime = 52 days 
                 ]]></artwork>
         </figure></t>
 
-      <t>Note that we use a activeRefreshOffset of 0, since 30 days is
+      <t>Note that activeRefreshOffset ends up being 0, since 30 days is
       evenly divisible by activeRefresh (1 day).</t>
 
-      <t>Thus, ICANN should wait a minimum of 56 days before switching to the newly
-      published KSK (and 26 days before removing the old revoked key
-      once it is published as revoked).  ICANN's current plans are to
-      wait 70 days before using the new KEY and 69 days before
-      removing the old, revoked key. Thus, their current rollover
-      plans are sufficiently secure from the attack discussed in this
-      memo.</t>
+      <t>Also note that we exclude the safetyMargin value, which is
+      calculated based on the expected client deployment size.</t>
+
+      <t>Thus, ICANN must wait a minimum of 52 days before switching
+      to the newly published KSK (and 26 days before removing the old
+      revoked key once it is published as revoked).  ICANN's current
+      plans are to wait 70 days before using the new KEY and 69 days
+      before removing the old, revoked key. Thus, their current
+      rollover plans are sufficiently secure from the attack discussed
+      in this memo.</t>
     </section>
   </back>
 </rfc>
