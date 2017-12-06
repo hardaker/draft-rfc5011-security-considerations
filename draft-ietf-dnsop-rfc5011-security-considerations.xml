@@ -482,7 +482,7 @@
       </t>
       </section>
       
-      <section title="safetyMargin">
+      <section title="safetyMargin" anchor="safetyMargin">
               <t>The safetyMargin is an extra period of time to account for
               caching, network delays, dropped packets, and other operational
               concerns otherwise beyond the scope of this document.  The value
@@ -896,10 +896,14 @@ Interval        0.25       33       41        49         57          65
     <section title="Acknowledgements">
       <t>The authors would like to especially thank to Michael StJohns
       for his help and advice and the care and thought he put into
-      RFC5011 itself. We would also like to thank Bob Harold, Shane
-      Kerr, Matthijs Mekking, Duane Wessels, Petr Petr Spacek, Ed
-      Lewis, and the dnsop working group who have assisted with this
-      document.</t>
+      RFC5011 itself and his continued reviews and suggestions for
+      this document.  He also designed the suggested math behind the
+      suggested safetyMargin values in <xref target="safetyMargin" />.
+      </t>
+
+      <t>We would also like to thank Bob Harold, Shane Kerr, Matthijs
+      Mekking, Duane Wessels, Petr Petr Spacek, Ed Lewis, and the
+      dnsop working group who have assisted with this document.</t>
     </section>
   </middle>
 
