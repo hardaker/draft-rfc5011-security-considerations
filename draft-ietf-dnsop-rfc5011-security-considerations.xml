@@ -449,15 +449,6 @@
 	          </t>
           </section>
 
-          <section title="sigExpirationTimeRemaining" anchor="sigExpirationTimeRemaining">
-	          <t>
-	          The amount of time remaining before
-	          lastSigExpirationTime is reached.
-	          </t>
-          </section>
-
-
-
       <section title="sigExpirationTimeRemaining">
               <t>sigExpirationTimeRemaining is defined in <xref
               target="terminology" />.</t>
