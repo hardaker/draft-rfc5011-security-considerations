@@ -408,7 +408,7 @@
         this that takes operational realities into account that
         further affect the recommended timings.</t>
 
-        First, we define the term components used in all equations in
+        <t>First, we define the term components used in all equations in
         <xref target="term" />. </t>
 
         <section anchor="term" title="Equation Components">
@@ -497,9 +497,9 @@
       activeRefresh itself.  
       </t>
 
-      <t>Note that later (in <xref target="driftSafetyMargin" />), when
-      real-world scenerios will trump this value that is useful only
-      in theoretical worlds with no network delays and other
+      <t>Note that later (in <xref target="timingSafetyMargin" />),
+      when real-world scenerios will trump this value that is useful
+      only in theoretical worlds with no network delays and other
       operational considerations. We leave it here only as an
       important marker in the security analysis of the base RFC5011
       protocol.</t>
