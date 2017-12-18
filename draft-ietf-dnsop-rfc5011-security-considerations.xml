@@ -402,9 +402,14 @@
         <t> This section defines the minimum timing requirements for
         making exclusive use of newly added DNSKEYs and timing
         requirements for ceasing the publication of DNSKEYs to be
-        revoked.  First, we define the term components used in both
-        equations in <xref target="term" />. </t>
+        revoked.  We break our timing solution requirements into two
+        primary components: the mathematically-based security analysis
+        of the RFC5011 publication process itself, and an extension of
+        this that takes operational realities into account that
+        further affect the recommended timings.</t>
 
+        First, we define the term components used in all equations in
+        <xref target="term" />. </t>
 
         <section anchor="term" title="Equation Components">
                 <section title="addHoldDownTime">
@@ -489,25 +494,75 @@
       "addHoldDownTime % activeRefresh", where % is the mathematical
       mod operator (calculating the remainder in a division problem).
       This will frequently be zero, but could be nearly as large as
-      activeRefresh itself.  For simplicity, setting the
-      activeRefreshOffset to the activeRefresh value itself is always
-      safe.
+      activeRefresh itself.  
       </t>
+
+      <t>Note that later (in <xref target="driftSafetyMargin" />), when
+      real-world scenerios will trump this value that is useful only
+      in theoretical worlds with no network delays and other
+      operational considerations. We leave it here only as an
+      important marker in the security analysis of the base RFC5011
+      protocol.</t>
+
       </section>
       
-      <section title="safetyMargin" anchor="safetyMargin">
-              <t>The safetyMargin is an extra period of time to account for
+      <section title="driftSafetyMargin" anchor="driftSafetyMargin">
+	      <t>Moving past the theoretical model parameters above,
+	      we not that clock drift, network delays and
+	      implementation differences will result in the RFC5011
+	      Resolver query times to drift over time.  Because of
+	      this, a driftSafetyMargin term must be introduce that
+	      accounts for these real world delays.  We set this value
+	      to be the same as the activeRefresh value, which will
+	      ensure that any timing drift in RFC5011 Resolver queries
+	      will be accounted for.</t>
+
+	      <t>Note: even a negative clock drift can actually cause
+	      RFC5011 Resolvers to require up to an extra
+	      activeRefresh period before it will accept a new DNSKEY
+	      as a trust anchor.</t>
+      </section>
+
+      <section title="timingSafetyMargin" anchor="timingSafetyMargin">
+	      <t>Both of the activeRefreshOffset and driftSafetyMargin
+	      parameters deal with timing delays introduced by
+	      mathematical analysis of RFC5011 (activeRefreshOffset)
+	      and by real world considerations (driftSafetyMargin).
+	      To find a safe value to extend timing, we define a
+	      timingSafetyMargin that is the maximum of these two
+	      values.  Since the driftSafetyMargin is set to
+	      activeRefresh, and activeRefreshOffset is always less
+	      than an activeRefresh, the final timingSafetyMargin
+	      value will be activeRefresh.
+	      </t>
+	      
+      <t> <figure>
+          <artwork><![CDATA[
+      timingSafetyMargin = min(activeRefreshOffset, driftSafetyMargin)
+
+      timingSafetyMargin = min(addHoldDownTime % activeRefresh,
+                               activeRefresh)
+
+      timingSafetyMargin = activeRefresh
+	                    ]]></artwork>
+      </figure></t>
+
+	      
+      </section>
+
+      <section title="retrySafetyMargin" anchor="retrySafetyMargin">
+              <t>The retrySafetyMargin is an extra period of time to account for
               caching, network delays, dropped packets, and other operational
               concerns otherwise beyond the scope of this document.  The value
               operators should chose is highly dependent on the deployment
               situation associated with their zone.  Note that no value of a
-              safetyMargin can protect against resolvers that are "down".
+              retrySafetyMargin can protect against resolvers that are "down".
               None the less, we do offer the following as one method
               considering reasonable values to select from.</t>
               
               <t>
                       The following list of variables need to be considered
-                      when selecting an appropriate safetyMargin value:
+                      when selecting an appropriate retrySafetyMargin value:
               </t>
               
               <t>
@@ -569,13 +624,13 @@ Interval        0.25       33       41        49         57          65
               ]]></artwork>
       </figure></t>
 
-      <t>Finally, a suggested value of safetyMargin can then be this
+      <t>Finally, a suggested value of retrySafetyMargin can then be this
       retryCountWait number multiplied by the retryTime from RFC5011:
       </t>
       
       <t> <figure>
           <artwork><![CDATA[
-              safetyMargin = retryCountWait * retryTime
+              retrySafetyMargin = retryCountWait * retryTime
               ]]></artwork>
       </figure></t>
 
@@ -606,8 +661,8 @@ Interval        0.25       33       41        49         57          65
    addWaitTime = addHoldDownTime
                  + sigExpirationTimeRemaining
                  + activeRefresh
-                 + activeRefreshOffset
-                 + safetyMargin
+                 + timingSafetyMargin
+                 + retrySafetyMargin
               ]]></artwork>
       </figure></t>
 
@@ -626,9 +681,8 @@ Interval        0.25       33       41        49         57          65
                            MAX(TTL of K_old DNSKEY RRSet) / 2,
                            15 days)
                        )
-                 + (addHoldDownTime % activeRefresh)
-                 + MAX(1.5 hours, 2 * MAX(TTL of all records))
-                 + safetyMargin
+                 + activeRefresh
+                 + retrySafetyMargin
               ]]></artwork>
       </figure></t>
       </section>
@@ -647,8 +701,8 @@ Interval        0.25       33       41        49         57          65
    addWallClockTime = lastSigExpirationTime
                     + addHoldDownTime
                     + activeRefresh
-                    + activeRefreshOffset
-                    + safetyMargin
+                    + timingSafetyMargin
+                    + retrySafetyMargin
               ]]></artwork>
       </figure></t>
 
@@ -665,9 +719,8 @@ Interval        0.25       33       41        49         57          65
                                     MAX(TTL of K_old DNSKEY RRSet) / 2,
                                     15 days)
                                 )
-                      + (addHoldDownTime % activeRefresh)
-                      + MAX(1.5 hours, 2 * MAX(TTL of all records))
-                      + safetyMargin
+                      + activeRefresh
+                      + retrySafetyMargin
               ]]></artwork>
           </figure>
       </t>
@@ -690,27 +743,6 @@ Interval        0.25       33       41        49         57          65
       Validity) field of the last K_old only RRSIG. </t>
       </section>
 
-<!-- this is duplication and badly worded ; first sentence moved above
-     too -->
-<!--
-      <t>The "Active Refresh" interval used by a RFC5011 validator is
-      determined by the larger of (DNSKEY RRSIG Signature Validity)
-      and (original TTL for the DNSKEY RRSet). The Following text
-      assumes that (DNSKEY RRSIG Signature Validity) is larger of the
-      two, which is operationally more common today.</t>
-
-      <t>The worst case scenario of this attack is when the attacker
-      can replay K_old seconds before the (DNSKEY RRSIG Signature
-      Validity) field of the last K_old only RRSIG. If a RFC5011
-      validator picks up K_old at this this point, it will not have a
-      hold down timer started as it will have been reset by previous
-      replays. It's not until the next "Active Refresh" time that
-      they'll pick up K_new with assurance, and thus start their
-      (final) hold down timer. Thus, this is not at (DNSKEY RRSIG
-      Signature Validity) time past publication but may be
-      significantly longer based on the zone's DNSSEC parameters.</t>
--->
-
       <section title="Additional Considerations for RFC7583">
       <t>Note: our notion of addWaitTime is
       called "Itrp" in Section 3.3.4.1 of <xref target="RFC7583"/>.
@@ -722,21 +754,20 @@ Interval        0.25       33       41        49         57          65
 
       <section title="Example Scenario Calculations">
       <t>For the parameters listed in <xref target="examplenumbers"/>,
-      the activeRefreshOffset is 0, since 30 days is evenly divisible
-      by activeRefresh (1/2 day), and our resulting addWaitTime is:
+      our resulting addWaitTime is:
       <figure>
           <artwork><![CDATA[
   addWaitTime = 30
                 + 10
                 + 1 / 2 
-                + 0              (days)
+                + 1 / 2          (days)
 
-  addWaitTime = 42.5             (days)
+  addWaitTime = 43               (days)
                                 ]]></artwork>
         </figure></t>
 
       <t>This addWaitTime of 42.5 days is 12.5 days longer than just
-      the hold down timer, even with the needed safetyMargin value
+      the hold down timer, even with the needed retrySafetyMargin value
       being left out (which we exclude due to the lack of necessary
       operational parameters).</t>
       </section>
@@ -771,19 +802,18 @@ Interval        0.25       33       41        49         57          65
           <artwork><![CDATA[
   remWaitTime = sigExpirationTimeRemaining
                 + activeRefresh
-                + safetyMargin
+                + timingSafetyMargin
+                + retrySafetyMargin
 
   remWaitTime = sigExpirationTimeRemaining
                 + MAX(1 hour,
                       MIN((sigExpirationTime) / 2,
                           MAX(TTL of K_old DNSKEY RRSet) / 2,
                           15 days))
-                + safetyMargin
+                + activeRefresh
+                + retrySafetyMargin
               ]]></artwork>
         </figure></t>
-
-      <t>Note that the activeRefreshOffset time does not apply to this
-      equation.</t>
 
       <t>Note also that adding retryTime intervals to the remWaitTime
       may be wise, just as it was for addWaitTime in <xref
@@ -802,14 +832,16 @@ Interval        0.25       33       41        49         57          65
           <artwork><![CDATA[
    remWallClockTime = lastSigExpirationTime
                     + activeRefresh
-                    + safetyMargin
+                    + timingSafetyMargin
+                    + retrySafetyMargin
 
    remWallClockTime = lastSigExpirationTime
                     + MAX(1 hour,
                           MIN((sigExpirationTime) / 2,
                               MAX(TTL of K_old DNSKEY RRSet) / 2,
                               15 days))
-                    + safetyMargin
+                    + timingSafetyMargin
+                    + retrySafetyMargin
               ]]></artwork>
       </figure></t>
 
@@ -896,7 +928,7 @@ Interval        0.25       33       41        49         57          65
       for his help and advice and the care and thought he put into
       RFC5011 itself and his continued reviews and suggestions for
       this document.  He also designed the suggested math behind the
-      suggested safetyMargin values in <xref target="safetyMargin" />.
+      suggested retrySafetyMargin values in <xref target="retrySafetyMargin" />.
       </t>
 
       <t>We would also like to thank Bob Harold, Shane Kerr, Matthijs
@@ -943,24 +975,15 @@ Interval        0.25       33       41        49         57          65
                           MAX(2) / 2,
                           15 days),
                       )
-                + 30 % activeRefresh
+                + activeRefresh
 
-  addWaitTime = 30 + 21 
-                + MAX(1 hour, MIN(11.5, 1, 15)))
-                + 30 % activeRefresh
+  addWaitTime = 30 + 21 + 1 + 1
 
-  addWaitTime = 30 + 21 + 1 + 30%1
-
-  addWaitTime = 30 + 21 + 1 + 0
-
-  addWaitTime = 52 days 
+  addWaitTime = 53 days 
                 ]]></artwork>
         </figure></t>
 
-      <t>Note that activeRefreshOffset ends up being 0, since 30 days is
-      evenly divisible by activeRefresh (1 day).</t>
-
-      <t>Also note that we exclude the safetyMargin value, which is
+      <t>Also note that we exclude the retrySafetyMargin value, which is
       calculated based on the expected client deployment size.</t>
 
       <t>Thus, ICANN must wait a minimum of 52 days before switching
