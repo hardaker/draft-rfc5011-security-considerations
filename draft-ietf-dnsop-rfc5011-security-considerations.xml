@@ -535,6 +535,7 @@
 	      than an activeRefresh, the final timingSafetyMargin
 	      value will be activeRefresh.
 	      </t>
+	      <t>Explicitly expanding out the math:</t>
 	      
       <t> <figure>
           <artwork><![CDATA[
