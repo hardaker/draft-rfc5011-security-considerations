@@ -508,7 +508,7 @@
       
       <section title="driftSafetyMargin" anchor="driftSafetyMargin">
 	      <t>Moving past the theoretical model parameters above,
-	      we not that clock drift, network delays and
+	      we note that clock drift, network delays and
 	      implementation differences will result in the RFC5011
 	      Resolver query times to drift over time.  Because of
 	      this, a driftSafetyMargin term must be introduce that
