@@ -508,19 +508,86 @@
       
       <section title="driftSafetyMargin" anchor="driftSafetyMargin">
 	      <t>Moving past the theoretical model parameters above,
-	      we note that clock drift, network delays and
-	      implementation differences will result in the RFC5011
-	      Resolver query times to drift over time.  Because of
-	      this, a driftSafetyMargin term must be introduce that
-	      accounts for these real world delays.  We set this value
-	      to be the same as the activeRefresh value, which will
-	      ensure that any timing drift in RFC5011 Resolver queries
-	      will be accounted for.</t>
+	      we note that clock drift, network delays, timeouts and
+	      associated re-transmissions, and implementation
+	      differences will result in the RFC5011 Resolver query
+	      times to drift over time.  The net result of drift is
+	      that RFC5011 Resolvers will sample data at a time length
+	      greater than an activeRefresh time length.</t>
 
-	      <t>Note: even a negative clock drift can actually cause
-	      RFC5011 Resolvers to require up to an extra
-	      activeRefresh period before it will accept a new DNSKEY
-	      as a trust anchor.</t>
+              <t>Because of this, a driftSafetyMargin term must be
+              introduce that accounts for these real world delays and
+              measurement shifts over time.  The value for
+              driftSafetyMargin is then set to the activeRefresh
+              value, which will ensure that any timing drift in
+              RFC5011 Resolver queries will be accounted for.</t>
+
+                            <t> <figure>
+                  <artwork><![CDATA[
+          driftSafetyMargin = activeRefresh
+                                   ]]></artwork>
+              </figure></t>
+
+              <t>We clarify a few cases why this is needed in the
+              following two subsections.</t>
+
+	      <section title="Clockskew Drift">
+		      <t>Even small clock drifts can have negative
+		      impacts upon the timing of the RFC5011
+		      Resolver's measurements.  Consider the simplest
+		      case where the RFC5011 Resolver's clock shifts
+		      to be 2 seconds slower near the end of the
+		      RFC5011 Resolver's addHoldDownTime period.
+		      I.E., if the RFC5011 Resolver first noticed a
+		      new DNSKEY at:</t>
+		     
+              <t> <figure>
+                  <artwork><![CDATA[
+          firstSeen = sigExpirationTime + activeRefresh + 1 second
+                                   ]]></artwork>
+              </figure></t>
+
+              <t>The effect of 2 second clock drift between the SEP
+              Publisher and the RFC5011 Resolver may result in the
+              RFC5011 Resolver querying again at:</t>
+
+              <t> <figure>
+                  <artwork><![CDATA[
+          justBefore = sigExpirationTime + addHoldDownTime +
+                       activeRefresh + 1 second - 2 seconds
+
+          justBefore = sigExpirationTime + addHoldDownTime +
+                       activeRefresh - 1 second
+                                   ]]></artwork>
+              </figure></t>
+
+              <t>The net effect is that from the perspective of the
+              SEP publisher, it may take one additional activeRefresh
+              period longer for this RFC5011 Resolver to accept the
+              new key (at sigExpirationTime + addHoldDownTime +
+              2 * activeRefresh - 1 second).</t>
+              
+            </section>
+            <section title="Retry and Reboot Drift">
+	            <t>Drift associated with a lost transmission and
+	            an accompanying re-transmission (see Section 2.3
+	            of <xref target="RFC5011" />) will cause RFC5011
+	            Resolvers to also change the timing associated
+	            with query times such that it becomes impossible
+	            to predict, from the perspective of the PEP
+	            Publisher, when the final important measurement
+	            query will arrive.  Similarly, any software that
+	            restarts/reboots without saving next-query timing
+	            state will also commence with a new random
+	            starting time.  Thus, the same additional
+	            activeRefresh is needed to handle both these cases
+	            as well.</t>
+
+	            <t>Note that we account for additional time
+	            associated with cumulative multiple retries in
+	            <xref target="timingSafetyMargin" />.</t>
+
+            </section>      
       </section>
 
       <section title="timingSafetyMargin" anchor="timingSafetyMargin">
