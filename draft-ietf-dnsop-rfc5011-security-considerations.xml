@@ -677,12 +677,11 @@ Interval      0.25       33       41        49         57          65
           <artwork><![CDATA[
    addWaitTime = addHoldDownTime
                  + sigExpirationTimeRemaining
-                 + MAX(1 hour,
+                 + 2 * MAX(1 hour,
                        MIN(sigExpirationTime / 2,
                            MAX(TTL of K_old DNSKEY RRSet) / 2,
                            15 days)
                        )
-                 + activeRefresh
                  + retrySafetyMargin
               ]]></artwork>
       </figure></t>
@@ -720,7 +719,6 @@ Interval      0.25       33       41        49         57          65
                                     MAX(TTL of K_old DNSKEY RRSet) / 2,
                                     15 days)
                                 )
-                      + activeRefresh
                       + retrySafetyMargin
               ]]></artwork>
           </figure>
