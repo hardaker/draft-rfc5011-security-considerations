@@ -487,62 +487,53 @@
       </figure></t>
       </section>
       
-      <section title="activeRefreshOffset">
-      <t>The activeRefreshOffset term must be added for situations
-      where the activeRefresh value is not a factor of the
-      addHoldDownTime.  Specifically, activeRefreshOffset will be
-      "addHoldDownTime % activeRefresh", where % is the mathematical
-      mod operator (calculating the remainder in a division problem).
-      This will frequently be zero, but could be nearly as large as
-      activeRefresh itself.  
+      <section title="timingSafetyMargin">
+
+      <t>Mentally, it is easy to assume that the period of time
+      required for SEP publishers to wait after making changes to SEP
+      marked DNSKEY sets will be entirely based off the length of the
+      addHoldDownTime.  Unfortunately, analysis shows that both the
+      design of the RFC5011 protocol and in operational realities in
+      deploying it require waiting longer.  In the subsections below,
+      we discuss three sources of additional delay.  In the end, we
+      will pick the longest of these delays as the minimum additional
+      time to add to our final wait times for our value of
+      timingSafetyMargin (see <xref target="timingSafetyMargin" />).
       </t>
 
-      <t>Note that later (in <xref target="timingSafetyMargin" />),
-      when real-world scenerios will trump this value that is useful
-      only in theoretical worlds with no network delays and other
-      operational considerations. We leave it here only as an
-      important marker in the security analysis of the base RFC5011
-      protocol.</t>
+      <section title="activeRefreshOffset">
+      <t>Security analysis of the timing associated with the
+      difference between the factors of the activeRefresh period on
+      the addHoldDown time requires the SEP Publisher to wait an extra
+      period of time for resolvers that do not query on activeRefresh
+      intervals are integer multiples of the addHoldDownTime.  The
+      activeRefreshOffset term defines this time difference and
+      becomes:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+ activeRefreshOffset = addHoldDownTime % activeRefresh
+              ]]></artwork>
+      </figure></t>
+
+      <t>The % symbol denotes the mathematical mod operator (calculating
+      the remainder in a division problem).  This will frequently be
+      zero, but can be nearly as large as activeRefresh itself.
+      </t>
 
       </section>
       
-      <section title="driftSafetyMargin" anchor="driftSafetyMargin">
-	      <t>Moving past the theoretical model parameters above,
-	      we note that clock drift, network delays, timeouts and
-	      associated re-transmissions, and implementation
-	      differences will result in the RFC5011 Resolver query
-	      times to drift over time.  The net result of drift is
-	      that RFC5011 Resolvers will sample data at a time length
-	      greater than an activeRefresh time length.</t>
-
-              <t>Because of this, a driftSafetyMargin term must be
-              introduce that accounts for these real world delays and
-              measurement shifts over time.  The value for
-              driftSafetyMargin is then set to the activeRefresh
-              value, which will ensure that any timing drift in
-              RFC5011 Resolver queries will be accounted for.</t>
-
-                            <t> <figure>
-                  <artwork><![CDATA[
-          driftSafetyMargin = activeRefresh
-                                   ]]></artwork>
-              </figure></t>
-
-              <t>We clarify a few cases why this is needed in the
-              following two subsections.</t>
-
-	      <section title="Clockskew Drift">
-		      <t>Even small clock drifts can have negative
-		      impacts upon the timing of the RFC5011
-		      Resolver's measurements.  Consider the simplest
-		      case where the RFC5011 Resolver's clock shifts
-		      to be 2 seconds slower near the end of the
-		      RFC5011 Resolver's addHoldDownTime period.
-		      I.E., if the RFC5011 Resolver first noticed a
-		      new DNSKEY at:</t>
-		     
-              <t> <figure>
-                  <artwork><![CDATA[
+      <section title="clockskewDriftMargin">
+	      <t>Even small clock drifts can have negative impacts
+	      upon the timing of the RFC5011 Resolver's measurements.
+	      Consider the simplest case where the RFC5011 Resolver's
+	      clock shifts over time to be 2 seconds slower near the
+	      end of the RFC5011 Resolver's addHoldDownTime period.
+	      I.E., if the RFC5011 Resolver first noticed a new DNSKEY
+	      at:</t>
+	      
+	      <t> <figure>
+		      <artwork><![CDATA[
           firstSeen = sigExpirationTime + activeRefresh + 1 second
                                    ]]></artwork>
               </figure></t>
@@ -556,19 +547,35 @@
           justBefore = sigExpirationTime + addHoldDownTime +
                        activeRefresh + 1 second - 2 seconds
 
+          which becomes:
+
           justBefore = sigExpirationTime + addHoldDownTime +
                        activeRefresh - 1 second
                                    ]]></artwork>
               </figure></t>
 
-              <t>The net effect is that from the perspective of the
-              SEP publisher, it may take one additional activeRefresh
-              period longer for this RFC5011 Resolver to accept the
-              new key (at sigExpirationTime + addHoldDownTime +
-              2 * activeRefresh - 1 second).</t>
+              <t>The net effect is the addHoldDownTime will not have
+              been reached from the perspective of the RFC5011
+              Resolver, but it will have been reached from the
+              perspective of the SEP Publisher.  The net effect is it
+              may take one additional activeRefresh period longer for
+              this RFC5011 Resolver to accept the new key (at
+              sigExpirationTime + addHoldDownTime + 2 * activeRefresh
+              - 1 second).  Similarly, positive clock drifts in the
+                SEP publisher logically has similar consequences.</t>
+
+              <t>We note that even the smallest clockskew errors can
+              require waiting an additional activeRefresh period, and
+              thus define the clockskewDriftMargin as:</t>
+              
+      <t> <figure>
+          <artwork><![CDATA[
+    clockskewDriftMargin = activeRefresh      
+              ]]></artwork>
+      </figure></t>
               
             </section>
-            <section title="Retry and Reboot Drift">
+            <section title="retryDriftMargin">
 	            <t>Drift associated with a lost transmission and
 	            an accompanying re-transmission (see Section 2.3
 	            of <xref target="RFC5011" />) will cause RFC5011
@@ -578,45 +585,50 @@
 	            Publisher, when the final important measurement
 	            query will arrive.  Similarly, any software that
 	            restarts/reboots without saving next-query timing
-	            state will also commence with a new random
-	            starting time.  Thus, the same additional
+	            state may also commence with a new random
+	            starting time.  Thus, an additional
 	            activeRefresh is needed to handle both these cases
 	            as well.</t>
 
-	            <t>Note that we account for additional time
-	            associated with cumulative multiple retries in
-	            <xref target="timingSafetyMargin" />.</t>
-
-            </section>      
-      </section>
-
-      <section title="timingSafetyMargin" anchor="timingSafetyMargin">
-	      <t>Both of the activeRefreshOffset and driftSafetyMargin
-	      parameters deal with timing delays introduced by
-	      mathematical analysis of RFC5011 (activeRefreshOffset)
-	      and by real world considerations (driftSafetyMargin).
-	      To find a safe value to extend timing, we define a
-	      timingSafetyMargin that is the maximum of these two
-	      values.  Since the driftSafetyMargin is set to
-	      activeRefresh, and activeRefreshOffset is always less
-	      than an activeRefresh, the final timingSafetyMargin
-	      value will be activeRefresh.
-	      </t>
-	      <t>Explicitly expanding out the math:</t>
-	      
       <t> <figure>
           <artwork><![CDATA[
-     timingSafetyMargin = min(activeRefreshOffset, driftSafetyMargin)
-
-     timingSafetyMargin = min(addHoldDownTime % activeRefresh,
-                              activeRefresh)
-
-     timingSafetyMargin = activeRefresh
-                            ]]></artwork>
+          retryDriftMargin = activeRefresh
+              ]]></artwork>
       </figure></t>
 
-              
+
+	            <t>Note that we account for additional time
+	            associated with cumulative multiple retries,
+	            especially under high-loss conditions, in <xref
+	            target="timingSafetyMargin" />.</t>
+
+            </section>      
+
+      <section title="timingSafetyMargin Value" anchor="timingSafetyMargin">
+	      <t>The activeRefreshOffset, clockskewDriftMargin, and
+	      retryDriftMargin parameters all deal with an additional
+	      wait-period that must be accounted for.  But they may be
+	      merged into a single term by waiting the longest of any
+	      of the values.  We define timingSafetyMargin as this
+	      "worst case" value:</t>
+
+      <t> <figure>
+          <artwork><![CDATA[
+     timingSafetyMargin = MAX(activeRefreshOffset,
+                              clockskewDriftMargin,
+                              retryDriftMargin)
+
+     timingSafetyMargin = MAX(addWaitTime % activeRefresh,
+                              activeRefresh,
+                              activeRefresh)
+
+     timingSafetyMargin = activeRefresh                              
+              ]]></artwork>
+      </figure></t>
+	      
       </section>
+      </section>
+
 
       <section title="retrySafetyMargin" anchor="retrySafetyMargin">
               <t>The retrySafetyMargin is an extra period of time to account for
@@ -708,14 +720,16 @@ Interval      0.25       33       41        49         57          65
 
       <section title="Timing Requirements For Adding a New KSK">
 
-        <t><xref target="waittime" /> defines a method for calculating
+        <t>Given the defined parameters and analysis from <xref
+        target="term" />, we can now create a method for calculating
         the amount of time to wait until it is safe to start signing
         exclusively with a new DNSKEY (especially useful for writing
-        code involving sleep based timers), and <xref
-        target="wallclock" /> defines a method for calculating a
-        wall-clock value after which it is safe to start signing
-        exclusively with a new DNSKEY (especially useful for writing
-        code based on clock-based event triggers).
+        code involving sleep based timers) in <xref target="waittime"
+        />, and define a method for calculating a wall-clock value
+        after which it is safe to start signing exclusively with a new
+        DNSKEY (especially useful for writing code based on
+        clock-based event triggers) in <xref
+        target="wallclock" />.
         </t>
         
       <section title="Wait Timer Based Calculation" anchor="waittime">
