@@ -111,6 +111,13 @@
       (which is written to provide timing guidance solely to a
       Validating Resolver's point of view).</t>
 
+      <t>To explain the RFC5011 security analysis in this document
+      better, <xref target="attack" /> first describes an attack on a
+      zone publisher.  Then in <xref target="term" /> we break down each
+      of the timing components that will be later used to define
+      timing requirements for adding keys in <xref target="adding" />
+      and revoking keys in <xref target="revoking" />.</t>
+
       <section title="Document History and Motivation">
         <t>To verify this lack of understanding is wide-spread, the
         authors reached out to 5 DNSSEC experts to ask them how long
@@ -718,7 +725,7 @@ Interval      0.25       33       41        49         57          65
         
       </section>
 
-      <section title="Timing Requirements For Adding a New KSK">
+      <section title="Timing Requirements For Adding a New KSK" anchor="adding">
 
         <t>Given the defined parameters and analysis from <xref
         target="term" />, we can now create a method for calculating
