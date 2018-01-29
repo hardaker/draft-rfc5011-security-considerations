@@ -501,20 +501,30 @@
       marked DNSKEY sets will be entirely based off the length of the
       addHoldDownTime.  Unfortunately, analysis shows that both the
       design of the RFC5011 protocol and in operational realities in
-      deploying it require waiting longer.  In the subsections below,
-      we discuss three sources of additional delay.  In the end, we
-      will pick the longest of these delays as the minimum additional
-      time to add to our final wait times for our value of
-      timingSafetyMargin (see <xref target="timingSafetyMargin" />).
+      deploying it require waiting and additional period of time
+      longer.  In subsections <xref target="activeRefreshOffset" /> to
+      <xref target="retryDriftMargin" /> below, we discuss three sources
+      of additional delay.  In the end, we will pick the largest of
+      these delays as the minimum additional time that the SEP
+      Publisher must wait in our final timingSafetyMargin value, which
+      we define in <xref target="timingSafetyMargin" />.
       </t>
 
-      <section title="activeRefreshOffset">
-      <t>Security analysis of the timing associated with the
-      difference between the factors of the activeRefresh period on
-      the addHoldDown time requires the SEP Publisher to wait an extra
-      period of time for resolvers that do not query on activeRefresh
-      intervals are integer multiples of the addHoldDownTime.  The
-      activeRefreshOffset term defines this time difference and
+      <section title="activeRefreshOffset" anchor="activeRefreshOffset">
+
+      <t>Security analysis of the timing associated with the query
+      rate of RFC5011 Resolvers shows that it may not perfectly align
+      with the addHoldDownTime when the addHoldDownTime is not evenly
+      divisible by the activeRefresh time.  Consider the example of a
+      zone with an activeRefresh period of 7 days.  If an associated
+      RFC5011 Resolver started it's holdDown timer just after the SEP
+      published a new DNSKEY (at time T), the resolver would send
+      checking queries at T+7, T+14, T+21 and T+28 Days and will
+      finally accept it at T+35 days, which is 5 days longer than the
+      30-day addHoldDownTime.</t>
+
+
+      <t>The activeRefreshOffset term defines this time difference and
       becomes:</t>
 
       <t> <figure>
@@ -568,8 +578,7 @@
               may take one additional activeRefresh period longer for
               this RFC5011 Resolver to accept the new key (at
               sigExpirationTime + addHoldDownTime + 2 * activeRefresh
-              - 1 second).  Similarly, positive clock drifts in the
-                SEP publisher logically has similar consequences.</t>
+              - 1 second).</t>
 
               <t>We note that even the smallest clockskew errors can
               require waiting an additional activeRefresh period, and
@@ -582,7 +591,7 @@
       </figure></t>
               
             </section>
-            <section title="retryDriftMargin">
+            <section title="retryDriftMargin" anchor="retryDriftMargin">
 	            <t>Drift associated with a lost transmission and
 	            an accompanying re-transmission (see Section 2.3
 	            of <xref target="RFC5011" />) will cause RFC5011
@@ -613,11 +622,14 @@
 
       <section title="timingSafetyMargin Value" anchor="timingSafetyMargin">
 	      <t>The activeRefreshOffset, clockskewDriftMargin, and
-	      retryDriftMargin parameters all deal with an additional
-	      wait-period that must be accounted for.  But they may be
+	      retryDriftMargin parameters all deal with additional
+	      wait-periods that must be accounted for after analyzing
+	      what conditions the client will take longer than
+	      expected to make its last query while waiting for the
+	      addHoldDownTime period to pass.  But these values may be
 	      merged into a single term by waiting the longest of any
-	      of the values.  We define timingSafetyMargin as this
-	      "worst case" value:</t>
+	      of them.  We define timingSafetyMargin as this "worst
+	      case" value:</t>
 
       <t> <figure>
           <artwork><![CDATA[
