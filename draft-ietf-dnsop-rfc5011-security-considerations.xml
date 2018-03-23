@@ -1032,8 +1032,9 @@ Interval      0.25       33       41        49         57          65
       </t>
 
       <t>We would also like to thank Bob Harold, Shane Kerr, Matthijs
-      Mekking, Duane Wessels, Petr Petr Spacek, Ed Lewis, and the
-      dnsop working group who have assisted with this document.</t>
+      Mekking, Duane Wessels, Petr Petr Spacek, Ed Lewis, Viktor
+      Dukhovni, and the dnsop working group who have assisted with
+      this document.</t>
     </section>
   </middle>
 
