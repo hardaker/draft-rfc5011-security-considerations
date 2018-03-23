@@ -103,7 +103,7 @@
       they must wait before switching to exclusively using recently
       published keys for signing records, or how long they must wait
       before ceasing publication of a revoked key. Because of this
-      lack of guidance, zone publishers may derive incorrect
+      lack of guidance, zone publishers may arrive at incorrect
       assumptions about safe usage of the RFC5011 DNSKEY advertising,
       rolling and revocation process. This document describes the
       minimum security requirements from a publisher's point of view
@@ -119,17 +119,17 @@
       and revoking keys in <xref target="revoking" />.</t>
 
       <section title="Document History and Motivation">
-        <t>To verify this lack of understanding is wide-spread, the
-        authors reached out to 5 DNSSEC experts to ask them how long
-        they thought they must wait before signing a zone exclusively
-        with a new KSK <xref target="RFC4033"/> that was being
-        introduced according to the 5011 process. All 5 experts
+        <t>To confirm that this lack of understanding is wide-spread,
+        the authors reached out to 5 DNSSEC experts to ask them how
+        long they thought they must wait before signing a zone
+        exclusively with a new KSK <xref target="RFC4033"/> that was
+        being introduced according to the 5011 process. All 5 experts
         answered with an insecure value, and we determined that this
-        lack of mathematical understanding might cause security
-        concerns in deployment. We hope that this companion document
-        to RFC5011 will rectify this understanding and provide better
-        guidance to zone publishers that wish to make use of the
-        RFC5011 rollover process.</t>
+        lack of understanding might cause security concerns in
+        deployment. We hope that this companion document to RFC5011
+        will rectify this and provide better guidance to zone
+        publishers who wish to make use of the RFC5011 rollover
+        process.</t>
       </section>
         
       <section title="Safely Rolling the Root Zone's KSK in 2017/2018"> 
@@ -137,7 +137,7 @@
         2017/2018 KSK rollover plan for the root zone: the timing
         values chosen for rolling the KSK in the root zone appear
         completely safe, and are not affected by the timing concerns
-        introduced by this draft</t>
+        discussed in this draft.</t>
       </section>
       <section title="Requirements notation">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -148,16 +148,17 @@
     </section>
 
     <section title="Background">
-      <t>The RFC5011 process describes a process by which a RFC5011
-      Resolver may accept a newly published KSK as a trust anchor for
-      validating future DNSSEC signed records. It also describes the
-      process for publicly revoking a published KSK. This document
-      augments that information with additional constraints, from the
-      SEP publisher's points of view. Note that this document does not
+      <t>RFC5011 describes a process by which an RFC5011 Resolver may
+      accept a newly published KSK as a trust anchor for validating
+      future DNSSEC signed records. It also describes the process for
+      publicly revoking a published KSK. This document augments that
+      information with additional constraints, from the SEP
+      publisher's points of view. Note that this document does not
       define any other operational guidance or recommendations about
-      the RFC5011 process and restricts itself to solely the security
-      and operational ramifications of switching to exclusively using
-      recently added keys or removing revoked keys too soon.</t>
+      the RFC5011 process and restricts itself solely to the security
+      and operational ramifications of prematurely switching to
+      exclusively using recently added keys or removing revoked
+      keys.</t>
 
       <t>Failure of a DNSKEY publisher to follow the minimum
       recommendations associated with this draft can result in
@@ -202,9 +203,9 @@
     </section>
 
     <section title="Timing Associated with RFC5011 Processing">
-            <t>These sections define a high-level overview of <xref
-            target="RFC5011" /> processing.  These steps are not
-            sufficient for proper RFC5011 implementation, but provide
+            <t>These subsections below give a high-level overview of <xref
+            target="RFC5011" /> processing.  This description is not
+            sufficient for fully understanding RFC5011, but provide
             enough background for the reader to follow the discussion
             in this document.  Readers need to fully understand <xref
             target="RFC5011" /> as well to fully comprehend the
@@ -213,9 +214,9 @@
       <section title="Timing Associated with Publication">
         <t>RFC5011's process of safely publishing a new DNSKEY and then
         assuming RFC5011 Resolvers have adopted it for trust
-        falls into a number of high-level steps
+        can be broken down into a number of high-level steps
         to be performed by the SEP Publisher.  This document
-        discusses the following scenario, which the principle way
+        discusses the following scenario, which the principal way
         RFC5011 is currently being used (even though Section 6 of
         RFC5011 suggests having a stand-by key available):</t>
 
@@ -274,7 +275,7 @@
       complete.</t>
 
       <t>If an attacker is able to provide a RFC5011 Resolver with
-      past responses, such as when it is in-path or able to perform
+      past responses, such as when it is on-path or able to perform
       any number of cache poisoning attacks, the attacker may be able to leave
       compliant RFC5011 Resolvers without an appropriate DNSKEY trust
       anchor. This scenario will remain until an administrator manually fixes
@@ -283,7 +284,7 @@
       <t>The time-line below illustrates an example of this situation.</t>
 
       <section anchor="examplenumbers" title="Enumerated Attack Example">
-        <t>The following example settings are used in the example scenario
+        <t>The following settings are used in the example scenario
         within this section: <list style="hanging">
             <t hangText="TTL (all records)">1 day</t>
 
@@ -296,16 +297,16 @@
         target="timing" /> depicts how a SEP Publisher that
         waits for only the RFC5011 hold time timer length of 30 days
         subjects its users to a potential Denial of Service
-        attack. The timing schedule listed below is based on a SEP
+        attack. The timeline below is based on a SEP
         Publisher publishing a new Key Signing Key (KSK), with
         the intent that it will later be used as a trust anchor.  We label
-        this publication time as "T+0".  All numbers in this sequence
+        this publication time as "T+0".  All numbers in this timeline
         refer to days before and after this initial publication
         event. Thus, T-1 is the day before the introduction of the new
         key, and T+15 is the 15th day after the key was introduced
-        into the fictitious zone being discussed.</t>
+        into the example zone being discussed.</t>
 
-        <t>In this dialog, we consider two keys within the example zone: <list
+        <t>In this exposition, we consider two keys within the example zone: <list
             style="hanging">
             <t hangText="K_old:">An older KSK and Trust Anchor being replaced.</t>
 
@@ -315,7 +316,7 @@
           </list></t>
 
         <section title="Attack Timing Breakdown" anchor="timing">
-          <t>The steps shows an attack that foils the adoption of a new
+          <t>Below we examine an attack that foils the adoption of a new
           DNSKEY by a 5011 Resolver when the
           SEP Publisher that starts signing and
           publishing with the new DNSKEY too quickly. <list
@@ -415,7 +416,7 @@
         this that takes operational realities into account that
         further affect the recommended timings.</t>
 
-        <t>First, we define the term components used in all equations in
+        <t>First, we define the component terms used in all equations in
         <xref target="term" />. </t>
 
         <section anchor="term" title="Equation Components">
@@ -498,9 +499,9 @@
 
       <t>Mentally, it is easy to assume that the period of time
       required for SEP publishers to wait after making changes to SEP
-      marked DNSKEY sets will be entirely based off the length of the
+      marked DNSKEY sets will be entirely based on the length of the
       addHoldDownTime.  Unfortunately, analysis shows that both the
-      design of the RFC5011 protocol and in operational realities in
+      design of the RFC5011 protocol an the operational realities in
       deploying it require waiting and additional period of time
       longer.  In subsections <xref target="activeRefreshOffset" /> to
       <xref target="retryDriftMargin" /> below, we discuss three sources
@@ -512,13 +513,13 @@
 
       <section title="activeRefreshOffset" anchor="activeRefreshOffset">
 
-      <t>Security analysis of the timing associated with the query
+      <t>A security analysis of the timing associated with the query
       rate of RFC5011 Resolvers shows that it may not perfectly align
       with the addHoldDownTime when the addHoldDownTime is not evenly
       divisible by the activeRefresh time.  Consider the example of a
       zone with an activeRefresh period of 7 days.  If an associated
       RFC5011 Resolver started it's holdDown timer just after the SEP
-      published a new DNSKEY (at time T), the resolver would send
+      published a new DNSKEY (at time T+0), the resolver would send
       checking queries at T+7, T+14, T+21 and T+28 Days and will
       finally accept it at T+35 days, which is 5 days longer than the
       30-day addHoldDownTime.</t>
@@ -597,8 +598,8 @@
 	            of <xref target="RFC5011" />) will cause RFC5011
 	            Resolvers to also change the timing associated
 	            with query times such that it becomes impossible
-	            to predict, from the perspective of the PEP
-	            Publisher, when the final important measurement
+	            to predict, from the perspective of the SEP
+	            Publisher, when the conclusive measurement
 	            query will arrive.  Similarly, any software that
 	            restarts/reboots without saving next-query timing
 	            state may also commence with a new random
@@ -656,7 +657,7 @@
               operators should chose is highly dependent on the deployment
               situation associated with their zone.  Note that no value of a
               retrySafetyMargin can protect against resolvers that are "down".
-              None the less, we do offer the following as one method
+              Nonetheless, we do offer the following as one method
               considering reasonable values to select from.</t>
               
               <t>
@@ -686,8 +687,8 @@
               <t>With the successRate and numResolvers values selected
               and the definition of retryTime from RFC5011, one method
               for determining how many retryTime intervals to wait in
-              order to reduce the set of uncompleted servers to 0
-              assuming normal probability is thus:
+              order to reduce the set of resolvers that have not
+              accepted the new trust anchor to 0 is thus:
               </t>
               
               <t> <figure>
