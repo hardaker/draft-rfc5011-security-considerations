@@ -6,10 +6,9 @@
 <!ENTITY rfc7583 PUBLIC "" ".//reference.RFC.7583.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
-<rfc category="std"
-     docName="draft-ietf-dnsop-rfc5011-security-considerations-12"
-     updates="7583"
-     ipr="trust200902">
+<rfc category="info"
+     docName="draft-ietf-dnsop-rfc5011-security-considerations-13"
+     ipr="trust200902" updates="7583">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
   <?rfc toc="yes" ?>
@@ -66,29 +65,30 @@
       </address>
     </author>
 
-    <date day="23" month="Mar" year="2018"/>
+    <date day="12" month="July" year="2018"/>
 
     <area>ops</area>
 
     <workgroup>dnsop</workgroup>
 
     <abstract>
-      <t> This document extends the RFC5011 rollover strategy with
-      timing advice that must be followed by the publisher in order to
-      maintain security.  Specifically, this document describes the
-      math behind the minimum time-length that a DNS zone publisher
-      must wait before signing exclusively with recently added
-      DNSKEYs.  This document also describes the minimum time-length
-      that a DNS zone publisher must wait after publishing a revoked
-      DNSKEY before assuming that all active RFC5011 resolvers should
-      have seen the revocation-marked key and removed it from their
-      list of trust anchors.</t>
+      <t>This document extends the RFC5011 rollover strategy with timing
+      advice that must be followed by the publisher in order to maintain
+      security. Specifically, this document describes the math behind the
+      minimum time-length that a DNS zone publisher must wait before signing
+      exclusively with recently added DNSKEYs. This document also describes
+      the minimum time-length that a DNS zone publisher must wait after
+      publishing a revoked DNSKEY before assuming that all active RFC5011
+      resolvers should have seen the revocation-marked key and removed it from
+      their list of trust anchors.</t>
 
-      <t>This document contains much math and complicated equations,
-      but the summary is that the key rollover / revocation time is
-      much longer than intuition would suggest.  If you are not both
-      publishing a DNSSEC DNSKEY, and using RFC5011 to advertise this
-      DNSKEY as a new Secure Entry Point key for use as a trust
+      <t>This document contains much math and complicated equations, but the
+      summary is that the key rollover / revocation time is much longer than
+      intuition would suggest. This document updates RFC7583 by adding an
+      additional delays (sigExpirationTime and timingSafetyMargin).</t>
+
+      <t>If you are not both publishing a DNSSEC DNSKEY, and using RFC5011 to
+      advertise this DNSKEY as a new Secure Entry Point key for use as a trust
       anchor, you probably don't need to read this document.</t>
     </abstract>
   </front>
@@ -96,49 +96,45 @@
   <middle>
     <section title="Introduction">
       <t><xref target="RFC5011"/> defines a mechanism by which DNSSEC
-      validators can update their list of trust anchors when they've
-      seen a new key published in a zone or revoke a properly marked
-      key from a trust anchor list. However, RFC5011 [intentionally]
-      provides no guidance to the publishers of DNSKEYs about how long
-      they must wait before switching to exclusively using recently
-      published keys for signing records, or how long they must wait
-      before ceasing publication of a revoked key. Because of this
-      lack of guidance, zone publishers may arrive at incorrect
-      assumptions about safe usage of the RFC5011 DNSKEY advertising,
-      rolling and revocation process. This document describes the
-      minimum security requirements from a publisher's point of view
-      and is intended to complement the guidance offered in RFC5011
-      (which is written to provide timing guidance solely to a
-      Validating Resolver's point of view).</t>
+      validators can update their list of trust anchors when they've seen a
+      new key published in a zone or revoke a properly marked key from a trust
+      anchor list. However, RFC5011 [intentionally] provides no guidance to
+      the publishers of DNSKEYs about how long they must wait before switching
+      to exclusively using recently published keys for signing records, or how
+      long they must wait before ceasing publication of a revoked key. Because
+      of this lack of guidance, zone publishers may arrive at incorrect
+      assumptions about safe usage of the RFC5011 DNSKEY advertising, rolling
+      and revocation process. This document describes the minimum security
+      requirements from a publisher's point of view and is intended to
+      complement the guidance offered in RFC5011 (which is written to provide
+      timing guidance solely to a Validating Resolver's point of view).</t>
 
-      <t>To explain the RFC5011 security analysis in this document
-      better, <xref target="attack" /> first describes an attack on a
-      zone publisher.  Then in <xref target="term" /> we break down each
-      of the timing components that will be later used to define
-      timing requirements for adding keys in <xref target="adding" />
-      and revoking keys in <xref target="revoking" />.</t>
+      <t>To explain the RFC5011 security analysis in this document better,
+      <xref target="attack"/> first describes an attack on a zone publisher.
+      Then in <xref target="term"/> we break down each of the timing
+      components that will be later used to define timing requirements for
+      adding keys in <xref target="adding"/> and revoking keys in <xref
+      target="revoking"/>.</t>
 
       <section title="Document History and Motivation">
-        <t>To confirm that this lack of understanding is wide-spread,
-        the authors reached out to 5 DNSSEC experts to ask them how
-        long they thought they must wait before signing a zone
-        exclusively with a new KSK <xref target="RFC4033"/> that was
-        being introduced according to the 5011 process. All 5 experts
-        answered with an insecure value, and we determined that this
-        lack of understanding might cause security concerns in
-        deployment. We hope that this companion document to RFC5011
-        will rectify this and provide better guidance to zone
-        publishers who wish to make use of the RFC5011 rollover
-        process.</t>
+        <t>To confirm that this lack of understanding is wide-spread, the
+        authors reached out to 5 DNSSEC experts to ask them how long they
+        thought they must wait before signing a zone exclusively with a new
+        KSK <xref target="RFC4033"/> that was being introduced according to
+        the 5011 process. All 5 experts answered with an insecure value, and
+        we determined that this lack of understanding might cause security
+        concerns in deployment. We hope that this companion document to
+        RFC5011 will rectify this and provide better guidance to zone
+        publishers who wish to make use of the RFC5011 rollover process.</t>
       </section>
-        
-      <section title="Safely Rolling the Root Zone's KSK in 2017/2018"> 
-        <t>One important note about ICANN's (currently in process)
-        2017/2018 KSK rollover plan for the root zone: the timing
-        values chosen for rolling the KSK in the root zone appear
-        completely safe, and are not affected by the timing concerns
-        discussed in this draft.</t>
+
+      <section title="Safely Rolling the Root Zone's KSK in 2017/2018">
+        <t>One important note about ICANN's (currently in process) 2017/2018
+        KSK rollover plan for the root zone: the timing values chosen for
+        rolling the KSK in the root zone appear completely safe, and are not
+        affected by the timing concerns discussed in this draft.</t>
       </section>
+
       <section title="Requirements notation">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
         "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
@@ -148,81 +144,72 @@
     </section>
 
     <section title="Background">
-      <t>RFC5011 describes a process by which an RFC5011 Resolver may
-      accept a newly published KSK as a trust anchor for validating
-      future DNSSEC signed records. It also describes the process for
-      publicly revoking a published KSK. This document augments that
-      information with additional constraints, from the SEP
-      publisher's points of view. Note that this document does not
-      define any other operational guidance or recommendations about
-      the RFC5011 process and restricts itself solely to the security
-      and operational ramifications of prematurely switching to
-      exclusively using recently added keys or removing revoked
-      keys.</t>
+      <t>RFC5011 describes a process by which an RFC5011 Resolver may accept a
+      newly published KSK as a trust anchor for validating future DNSSEC
+      signed records. It also describes the process for publicly revoking a
+      published KSK. This document augments that information with additional
+      constraints, from the SEP publisher's points of view. Note that this
+      document does not define any other operational guidance or
+      recommendations about the RFC5011 process and restricts itself solely to
+      the security and operational ramifications of prematurely switching to
+      exclusively using recently added keys or removing revoked keys.</t>
 
-      <t>Failure of a DNSKEY publisher to follow the minimum
-      recommendations associated with this draft can result in
-      potential denial-of-service attack opportunities against
-      validating resolvers.  Failure of a DNSKEY publisher to publish
-      a revoked key for a long enough period of time may result in
-      RFC5011 Resolvers leaving that key in their trust anchor
+      <t>Failure of a DNSKEY publisher to follow the minimum recommendations
+      associated with this draft can result in potential denial-of-service
+      attack opportunities against validating resolvers. Failure of a DNSKEY
+      publisher to publish a revoked key for a long enough period of time may
+      result in RFC5011 Resolvers leaving that key in their trust anchor
       storage beyond the key's expected lifetime.</t>
     </section>
 
-    <section title="Terminology" anchor="terminology">
+    <section anchor="terminology" title="Terminology">
       <t><list style="hanging">
-          <t hangText="SEP Publisher">The entity responsible for
-          publishing a DNSKEY (with the Secure Entry Point (SEP) bit
-          set) that can be used as a trust anchor.</t>
+          <t hangText="SEP Publisher">The entity responsible for publishing a
+          DNSKEY (with the Secure Entry Point (SEP) bit set) that can be used
+          as a trust anchor.</t>
 
-          <t hangText="Zone Signer">The owner of a zone intending to publish
-          a new Key-Signing-Key (KSK) that may become a trust anchor for
+          <t hangText="Zone Signer">The owner of a zone intending to publish a
+          new Key-Signing-Key (KSK) that may become a trust anchor for
           validators following the RFC5011 process.</t>
 
-          <t hangText="RFC5011 Resolver">A DNSSEC
-          Resolver that is using
-          the RFC5011 processes to track and update trust anchors.</t>
+          <t hangText="RFC5011 Resolver">A DNSSEC Resolver that is using the
+          RFC5011 processes to track and update trust anchors.</t>
 
-          <t hangText="Attacker">An entity intent on foiling the
-          RFC5011 Resolver's ability to successfully adopt the Zone
-          Signer's new DNSKEY as a new trust anchor or to prevent the
-          RFC5011 Resolver from removing an old DNSKEY from its list
-          of trust anchors.</t>
+          <t hangText="Attacker">An entity intent on foiling the RFC5011
+          Resolver's ability to successfully adopt the Zone Signer's new
+          DNSKEY as a new trust anchor or to prevent the RFC5011 Resolver from
+          removing an old DNSKEY from its list of trust anchors.</t>
 
           <!-- should match components later -->
-          <t hangText="sigExpirationTime">
-	          The amount of time between the
-	          DNSKEY RRSIG's Signature Inception field and the Signature
-	          Expiration field.
-          </t>
 
-      </list></t>
+          <t hangText="sigExpirationTime">The amount of time between the
+          DNSKEY RRSIG's Signature Inception field and the Signature
+          Expiration field.</t>
+        </list></t>
 
-      <t>Also see Section 2 of <xref target="RFC4033" /> and <xref
-      target="RFC7719" /> for additional terminology.</t>
+      <t>Also see Section 2 of <xref target="RFC4033"/> and <xref
+      target="RFC7719"/> for additional terminology.</t>
     </section>
 
     <section title="Timing Associated with RFC5011 Processing">
-            <t>These subsections below give a high-level overview of <xref
-            target="RFC5011" /> processing.  This description is not
-            sufficient for fully understanding RFC5011, but provide
-            enough background for the reader to follow the discussion
-            in this document.  Readers need to fully understand <xref
-            target="RFC5011" /> as well to fully comprehend the
-            content and importance of this document.</t>
+      <t>These subsections below give a high-level overview of <xref
+      target="RFC5011"/> processing. This description is not sufficient for
+      fully understanding RFC5011, but provide enough background for the
+      reader to follow the discussion in this document. Readers need to fully
+      understand <xref target="RFC5011"/> as well to fully comprehend the
+      content and importance of this document.</t>
 
       <section title="Timing Associated with Publication">
         <t>RFC5011's process of safely publishing a new DNSKEY and then
-        assuming RFC5011 Resolvers have adopted it for trust
-        can be broken down into a number of high-level steps
-        to be performed by the SEP Publisher.  This document
-        discusses the following scenario, which the principal way
-        RFC5011 is currently being used (even though Section 6 of
-        RFC5011 suggests having a stand-by key available):</t>
+        assuming RFC5011 Resolvers have adopted it for trust can be broken
+        down into a number of high-level steps to be performed by the SEP
+        Publisher. This document discusses the following scenario, which the
+        principal way RFC5011 is currently being used (even though Section 6
+        of RFC5011 suggests having a stand-by key available):</t>
 
         <t><list style="numbers">
-            <t>Publish a new DNSKEY in a zone, but continue to sign
-            the zone with the old one.</t>
+            <t>Publish a new DNSKEY in a zone, but continue to sign the zone
+            with the old one.</t>
 
             <t>Wait a period of time.</t>
 
@@ -230,19 +217,17 @@
             appropriate resource records.</t>
           </list></t>
 
-        <t>This document discusses the time required to wait during
-        step 2 of the above process. Some interpretations of RFC5011
-        have erroneously determined that the wait time is equal to
-        RFC5011's "hold down time".  <xref target="attack" />
-        describes an attack based on this (common) erroneous belief,
-        which can result in a denial of service attack against the
-        zone.</t>
+        <t>This document discusses the time required to wait during step 2 of
+        the above process. Some interpretations of RFC5011 have erroneously
+        determined that the wait time is equal to RFC5011's "hold down time".
+        <xref target="attack"/> describes an attack based on this (common)
+        erroneous belief, which can result in a denial of service attack
+        against the zone.</t>
       </section>
 
       <section title="Timing Associated with Revocation">
         <t>RFC5011's process of advertising that an old key is to be revoked
-        from RFC5011 Resolvers falls into a number of high-level
-        steps:</t>
+        from RFC5011 Resolvers falls into a number of high-level steps:</t>
 
         <t><list style="numbers">
             <t>Set the revoke bit on the DNSKEY to be revoked.</t>
@@ -254,38 +239,36 @@
             <t>Remove the revoked key from the zone.</t>
           </list></t>
 
-        <t>This document discusses the time required to wait in step 3
-        of the above process. Some interpretations of RFC5011 have
-        erroneously determined that the wait time is equal to
-        RFC5011's "hold down time".  This document describes an attack
-        based on this (common) erroneous belief, which results in a
-        revoked DNSKEY potentially remaining as a trust anchor in a
-        RFC5011 Resolver long past its expected usage.</t>
+        <t>This document discusses the time required to wait in step 3 of the
+        above process. Some interpretations of RFC5011 have erroneously
+        determined that the wait time is equal to RFC5011's "hold down time".
+        This document describes an attack based on this (common) erroneous
+        belief, which results in a revoked DNSKEY potentially remaining as a
+        trust anchor in a RFC5011 Resolver long past its expected usage.</t>
       </section>
     </section>
 
     <section anchor="attack" title="Denial of Service Attack Walkthrough">
-      <t>This section serves as an illustrative example of the problem
-      being discussed in this document.  Note that in order to keep
-      the example simple enough to understand, some simplifications
-      were made (such as by not creating a set of pre-signed RRSIGs
-      and by not using values that result in the addHoldDownTime not
-      being evenly divisible by the activeRefresh value); the
-      mathematical formulas in <xref target="minimum" /> are, however,
-      complete.</t>
+      <t>This section serves as an illustrative example of the problem being
+      discussed in this document. Note that in order to keep the example
+      simple enough to understand, some simplifications were made (such as by
+      not creating a set of pre-signed RRSIGs and by not using values that
+      result in the addHoldDownTime not being evenly divisible by the
+      activeRefresh value); the mathematical formulas in <xref
+      target="minimum"/> are, however, complete.</t>
 
-      <t>If an attacker is able to provide a RFC5011 Resolver with
-      past responses, such as when it is on-path or able to perform
-      any number of cache poisoning attacks, the attacker may be able to leave
-      compliant RFC5011 Resolvers without an appropriate DNSKEY trust
-      anchor. This scenario will remain until an administrator manually fixes
-      the situation.</t>
+      <t>If an attacker is able to provide a RFC5011 Resolver with past
+      responses, such as when it is on-path or able to perform any number of
+      cache poisoning attacks, the attacker may be able to leave compliant
+      RFC5011 Resolvers without an appropriate DNSKEY trust anchor. This
+      scenario will remain until an administrator manually fixes the
+      situation.</t>
 
       <t>The time-line below illustrates an example of this situation.</t>
 
       <section anchor="examplenumbers" title="Enumerated Attack Example">
-        <t>The following settings are used in the example scenario
-        within this section: <list style="hanging">
+        <t>The following settings are used in the example scenario within this
+        section: <list style="hanging">
             <t hangText="TTL (all records)">1 day</t>
 
             <t hangText="sigExpirationTime">10 days</t>
@@ -294,80 +277,71 @@
           </list></t>
 
         <t>Given these settings, the sequence of events in <xref
-        target="timing" /> depicts how a SEP Publisher that
-        waits for only the RFC5011 hold time timer length of 30 days
-        subjects its users to a potential Denial of Service
-        attack. The timeline below is based on a SEP
-        Publisher publishing a new Key Signing Key (KSK), with
-        the intent that it will later be used as a trust anchor.  We label
-        this publication time as "T+0".  All numbers in this timeline
-        refer to days before and after this initial publication
-        event. Thus, T-1 is the day before the introduction of the new
-        key, and T+15 is the 15th day after the key was introduced
-        into the example zone being discussed.</t>
+        target="timing"/> depicts how a SEP Publisher that waits for only the
+        RFC5011 hold time timer length of 30 days subjects its users to a
+        potential Denial of Service attack. The timeline below is based on a
+        SEP Publisher publishing a new Key Signing Key (KSK), with the intent
+        that it will later be used as a trust anchor. We label this
+        publication time as "T+0". All numbers in this timeline refer to days
+        before and after this initial publication event. Thus, T-1 is the day
+        before the introduction of the new key, and T+15 is the 15th day after
+        the key was introduced into the example zone being discussed.</t>
 
-        <t>In this exposition, we consider two keys within the example zone: <list
-            style="hanging">
-            <t hangText="K_old:">An older KSK and Trust Anchor being replaced.</t>
+        <t>In this exposition, we consider two keys within the example zone:
+        <list style="hanging">
+            <t hangText="K_old:">An older KSK and Trust Anchor being
+            replaced.</t>
 
-            <t hangText="K_new:">A new KSK being transitioned into active
-            use and expected to become a Trust Anchor via the RFC5011
-            automated trust anchor update process.</t>
+            <t hangText="K_new:">A new KSK being transitioned into active use
+            and expected to become a Trust Anchor via the RFC5011 automated
+            trust anchor update process.</t>
           </list></t>
 
-        <section title="Attack Timing Breakdown" anchor="timing">
+        <section anchor="timing" title="Attack Timing Breakdown">
           <t>Below we examine an attack that foils the adoption of a new
-          DNSKEY by a 5011 Resolver when the
-          SEP Publisher that starts signing and
-          publishing with the new DNSKEY too quickly. <list
+          DNSKEY by a 5011 Resolver when the SEP Publisher that starts signing
+          and publishing with the new DNSKEY too quickly. <list
               style="hanging">
-              <t hangText="T-1">The K_old based RRSIGs are being
-              published by the Zone Signer.  [It may also be signing
-              ZSKs as well, but they are not relevant to this event so
-              we will not talk further about them; we are only
-              considering the RRSIGs that cover the DNSKEYs in this
-              document.]  The Attacker queries for, retrieves and
-              caches this DNSKEY set and corresponding RRSIG
-              signatures.</t>
+              <t hangText="T-1">The K_old based RRSIGs are being published by
+              the Zone Signer. [It may also be signing ZSKs as well, but they
+              are not relevant to this event so we will not talk further about
+              them; we are only considering the RRSIGs that cover the DNSKEYs
+              in this document.] The Attacker queries for, retrieves and
+              caches this DNSKEY set and corresponding RRSIG signatures.</t>
 
-              <t hangText="T+0">The Zone Signer adds K_new to their
-              zone and signs the zone's key set with K_old. The
-              RFC5011 Resolver (later to be under attack) retrieves
-              this new key set and corresponding RRSIGs and notices
-              the publication of K_new. The RFC5011 Resolver starts
-              the (30-day) hold-down timer for K_new.  [Note that in a
-              more real-world scenario there will likely be a further
-              delay between the point where the Zone Signer publishes
-              a new RRSIG and the RFC5011 Resolver notices its
-              publication; though not shown in this example, this
-              delay is accounted for in the equation in <xref
-              target="minimum" /> below]</t>
+              <t hangText="T+0">The Zone Signer adds K_new to their zone and
+              signs the zone's key set with K_old. The RFC5011 Resolver (later
+              to be under attack) retrieves this new key set and corresponding
+              RRSIGs and notices the publication of K_new. The RFC5011
+              Resolver starts the (30-day) hold-down timer for K_new. [Note
+              that in a more real-world scenario there will likely be a
+              further delay between the point where the Zone Signer publishes
+              a new RRSIG and the RFC5011 Resolver notices its publication;
+              though not shown in this example, this delay is accounted for in
+              the equation in <xref target="minimum"/> below]</t>
 
-              <t hangText="T+5">The RFC5011 Resolver queries for the
-              zone's keyset per the RFC5011 Active Refresh schedule,
-              discussed in Section 2.3 of RFC5011. Instead of
-              receiving the intended published keyset, the Attacker
-              successfully replays the keyset and associated
-              signatures recorded at T-1 to the victim RFC5011
-              Resolver. Because the signature lifetime is 10 days (in
-              this example), the replayed signature and keyset is
-              accepted as valid (being only 6 days old, which is less
-              than sigExpirationTime) and the RFC5011 Resolver cancels
-              the (30-day) hold-down timer for K_new, per the RFC5011
-              algorithm.</t>
+              <t hangText="T+5">The RFC5011 Resolver queries for the zone's
+              keyset per the RFC5011 Active Refresh schedule, discussed in
+              Section 2.3 of RFC5011. Instead of receiving the intended
+              published keyset, the Attacker successfully replays the keyset
+              and associated signatures recorded at T-1 to the victim RFC5011
+              Resolver. Because the signature lifetime is 10 days (in this
+              example), the replayed signature and keyset is accepted as valid
+              (being only 6 days old, which is less than sigExpirationTime)
+              and the RFC5011 Resolver cancels the (30-day) hold-down timer
+              for K_new, per the RFC5011 algorithm.</t>
 
-              <t hangText="T+10">The RFC5011 Resolver queries for the
-              zone's keyset and discovers a signed keyset that
-              includes K_new (again), and is signed by K_old.  Note:
-              the attacker is unable to replay the records cached at
-              T-1, because the signatures have now expired. Thus at
-              T+10, the RFC5011 Resolver starts (anew) the hold-timer
-              for K_new.</t>
+              <t hangText="T+10">The RFC5011 Resolver queries for the zone's
+              keyset and discovers a signed keyset that includes K_new
+              (again), and is signed by K_old. Note: the attacker is unable to
+              replay the records cached at T-1, because the signatures have
+              now expired. Thus at T+10, the RFC5011 Resolver starts (anew)
+              the hold-timer for K_new.</t>
 
-              <t hangText="T+11 through T+29">The RFC5011 Resolver
-              continues checking the zone's key set at the prescribed
-              regular intervals.  During this period, the attacker can
-              no longer replay traffic to their benefit.</t>
+              <t hangText="T+11 through T+29">The RFC5011 Resolver continues
+              checking the zone's key set at the prescribed regular intervals.
+              During this period, the attacker can no longer replay traffic to
+              their benefit.</t>
 
               <t hangText="T+30">The Zone Signer knows that this is the first
               time at which some validators might accept K_new as a new trust
@@ -379,100 +353,87 @@
               <t hangText="T+35">The Zone Signer (mistakenly) believes that
               all validators following the Active Refresh schedule (Section
               2.3 of RFC5011) should have accepted K_new as a the new trust
-              anchor (since the hold down time (30 days) + the query
-              interval [which is just 1/2 the signature validity
-              period in this example] would have passed). However, the
-              hold-down timer of our attacked RFC5011 Resolver is
-              only at 25 days (T+35 minus T+10); thus the RFC5011
-              Resolver won't consider it a valid trust
-              anchor addition yet, as the required 30 days have not
-              yet elapsed.</t>
+              anchor (since the hold down time (30 days) + the query interval
+              [which is just 1/2 the signature validity period in this
+              example] would have passed). However, the hold-down timer of our
+              attacked RFC5011 Resolver is only at 25 days (T+35 minus T+10);
+              thus the RFC5011 Resolver won't consider it a valid trust anchor
+              addition yet, as the required 30 days have not yet elapsed.</t>
 
-              <t hangText="T+36">The Zone Signer, believing K_new is
-              safe to use, switches their active signing KSK to K_new
-              and publishes a new RRSIG, signed with (only) K_new, covering
-              the DNSKEY set. Non-attacked RFC5011 validators, with a
-              hold-down timer of at least 30 days, would have accepted
-              K_new into their set of trusted keys. But, because our
-              attacked RFC5011 Resolver now has a hold-down timer for
-              K_new of only 26 days, it failed to ever accept K_new as a
-              trust anchor.  Since K_old is no longer being used to
-              sign the zone's DNSKEYs, all the DNSKEY records from
-              the zone will be treated as invalid.  Subsequently, all
-              of the records in the DNS tree below the zone's apex
-              will be deemed invalid by DNSSEC.</t>
+              <t hangText="T+36">The Zone Signer, believing K_new is safe to
+              use, switches their active signing KSK to K_new and publishes a
+              new RRSIG, signed with (only) K_new, covering the DNSKEY set.
+              Non-attacked RFC5011 validators, with a hold-down timer of at
+              least 30 days, would have accepted K_new into their set of
+              trusted keys. But, because our attacked RFC5011 Resolver now has
+              a hold-down timer for K_new of only 26 days, it failed to ever
+              accept K_new as a trust anchor. Since K_old is no longer being
+              used to sign the zone's DNSKEYs, all the DNSKEY records from the
+              zone will be treated as invalid. Subsequently, all of the
+              records in the DNS tree below the zone's apex will be deemed
+              invalid by DNSSEC.</t>
             </list></t>
         </section>
       </section>
     </section>
 
     <section anchor="minimum" title="Minimum RFC5011 Timing Requirements">
-        <t> This section defines the minimum timing requirements for
-        making exclusive use of newly added DNSKEYs and timing
-        requirements for ceasing the publication of DNSKEYs to be
-        revoked.  We break our timing solution requirements into two
-        primary components: the mathematically-based security analysis
-        of the RFC5011 publication process itself, and an extension of
-        this that takes operational realities into account that
-        further affect the recommended timings.</t>
+      <t>This section defines the minimum timing requirements for making
+      exclusive use of newly added DNSKEYs and timing requirements for ceasing
+      the publication of DNSKEYs to be revoked. We break our timing solution
+      requirements into two primary components: the mathematically-based
+      security analysis of the RFC5011 publication process itself, and an
+      extension of this that takes operational realities into account that
+      further affect the recommended timings.</t>
 
-        <t>First, we define the component terms used in all equations in
-        <xref target="term" />. </t>
+      <t>First, we define the component terms used in all equations in <xref
+      target="term"/>.</t>
 
-        <section anchor="term" title="Equation Components">
-                <section title="addHoldDownTime">
-          <t>The addHoldDownTime is defined in Section 2.4.1 of
-          <xref target="RFC5011" /> as:</t>
+      <section anchor="term" title="Equation Components">
+        <section title="addHoldDownTime">
+          <t>The addHoldDownTime is defined in Section 2.4.1 of <xref
+          target="RFC5011"/> as:</t>
 
-
-          <t> <figure>
-                  <artwork><![CDATA[
+          <t><figure>
+              <artwork><![CDATA[
     The add hold-down time is 30 days or the expiration time of the
     original TTL of the first trust point DNSKEY RRSet that contained
     the new key, whichever is greater.  This ensures that at least
     two validated DNSKEY RRSets that contain the new key MUST be seen
     by the resolver prior to the key's acceptance.
-                  ]]></artwork></figure></t>
-                </section>
+                  ]]></artwork>
+            </figure></t>
+        </section>
 
+        <!-- XXX: review this: -->
 
+        <section anchor="lastSigExpirationTime" title="lastSigExpirationTime">
+          <t>The latest value (i.e. the future most date and time) of any
+          RRSig Signature Expiration field covering any DNSKEY RRSet
+          containing only the old trust anchor(s) that are being superseded.
+          Note that for organizations pre-creating signatures this time may be
+          fairly far in the future unless they can be significantly assured
+          that none of their pre-generated signatures can be replayed at a
+          later date.</t>
+        </section>
 
-          <!-- XXX: review this: -->
+        <!-- must match definition in terminology -->
 
-          <section title="lastSigExpirationTime" anchor="lastSigExpirationTime">
-	          <t>
-	          The latest value (i.e. the future most date and
-	          time) of any RRSig Signature Expiration field
-	          covering any DNSKEY RRSet containing only the old
-	          trust anchor(s) that are being superseded. Note that
-	          for organizations pre-creating signatures this time
-	          may be fairly far in the future unless they can be
-	          significantly assured that none of their
-	          pre-generated signatures can be replayed at a later
-	          date.
-	          </t>
-          </section>
+        <section anchor="sigExpirationTime" title="sigExpirationTime">
+          <t>The amount of time between the DNSKEY RRSIG's Signature Inception
+          field and the Signature Expiration field.</t>
+        </section>
 
-          <!-- must match definition in terminology -->
-          <section title="sigExpirationTime" anchor="sigExpirationTime">
-	          <t>
-	          The amount of time between the
-	          DNSKEY RRSIG's Signature Inception field and the Signature
-	          Expiration field.
-	          </t>
-          </section>
+        <section title="sigExpirationTimeRemaining">
+          <t>sigExpirationTimeRemaining is defined in <xref
+          target="terminology"/>.</t>
+        </section>
 
-      <section title="sigExpirationTimeRemaining">
-              <t>sigExpirationTimeRemaining is defined in <xref
-              target="terminology" />.</t>
-      </section>
+        <section anchor="activeRefresh" title="activeRefresh">
+          <t>activeRefresh time is defined by RFC5011 by</t>
 
-      <section title="activeRefresh" anchor="activeRefresh">
-      <t>
-        activeRefresh time is defined by RFC5011 by
-      </t>
-      <t><figure>
-          <artwork><![CDATA[
+          <t><figure>
+              <artwork><![CDATA[
   A resolver that has been configured for an automatic update
   of keys from a particular trust point MUST query that trust
   point (e.g., do a lookup for the DNSKEY RRSet and related
@@ -481,87 +442,80 @@
   expiration interval and no more often than once per hour.
                           
               ]]></artwork>
-        </figure></t>
+            </figure></t>
 
-      <t> This translates to:</t>
-      <t> <figure>
-          <artwork><![CDATA[
+          <t>This translates to:</t>
+
+          <t><figure>
+              <artwork><![CDATA[
  activeRefresh = MAX(1 hour,
                      MIN(sigExpirationTime / 2,
                          MAX(TTL of K_old DNSKEY RRSet) / 2,
                          15 days)
                      )
               ]]></artwork>
-      </figure></t>
-      </section>
-      
-      <section title="timingSafetyMargin">
+            </figure></t>
+        </section>
 
-      <t>Mentally, it is easy to assume that the period of time
-      required for SEP publishers to wait after making changes to SEP
-      marked DNSKEY sets will be entirely based on the length of the
-      addHoldDownTime.  Unfortunately, analysis shows that both the
-      design of the RFC5011 protocol an the operational realities in
-      deploying it require waiting and additional period of time
-      longer.  In subsections <xref target="activeRefreshOffset" /> to
-      <xref target="retryDriftMargin" /> below, we discuss three sources
-      of additional delay.  In the end, we will pick the largest of
-      these delays as the minimum additional time that the SEP
-      Publisher must wait in our final timingSafetyMargin value, which
-      we define in <xref target="timingSafetyMargin" />.
-      </t>
+        <section title="timingSafetyMargin">
+          <t>Mentally, it is easy to assume that the period of time required
+          for SEP publishers to wait after making changes to SEP marked DNSKEY
+          sets will be entirely based on the length of the addHoldDownTime.
+          Unfortunately, analysis shows that both the design of the RFC5011
+          protocol an the operational realities in deploying it require
+          waiting and additional period of time longer. In subsections <xref
+          target="activeRefreshOffset"/> to <xref target="retryDriftMargin"/>
+          below, we discuss three sources of additional delay. In the end, we
+          will pick the largest of these delays as the minimum additional time
+          that the SEP Publisher must wait in our final timingSafetyMargin
+          value, which we define in <xref target="timingSafetyMargin"/>.</t>
 
-      <section title="activeRefreshOffset" anchor="activeRefreshOffset">
+          <section anchor="activeRefreshOffset" title="activeRefreshOffset">
+            <t>A security analysis of the timing associated with the query
+            rate of RFC5011 Resolvers shows that it may not perfectly align
+            with the addHoldDownTime when the addHoldDownTime is not evenly
+            divisible by the activeRefresh time. Consider the example of a
+            zone with an activeRefresh period of 7 days. If an associated
+            RFC5011 Resolver started it's holdDown timer just after the SEP
+            published a new DNSKEY (at time T+0), the resolver would send
+            checking queries at T+7, T+14, T+21 and T+28 Days and will finally
+            accept it at T+35 days, which is 5 days longer than the 30-day
+            addHoldDownTime.</t>
 
-      <t>A security analysis of the timing associated with the query
-      rate of RFC5011 Resolvers shows that it may not perfectly align
-      with the addHoldDownTime when the addHoldDownTime is not evenly
-      divisible by the activeRefresh time.  Consider the example of a
-      zone with an activeRefresh period of 7 days.  If an associated
-      RFC5011 Resolver started it's holdDown timer just after the SEP
-      published a new DNSKEY (at time T+0), the resolver would send
-      checking queries at T+7, T+14, T+21 and T+28 Days and will
-      finally accept it at T+35 days, which is 5 days longer than the
-      30-day addHoldDownTime.</t>
+            <t>The activeRefreshOffset term defines this time difference and
+            becomes:</t>
 
-
-      <t>The activeRefreshOffset term defines this time difference and
-      becomes:</t>
-
-      <t> <figure>
-          <artwork><![CDATA[
+            <t><figure>
+                <artwork><![CDATA[
  activeRefreshOffset = addHoldDownTime % activeRefresh
               ]]></artwork>
-      </figure></t>
+              </figure></t>
 
-      <t>The % symbol denotes the mathematical mod operator (calculating
-      the remainder in a division problem).  This will frequently be
-      zero, but can be nearly as large as activeRefresh itself.
-      </t>
+            <t>The % symbol denotes the mathematical mod operator (calculating
+            the remainder in a division problem). This will frequently be
+            zero, but can be nearly as large as activeRefresh itself.</t>
+          </section>
 
-      </section>
-      
-      <section title="clockskewDriftMargin">
-	      <t>Even small clock drifts can have negative impacts
-	      upon the timing of the RFC5011 Resolver's measurements.
-	      Consider the simplest case where the RFC5011 Resolver's
-	      clock shifts over time to be 2 seconds slower near the
-	      end of the RFC5011 Resolver's addHoldDownTime period.
-	      I.E., if the RFC5011 Resolver first noticed a new DNSKEY
-	      at:</t>
-	      
-	      <t> <figure>
-		      <artwork><![CDATA[
+          <section title="clockskewDriftMargin">
+            <t>Even small clock drifts can have negative impacts upon the
+            timing of the RFC5011 Resolver's measurements. Consider the
+            simplest case where the RFC5011 Resolver's clock shifts over time
+            to be 2 seconds slower near the end of the RFC5011 Resolver's
+            addHoldDownTime period. I.E., if the RFC5011 Resolver first
+            noticed a new DNSKEY at:</t>
+
+            <t><figure>
+                <artwork><![CDATA[
           firstSeen = sigExpirationTime + activeRefresh + 1 second
                                    ]]></artwork>
               </figure></t>
 
-              <t>The effect of 2 second clock drift between the SEP
-              Publisher and the RFC5011 Resolver may result in the
-              RFC5011 Resolver querying again at:</t>
+            <t>The effect of 2 second clock drift between the SEP Publisher
+            and the RFC5011 Resolver may result in the RFC5011 Resolver
+            querying again at:</t>
 
-              <t> <figure>
-                  <artwork><![CDATA[
+            <t><figure>
+                <artwork><![CDATA[
           justBefore = sigExpirationTime + addHoldDownTime +
                        activeRefresh + 1 second - 2 seconds
 
@@ -572,68 +526,59 @@
                                    ]]></artwork>
               </figure></t>
 
-              <t>The net effect is the addHoldDownTime will not have
-              been reached from the perspective of the RFC5011
-              Resolver, but it will have been reached from the
-              perspective of the SEP Publisher.  The net effect is it
-              may take one additional activeRefresh period longer for
-              this RFC5011 Resolver to accept the new key (at
-              sigExpirationTime + addHoldDownTime + 2 * activeRefresh
-              - 1 second).</t>
+            <t>The net effect is the addHoldDownTime will not have been
+            reached from the perspective of the RFC5011 Resolver, but it will
+            have been reached from the perspective of the SEP Publisher. The
+            net effect is it may take one additional activeRefresh period
+            longer for this RFC5011 Resolver to accept the new key (at
+            sigExpirationTime + addHoldDownTime + 2 * activeRefresh - 1
+            second).</t>
 
-              <t>We note that even the smallest clockskew errors can
-              require waiting an additional activeRefresh period, and
-              thus define the clockskewDriftMargin as:</t>
-              
-      <t> <figure>
-          <artwork><![CDATA[
+            <t>We note that even the smallest clockskew errors can require
+            waiting an additional activeRefresh period, and thus define the
+            clockskewDriftMargin as:</t>
+
+            <t><figure>
+                <artwork><![CDATA[
     clockskewDriftMargin = activeRefresh      
               ]]></artwork>
-      </figure></t>
-              
-            </section>
-            <section title="retryDriftMargin" anchor="retryDriftMargin">
-	            <t>Drift associated with a lost transmission and
-	            an accompanying re-transmission (see Section 2.3
-	            of <xref target="RFC5011" />) will cause RFC5011
-	            Resolvers to also change the timing associated
-	            with query times such that it becomes impossible
-	            to predict, from the perspective of the SEP
-	            Publisher, when the conclusive measurement
-	            query will arrive.  Similarly, any software that
-	            restarts/reboots without saving next-query timing
-	            state may also commence with a new random
-	            starting time.  Thus, an additional
-	            activeRefresh is needed to handle both these cases
-	            as well.</t>
+              </figure></t>
+          </section>
 
-      <t> <figure>
-          <artwork><![CDATA[
+          <section anchor="retryDriftMargin" title="retryDriftMargin">
+            <t>Drift associated with a lost transmission and an accompanying
+            re-transmission (see Section 2.3 of <xref target="RFC5011"/>) will
+            cause RFC5011 Resolvers to also change the timing associated with
+            query times such that it becomes impossible to predict, from the
+            perspective of the SEP Publisher, when the conclusive measurement
+            query will arrive. Similarly, any software that restarts/reboots
+            without saving next-query timing state may also commence with a
+            new random starting time. Thus, an additional activeRefresh is
+            needed to handle both these cases as well.</t>
+
+            <t><figure>
+                <artwork><![CDATA[
           retryDriftMargin = activeRefresh
               ]]></artwork>
-      </figure></t>
+              </figure></t>
 
+            <t>Note that we account for additional time associated with
+            cumulative multiple retries, especially under high-loss
+            conditions, in <xref target="timingSafetyMargin"/>.</t>
+          </section>
 
-	            <t>Note that we account for additional time
-	            associated with cumulative multiple retries,
-	            especially under high-loss conditions, in <xref
-	            target="timingSafetyMargin" />.</t>
+          <section anchor="timingSafetyMargin"
+                   title="timingSafetyMargin Value">
+            <t>The activeRefreshOffset, clockskewDriftMargin, and
+            retryDriftMargin parameters all deal with additional wait-periods
+            that must be accounted for after analyzing what conditions the
+            client will take longer than expected to make its last query while
+            waiting for the addHoldDownTime period to pass. But these values
+            may be merged into a single term by waiting the longest of any of
+            them. We define timingSafetyMargin as this "worst case" value:</t>
 
-            </section>      
-
-      <section title="timingSafetyMargin Value" anchor="timingSafetyMargin">
-	      <t>The activeRefreshOffset, clockskewDriftMargin, and
-	      retryDriftMargin parameters all deal with additional
-	      wait-periods that must be accounted for after analyzing
-	      what conditions the client will take longer than
-	      expected to make its last query while waiting for the
-	      addHoldDownTime period to pass.  But these values may be
-	      merged into a single term by waiting the longest of any
-	      of them.  We define timingSafetyMargin as this "worst
-	      case" value:</t>
-
-      <t> <figure>
-          <artwork><![CDATA[
+            <t><figure>
+                <artwork><![CDATA[
      timingSafetyMargin = MAX(activeRefreshOffset,
                               clockskewDriftMargin,
                               retryDriftMargin)
@@ -644,37 +589,35 @@
 
      timingSafetyMargin = activeRefresh                              
               ]]></artwork>
-      </figure></t>
-	      
-      </section>
-      </section>
+              </figure></t>
+          </section>
+        </section>
 
+        <section anchor="retrySafetyMargin" title="retrySafetyMargin">
+          <t>The retrySafetyMargin is an extra period of time to account for
+          caching, network delays, dropped packets, and other operational
+          concerns otherwise beyond the scope of this document. The value
+          operators should chose is highly dependent on the deployment
+          situation associated with their zone. Note that no value of a
+          retrySafetyMargin can protect against resolvers that are "down".
+          Nonetheless, we do offer the following as one method considering
+          reasonable values to select from.</t>
 
-      <section title="retrySafetyMargin" anchor="retrySafetyMargin">
-              <t>The retrySafetyMargin is an extra period of time to account for
-              caching, network delays, dropped packets, and other operational
-              concerns otherwise beyond the scope of this document.  The value
-              operators should chose is highly dependent on the deployment
-              situation associated with their zone.  Note that no value of a
-              retrySafetyMargin can protect against resolvers that are "down".
-              Nonetheless, we do offer the following as one method
-              considering reasonable values to select from.</t>
-              
-              <t>
-                      The following list of variables need to be considered
-                      when selecting an appropriate retrySafetyMargin value:
-              </t>
-              
-              <t>
-                      <list style="hanging">
-                              <t hangText="successRate:"> A likely success rate for client queries and retries</t>
-                              <t hangText="numResolvers:"> The number of client RFC5011 Resolvers</t>
-                      </list>
-              </t>
+          <t>The following list of variables need to be considered when
+          selecting an appropriate retrySafetyMargin value:</t>
 
-              <t>Note that RFC5011 defines retryTime as:</t>
-      <t> <figure>
-          <artwork><![CDATA[
+          <t><list style="hanging">
+              <t hangText="successRate:">A likely success rate for client
+              queries and retries</t>
+
+              <t hangText="numResolvers:">The number of client RFC5011
+              Resolvers</t>
+            </list></t>
+
+          <t>Note that RFC5011 defines retryTime as:</t>
+
+          <t><figure>
+              <artwork><![CDATA[
       If the query fails, the resolver MUST repeat the query until
       satisfied no more often than once an hour and no less often
       than the lesser of 1 day, 10% of the original TTL, or 10% of
@@ -682,29 +625,28 @@
       retryTime = MAX (1 hour, MIN (1 day, .1 * origTTL,
                                     .1 * expireInterval)).
               ]]></artwork>
-      </figure></t>
+            </figure></t>
 
-              <t>With the successRate and numResolvers values selected
-              and the definition of retryTime from RFC5011, one method
-              for determining how many retryTime intervals to wait in
-              order to reduce the set of resolvers that have not
-              accepted the new trust anchor to 0 is thus:
-              </t>
-              
-              <t> <figure>
-                      <artwork><![CDATA[
+          <t>With the successRate and numResolvers values selected and the
+          definition of retryTime from RFC5011, one method for determining how
+          many retryTime intervals to wait in order to reduce the set of
+          resolvers that have not accepted the new trust anchor to 0 is
+          thus:</t>
+
+          <t><figure>
+              <artwork><![CDATA[
                       x = (1/(1 - successRate))
 
          retryCountWait = Log_base_x(numResolvers)
                       ]]></artwork>
-              </figure></t>
+            </figure></t>
 
-              <t>To reduce the need for readers to pull out a
-              scientific calculator, we offer the following lookup
-              table based on successRate and numResolvers:</t>
+          <t>To reduce the need for readers to pull out a scientific
+          calculator, we offer the following lookup table based on successRate
+          and numResolvers:</t>
 
-      <t> <figure>
-          <artwork><![CDATA[
+          <t><figure>
+              <artwork><![CDATA[
                        retryCountWait lookup table
                      ---------------------------
 
@@ -722,60 +664,53 @@ Interval      0.25       33       41        49         57          65
               0.99        2        3         3          4           4
               0.999       2        2         2          3           3
               ]]></artwork>
-      </figure></t>
+            </figure></t>
 
-      <t>Finally, a suggested value of retrySafetyMargin can then be this
-      retryCountWait number multiplied by the retryTime from RFC5011:
-      </t>
-      
-      <t> <figure>
-          <artwork><![CDATA[
+          <t>Finally, a suggested value of retrySafetyMargin can then be this
+          retryCountWait number multiplied by the retryTime from RFC5011:</t>
+
+          <t><figure>
+              <artwork><![CDATA[
               retrySafetyMargin = retryCountWait * retryTime
               ]]></artwork>
-      </figure></t>
-
-              </section>
-        
+            </figure></t>
+        </section>
       </section>
 
-      <section title="Timing Requirements For Adding a New KSK" anchor="adding">
-
+      <section anchor="adding"
+               title="Timing Requirements For Adding a New KSK">
         <t>Given the defined parameters and analysis from <xref
-        target="term" />, we can now create a method for calculating
-        the amount of time to wait until it is safe to start signing
-        exclusively with a new DNSKEY (especially useful for writing
-        code involving sleep based timers) in <xref target="waittime"
-        />, and define a method for calculating a wall-clock value
-        after which it is safe to start signing exclusively with a new
-        DNSKEY (especially useful for writing code based on
-        clock-based event triggers) in <xref
-        target="wallclock" />.
-        </t>
-        
-      <section title="Wait Timer Based Calculation" anchor="waittime">
-      <t>Given the attack description in <xref target="attack"/>, the
-      correct minimum length of time required for the Zone Signer to
-      wait after publishing K_new but before exclusively using it and
-      newer keys is:</t>
+        target="term"/>, we can now create a method for calculating the amount
+        of time to wait until it is safe to start signing exclusively with a
+        new DNSKEY (especially useful for writing code involving sleep based
+        timers) in <xref target="waittime"/>, and define a method for
+        calculating a wall-clock value after which it is safe to start signing
+        exclusively with a new DNSKEY (especially useful for writing code
+        based on clock-based event triggers) in <xref
+        target="wallclock"/>.</t>
 
-      <t> <figure>
-          <artwork><![CDATA[
+        <section anchor="waittime" title="Wait Timer Based Calculation">
+          <t>Given the attack description in <xref target="attack"/>, the
+          correct minimum length of time required for the Zone Signer to wait
+          after publishing K_new but before exclusively using it and newer
+          keys is:</t>
+
+          <t><figure>
+              <artwork><![CDATA[
    addWaitTime = addHoldDownTime
                  + sigExpirationTimeRemaining
                  + activeRefresh
                  + timingSafetyMargin
                  + retrySafetyMargin
               ]]></artwork>
-      </figure></t>
+            </figure></t>
 
-      <section title="Fully expanded equation">
-      <t>
-               Given the equation components defined in <xref
-               target="term" />, the full expanded equation is:
-      </t>
+          <section title="Fully expanded equation">
+            <t>Given the equation components defined in <xref target="term"/>,
+            the full expanded equation is:</t>
 
-      <t> <figure>
-          <artwork><![CDATA[
+            <t><figure>
+                <artwork><![CDATA[
    addWaitTime = addHoldDownTime
                  + sigExpirationTimeRemaining
                  + 2 * MAX(1 hour,
@@ -785,34 +720,33 @@ Interval      0.25       33       41        49         57          65
                        )
                  + retrySafetyMargin
               ]]></artwork>
-      </figure></t>
-      </section>
-      </section>
+              </figure></t>
+          </section>
+        </section>
 
-      <section title="Wall-Clock Based Calculation" anchor="wallclock">
-	      <t>The equations in <xref target="waittime" />
-	      are defined based upon how long
-              to wait from a particular moment in time.  An
-              alternative, but equivalent, method is to calculate the
-              date and time before which it is unsafe to use a key for
-              signing.  This calculation thus becomes:</t>
+        <section anchor="wallclock" title="Wall-Clock Based Calculation">
+          <t>The equations in <xref target="waittime"/> are defined based upon
+          how long to wait from a particular moment in time. An alternative,
+          but equivalent, method is to calculate the date and time before
+          which it is unsafe to use a key for signing. This calculation thus
+          becomes:</t>
 
-      <t> <figure>
-          <artwork><![CDATA[
+          <t><figure>
+              <artwork><![CDATA[
    addWallClockTime = lastSigExpirationTime
                     + addHoldDownTime
                     + activeRefresh
                     + timingSafetyMargin
                     + retrySafetyMargin
               ]]></artwork>
-      </figure></t>
+            </figure></t>
 
-      <t>where lastSigExpirationTime is the latest value of any
-      sigExpirationTime for which RRSIGs were created that could
-      potentially be replayed.  Fully expanded, this becomes:</t>
-              
-      <t> <figure>
-          <artwork><![CDATA[
+          <t>where lastSigExpirationTime is the latest value of any
+          sigExpirationTime for which RRSIGs were created that could
+          potentially be replayed. Fully expanded, this becomes:</t>
+
+          <t><figure>
+              <artwork><![CDATA[
    addWallClockTime = lastSigExpirationTime
                       + addHoldDownTime
                       + 2 * MAX(1 hour,
@@ -822,41 +756,36 @@ Interval      0.25       33       41        49         57          65
                                 )
                       + retrySafetyMargin
               ]]></artwork>
-          </figure>
-      </t>
+            </figure></t>
+        </section>
 
-      </section>
+        <section title="Timing Constraint Summary">
+          <t>The important timing constraint introduced by this memo relates
+          to the last point at which a RFC5011 Resolver may have received a
+          replayed original DNSKEY set, containing K_old and not K_new. The
+          next query of the RFC5011 validator at which K_new will be seen
+          without the potential for a replay attack will occur after the old
+          DNSKEY RRSIG's Signature Expriation Time. Thus, the latest time that
+          a RFC5011 Validator may begin their hold down timer is an "Active
+          Refresh" period after the last point that an attacker can replay the
+          K_old DNSKEY set. The worst case scenario of this attack is if the
+          attacker can replay K_old just seconds before the (DNSKEY RRSIG
+          Signature Validity) field of the last K_old only RRSIG.</t>
+        </section>
 
+        <section title="Additional Considerations for RFC7583">
+          <t>Note: our notion of addWaitTime is called "Itrp" in Section
+          3.3.4.1 of <xref target="RFC7583"/>. The equation for Itrp in
+          RFC7583 is insecure as it does not include the sigExpirationTime
+          listed above. The Itrp equation in RFC7583 also does not include the
+          2*TTL safety margin, though that is an operational
+          consideration.</t>
+        </section>
 
-      <section title="Timing Constraint Summary">
-      <t>The important timing constraint introduced by this memo
-      relates to the last point at which a RFC5011 Resolver may have
-      received a replayed original DNSKEY set, containing K_old and
-      not K_new.  The next query of the RFC5011 validator at which
-      K_new will be seen without the potential for a replay attack
-      will occur after the old DNSKEY RRSIG's Signature Expriation
-      Time. Thus, the latest time that a RFC5011 Validator may begin
-      their hold down timer is an "Active Refresh" period after the
-      last point that an attacker can replay the K_old DNSKEY set.
-      The worst case scenario of this attack is if the attacker can
-      replay K_old just seconds before the (DNSKEY RRSIG Signature
-      Validity) field of the last K_old only RRSIG. </t>
-      </section>
-
-      <section title="Additional Considerations for RFC7583">
-      <t>Note: our notion of addWaitTime is
-      called "Itrp" in Section 3.3.4.1 of <xref target="RFC7583"/>.
-      The equation for Itrp in RFC7583 is insecure as it does not
-      include the sigExpirationTime listed above.  The Itrp equation
-      in RFC7583 also does not include the 2*TTL safety margin, though
-      that is an operational consideration.</t>
-      </section>
-
-      <section title="Example Scenario Calculations">
-      <t>For the parameters listed in <xref target="examplenumbers"/>,
-      our resulting addWaitTime is:
-      <figure>
-          <artwork><![CDATA[
+        <section title="Example Scenario Calculations">
+          <t>For the parameters listed in <xref target="examplenumbers"/>, our
+          resulting addWaitTime is: <figure>
+              <artwork><![CDATA[
   addWaitTime = 30
                 + 10
                 + 1 / 2 
@@ -864,42 +793,38 @@ Interval      0.25       33       41        49         57          65
 
   addWaitTime = 43               (days)
                                 ]]></artwork>
-        </figure></t>
+            </figure></t>
 
-      <t>This addWaitTime of 42.5 days is 12.5 days longer than just
-      the hold down timer, even with the needed retrySafetyMargin value
-      being left out (which we exclude due to the lack of necessary
-      operational parameters).</t>
+          <t>This addWaitTime of 42.5 days is 12.5 days longer than just the
+          hold down timer, even with the needed retrySafetyMargin value being
+          left out (which we exclude due to the lack of necessary operational
+          parameters).</t>
+        </section>
       </section>
 
-      </section>
+      <section anchor="revoking"
+               title="Timing Requirements For Revoking an Old KSK">
+        <t>This issue affects not just the publication of new DNSKEYs intended
+        to be used as trust anchors, but also the length of time required to
+        continuously publish a DNSKEY with the revoke bit set.</t>
 
-      <section title="Timing Requirements For Revoking an Old KSK" anchor="revoking">
+        <t><xref target="waittime"/> defines a method for calculating the
+        amount of time operators need to wait until it is safe to cease
+        publishing a DNSKEY (especially useful for writing code involving
+        sleep based timers), and <xref target="wallclock"/> defines a method
+        for calculating a minimal wall-clock value after which it is safe to
+        cease publishing a DNSKEY (especially useful for writing code based on
+        clock-based event triggers).</t>
 
-        <t>This issue affects not just the
-        publication of new DNSKEYs intended to be used as trust anchors,
-        but also the length of time required to continuously publish a
-        DNSKEY with the revoke bit set.</t>
+        <section title="Wait Timer Based Calculation">
+          <t>Both of these publication timing requirements are affected by the
+          attacks described in this document, but with revocation the key is
+          revoked immediately and the addHoldDown timer does not apply. Thus
+          the minimum amount of time that a SEP Publisher must wait before
+          removing a revoked key from publication is:</t>
 
-      <t><xref target="waittime" /> defines a method for calculating
-        the amount of time operators need to wait until it is safe to
-        cease publishing a DNSKEY (especially useful for writing code
-        involving sleep based timers), and <xref target="wallclock" />
-        defines a method for calculating a minimal wall-clock value
-        after which it is safe to cease publishing a DNSKEY
-        (especially useful for writing code based on clock-based event
-        triggers).
-        </t>
-
-      <section title="Wait Timer Based Calculation">
-      <t>Both of these publication
-      timing requirements are affected by the attacks described in
-      this document, but with revocation the key is revoked
-      immediately and the addHoldDown timer does not apply.  Thus the
-      minimum amount of time that a SEP Publisher must wait
-      before removing a revoked key from publication is: </t>
-      <t> <figure>
-          <artwork><![CDATA[
+          <t><figure>
+              <artwork><![CDATA[
   remWaitTime = sigExpirationTimeRemaining
                 + activeRefresh
                 + timingSafetyMargin
@@ -913,23 +838,22 @@ Interval      0.25       33       41        49         57          65
                 + activeRefresh
                 + retrySafetyMargin
               ]]></artwork>
-        </figure></t>
+            </figure></t>
 
-      <t>Note also that adding retryTime intervals to the remWaitTime
-      may be wise, just as it was for addWaitTime in <xref
-      target="minimum" />.</t>
-      </section>
+          <t>Note also that adding retryTime intervals to the remWaitTime may
+          be wise, just as it was for addWaitTime in <xref
+          target="minimum"/>.</t>
+        </section>
 
-      <section title="Wall-Clock Based Calculation">
-              <t>Like before, the above equations are defined based
-              upon how long to wait from a particular moment in time.
-              An alternative, but equivalent, method is to calculate
-              the date and time before which it is unsafe to cease
-              publishing a revoked key.  This calculation thus
-              becomes:</t>
+        <section title="Wall-Clock Based Calculation">
+          <t>Like before, the above equations are defined based upon how long
+          to wait from a particular moment in time. An alternative, but
+          equivalent, method is to calculate the date and time before which it
+          is unsafe to cease publishing a revoked key. This calculation thus
+          becomes:</t>
 
-      <t> <figure>
-          <artwork><![CDATA[
+          <t><figure>
+              <artwork><![CDATA[
    remWallClockTime = lastSigExpirationTime
                     + activeRefresh
                     + timingSafetyMargin
@@ -943,109 +867,101 @@ Interval      0.25       33       41        49         57          65
                     + timingSafetyMargin
                     + retrySafetyMargin
               ]]></artwork>
-      </figure></t>
+            </figure></t>
 
-      <t>where lastSigExpirationTime is the latest value of any
-      sigExpirationTime for which RRSIGs were created that could
-      potentially be replayed.  Fully expanded, this becomes:</t>
-              
-      </section>
+          <t>where lastSigExpirationTime is the latest value of any
+          sigExpirationTime for which RRSIGs were created that could
+          potentially be replayed. Fully expanded, this becomes:</t>
+        </section>
 
-      <section title="Additional Considerations for RFC7583">
-      <t>Note that our notion of remWaitTime is
-      called "Irev" in Section 3.3.4.2 of <xref target="RFC7583"/>.
-      The equation for Irev in RFC7583 is insecure as it does not
-      include the sigExpirationTime listed above.    The Irev equation
-      in RFC7583 also does not include a safety margin, though
-      that is an operational consideration.</t>
-      </section>
+        <section title="Additional Considerations for RFC7583">
+          <t>Note that our notion of remWaitTime is called "Irev" in Section
+          3.3.4.2 of <xref target="RFC7583"/>. The equation for Irev in
+          RFC7583 is insecure as it does not include the sigExpirationTime
+          listed above. The Irev equation in RFC7583 also does not include a
+          safety margin, though that is an operational consideration.</t>
+        </section>
 
-      <section title="Example Scenario Calculations">
-      <t>For the parameters listed in <xref target="examplenumbers"/>, our
-      example: <figure>
-          <artwork><![CDATA[
+        <section title="Example Scenario Calculations">
+          <t>For the parameters listed in <xref target="examplenumbers"/>, our
+          example: <figure>
+              <artwork><![CDATA[
   remwaitTime = 10
                 + 1 / 2          (days)
      
   remwaitTime = 10.5             (days)
                                 ]]></artwork>
-        </figure></t>
+            </figure></t>
 
-      <t>Note that for the values in this example produce a length
-      shorter than the recommended 30 days in RFC5011's section 6.6,
-      step 3.  Other values of sigExpirationTime and the original TTL
-      of the K_old DNSKEY RRSet, however, can produce values longer
-      than 30 days.</t>
+          <t>Note that for the values in this example produce a length shorter
+          than the recommended 30 days in RFC5011's section 6.6, step 3. Other
+          values of sigExpirationTime and the original TTL of the K_old DNSKEY
+          RRSet, however, can produce values longer than 30 days.</t>
 
-      <t>Note that because revocation happens immediately, an attacker
-      has a much harder job tricking a RFC5011 Resolver into leaving
-      a trust anchor in place, as the attacker must successfully
-      replay the old data for every query a RFC5011 Resolver sends,
-      not just one.</t>
+          <t>Note that because revocation happens immediately, an attacker has
+          a much harder job tricking a RFC5011 Resolver into leaving a trust
+          anchor in place, as the attacker must successfully replay the old
+          data for every query a RFC5011 Resolver sends, not just one.</t>
+        </section>
       </section>
     </section>
-</section>
 
     <section title="IANA Considerations">
       <t>This document contains no IANA considerations.</t>
     </section>
 
     <section anchor="operational" title="Operational Considerations">
-      <t>A companion document to RFC5011 was expected to be published
-      that describes the best operational practice considerations from
-      the perspective of a zone publisher and SEP
-      Publisher. However, this companion document has yet to be
-      published. The authors of this document hope that it will at
-      some point in the future, as RFC5011 timing can be tricky as we
-      have shown, and a BCP is clearly warranted.  This document is
-      intended only to fill a single operational void which, when left
-      misunderstood, can result in serious security
-      ramifications. This document does not attempt to document any
-      other missing operational guidance for zone publishers.</t>
+      <t>A companion document to RFC5011 was expected to be published that
+      describes the best operational practice considerations from the
+      perspective of a zone publisher and SEP Publisher. However, this
+      companion document has yet to be published. The authors of this document
+      hope that it will at some point in the future, as RFC5011 timing can be
+      tricky as we have shown, and a BCP is clearly warranted. This document
+      is intended only to fill a single operational void which, when left
+      misunderstood, can result in serious security ramifications. This
+      document does not attempt to document any other missing operational
+      guidance for zone publishers.</t>
     </section>
 
     <section anchor="security" title="Security Considerations">
       <t>This document, is solely about the security considerations with
-      respect to the SEP Publisher's ability to advertise new DNSKEYs
-      via the RFC5011 automated trust anchor update process.
-      Thus the entire document is a discussion of Security
-      Considerations when adding or removing DNSKEYs from trust anchor
-      storage using the RFC5011 process.</t>
+      respect to the SEP Publisher's ability to advertise new DNSKEYs via the
+      RFC5011 automated trust anchor update process. Thus the entire document
+      is a discussion of Security Considerations when adding or removing
+      DNSKEYs from trust anchor storage using the RFC5011 process.</t>
 
-      <t>For simplicity, this document assumes
-      that the SEP Publisher will use a consistent RRSIG
-      validity period.  SEP Publishers that vary the
-      length of RRSIG validity periods will need to adjust the
-      sigExpirationTime value accordingly so that the equations in
-      <xref target="minimum" />  and <xref target="revoking" />
-      use a value that coincides with the last time a replay of older
-      RRSIGs will no longer succeed.</t>
-
+      <t>For simplicity, this document assumes that the SEP Publisher will use
+      a consistent RRSIG validity period. SEP Publishers that vary the length
+      of RRSIG validity periods will need to adjust the sigExpirationTime
+      value accordingly so that the equations in <xref target="minimum"/> and
+      <xref target="revoking"/> use a value that coincides with the last time
+      a replay of older RRSIGs will no longer succeed.</t>
     </section>
 
     <section title="Acknowledgements">
-      <t>The authors would like to especially thank to Michael StJohns
-      for his help and advice and the care and thought he put into
-      RFC5011 itself and his continued reviews and suggestions for
-      this document.  He also designed the suggested math behind the
-      suggested retrySafetyMargin values in <xref target="retrySafetyMargin" />.
-      </t>
+      <t>The authors would like to especially thank to Michael StJohns for his
+      help and advice and the care and thought he put into RFC5011 itself and
+      his continued reviews and suggestions for this document. He also
+      designed the suggested math behind the suggested retrySafetyMargin
+      values in <xref target="retrySafetyMargin"/>.</t>
 
-      <t>We would also like to thank Bob Harold, Shane Kerr, Matthijs
-      Mekking, Duane Wessels, Petr Petr Spacek, Ed Lewis, Viktor
-      Dukhovni, and the dnsop working group who have assisted with
-      this document.</t>
+      <t>We would also like to thank Bob Harold, Shane Kerr, Matthijs Mekking,
+      Duane Wessels, Petr Petr Spacek, Ed Lewis, Viktor Dukhovni, and the
+      dnsop working group who have assisted with this document.</t>
     </section>
   </middle>
 
   <back>
     <references title="Normative References">
       <?rfc include='reference.RFC.2119'?>
-      <?rfc include='reference.RFC.4033'?>
-      <?rfc include='reference.RFC.5011'?>
-      <?rfc include='reference.RFC.7583'?>
-      <?rfc include='reference.RFC.7719'?>
 
+      <?rfc include='reference.RFC.4033'?>
+
+      <?rfc include='reference.RFC.5011'?>
+
+      <?rfc include='reference.RFC.7583'?>
+
+      <?rfc include='reference.RFC.7719'?>
     </references>
 
     <!--
@@ -1054,11 +970,10 @@ Interval      0.25       33       41        49         57          65
                 -->
 
     <section title="Real World Example: The 2017 Root KSK Key Roll">
-      <t>In 2017 and 2018, ICANN expects to (or has, depending on when
-      you're reading this) roll the key signing key (KSK) for the root
-      zone. The relevant parameters associated with the root zone at
-      the time of this writing is as follows:
-      <figure>
+      <t>In 2017 and 2018, ICANN expects to (or has, depending on when you're
+      reading this) roll the key signing key (KSK) for the root zone. The
+      relevant parameters associated with the root zone at the time of this
+      writing is as follows: <figure>
           <artwork><![CDATA[
       addHoldDownTime:                      30 days
       Old DNSKEY sigExpirationTime:         21 days
@@ -1087,13 +1002,12 @@ Interval      0.25       33       41        49         57          65
       <t>Also note that we exclude the retrySafetyMargin value, which is
       calculated based on the expected client deployment size.</t>
 
-      <t>Thus, ICANN must wait a minimum of 52 days before switching
-      to the newly published KSK (and 26 days before removing the old
-      revoked key once it is published as revoked).  ICANN's current
-      plans involve waiting over 3 months before using the new KEY and
-      69 days before removing the old, revoked key. Thus, their
-      current rollover plans are sufficiently secure from the attack
-      discussed in this memo.</t>
+      <t>Thus, ICANN must wait a minimum of 52 days before switching to the
+      newly published KSK (and 26 days before removing the old revoked key
+      once it is published as revoked). ICANN's current plans involve waiting
+      over 3 months before using the new KEY and 69 days before removing the
+      old, revoked key. Thus, their current rollover plans are sufficiently
+      secure from the attack discussed in this memo.</t>
     </section>
   </back>
 </rfc>
