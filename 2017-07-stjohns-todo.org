@@ -430,7 +430,7 @@
        At this time we don't plan to change the document to reflect
        your preferred style.
 
-*** TODO You continue to have a problem with "sigExpirationTime".
+*** FIXED You continue to have a problem with "sigExpirationTime".
     > The amount of time remaining before any existing
     > RRSIG's Signature Expiration time is reached.  Note that for
     > organizations pre-creating signatures this time may be fairly
